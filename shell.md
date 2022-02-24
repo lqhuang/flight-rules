@@ -1,5 +1,7 @@
 ---
 title: Shell Tips
+created: 2019-01-20
+updated: 2022-02-24
 ---
 
 # Shell related tips
@@ -14,7 +16,7 @@ title: Shell Tips
 6. [Bash Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
 7. [Advanced Bash-Scripting Guide](http://tldp.org/LDP/abs/html/)
 
-## Shell: use variable inside single quote
+## Shell: Use variable inside single quote
 
 Unfortunately, you can't expand variables in single quotes. But you can end single quotes and start double quotes, though:
 
@@ -28,8 +30,7 @@ References:
 
 1. [print-value-inside-variable-inside-single-quote](https://unix.stackexchange.com/questions/209971/is-there-any-way-to-print-value-inside-variable-inside-single-quote)
 
-
-## Shell: single and double quotes are different in Bash
+## Shell: Single and double quotes are different in Bash
 
 Single `''` quotes won't interpolate anything, but double quotes `""` will, including: variables, backticks, certain `\` escapes, etc.
 
@@ -54,8 +55,7 @@ References:
 1. [difference-between-single-and-double-quotes-in-bash](https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash)
 2. [Single-Quotes.html#Single-Quotes](https://www.gnu.org/software/bash/manual/html_node/Single-Quotes.html#Single-Quotes)
 
-
-## Shell: difference among `[]`, `[[]]`, `{}`, `()`, `(())`
+## Shell: Difference among `[]`, `[[]]`, `{}`, `()`, `(())`
 
 Refs:
 
@@ -69,8 +69,8 @@ Refs:
 
 You need to interpolate the $testseq variable with one of the following ways:
 
-* `$file == *_"$testseq"_*` (here `$testseq` considered as a fixed string).
-* `$file == *_${testseq}_*` (here `$testseq` considered as a pattern).
+- `$file == *_"$testseq"_*` (here `$testseq` considered as a fixed string).
+- `$file == *_${testseq}_*` (here `$testseq` considered as a pattern).
 
 Or the `_` immediately after the variable's name will be taken as part of the variable's name (it's a valid character in a variable name).
 
@@ -117,7 +117,7 @@ First define a array
 ```shell
 declare -a arr=("element1" "element2" "element3")
 # or
-arr = ("element1" 
+arr = ("element1"
        "element2" "element3"
        "element4")
 ```
@@ -132,7 +132,7 @@ for i in "${arr[@]}"; do  # double quotes are required
 done
 ```
 
-The special parameters `*` and `@` have special meaning when in double quotes (see [Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)). 
+The special parameters `*` and `@` have special meaning when in double quotes (see [Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)).
 
 If no variables used:
 
@@ -142,7 +142,7 @@ for name in "a" "b" "c" "d" "e" "f"; do
 done
 ```
 
-Advanced: 
+Advanced:
 
 1. Creating an associative array. A dictionary:
 
@@ -166,7 +166,7 @@ Vietnam is in Asia
 France is in Europe
 ```
 
-2. Array  manipulation
+2. Array manipulation
 
 ```shell
 
@@ -227,8 +227,7 @@ Refs:
 1. [Loop through an array of strings in Bash](https://stackoverflow.com/questions/8880603/loop-through-an-array-of-strings-in-bash)
 2. [Shell-Parameter-Expansion.html#Shell-Parameter-Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)
 
-
-## Readlines form bash
+## Bash: Readlines
 
 Refs:
 
@@ -256,7 +255,6 @@ Refs:
 2. https://stackoverflow.com/questions/13570327/how-to-delete-a-substring-using-shell-script
 3. https://unix.stackexchange.com/questions/311758/remove-specific-word-in-variable
 
-
 ## Shell: Output string with padding
 
 1. Use `printf`, just like in C. It's available in any POSIXly Bourne Shell (zsh, ksh, bash, ...)
@@ -283,7 +281,7 @@ References:
 1. [Zero-padding a string/file name in shell script](https://stackoverflow.com/questions/16798770/zero-padding-a-string-file-name-in-shell-script)
 2. [How to zero pad a number or a variable?](http://www.theunixschool.com/2012/04/different-ways-to-zero-pad-number-or.html)
 
-## Bash: get arguments from command line options
+## Bash: Get arguments from command line options
 
 References:
 
@@ -301,3 +299,153 @@ if [[ -n ${SSH_CLIENT} ]] || [ -n ${SSH_TTY} ]; then
 References:
 
 1. [how-can-i-detect-if-the-shell-is-controlled-from-ssh](https://unix.stackexchange.com/questions/9605/how-can-i-detect-if-the-shell-is-controlled-from-ssh)
+
+## Shell: Catch all arguments inside script
+
+Use quoted `"$@"` instead of `$@`
+
+```
++--------+---------------------------+
+| Syntax |      Effective result     |
++--------+---------------------------+
+|   $*   |     $1 $2 $3 ... ${N}     |
++--------+---------------------------+
+|   $@   |     $1 $2 $3 ... ${N}     |
++--------+---------------------------+
+|  "$*"  |    "$1c$2c$3c...c${N}"    |
++--------+---------------------------+
+|  "$@"  | "$1" "$2" "$3" ... "${N}" |
++--------+---------------------------+
+```
+
+References:
+
+1. [Propagate all arguments in a bash shell script](https://stackoverflow.com/questions/4824590/propagate-all-arguments-in-a-bash-shell-script)
+
+## Shell: Generate random numbers from shell
+
+### `${RANDOM}`
+
+```shell
+echo ${RANDOM}
+```
+
+> `${RANDOM}` is generated by using your current process ID (PID) and the current time/date as defined by the number of seconds elapsed since 1970. -- from Abhijeet Rastogi
+
+> Each time this parameter is referenced, a random integer between 0 and 32767 is generated. -- from `man bash`
+
+You shouldn't be using `${RANDOM}` for security purposes. For example, if you want to generate a random number between 1 and 10:
+
+```shell
+echo $(( ${RANDOM} % 10 + 1 ))
+# or
+echo ${RNADOM} % 10 + 1 | bc
+```
+
+This is not an uniform distribution, because 0 to 32767 (unsigned 15-bit int or signed 16-bit int) obviously can not divide evenly into groups of 10.
+
+However, you could divide it into 8 groups equally, this would be useful to choose a random CUDA device:
+
+```shell
+CUDA_VISIBLE_DEVICES=$(( ${RANDOM} % 8 ))
+```
+
+### `shuf` (from gnu core utils)
+
+```shell
+shut -i ${MIN}-{MAX} -n ${NUMBER}
+# eg: generate 1 random number between 1024 to 65535
+shut -i 1024-65535 -n 1
+```
+
+### `od`
+
+Read random bytes from `/dev/urandom` or `/dev/random` and convert it to interger.
+
+>     od -A n -N 2 -t u2 /dev/urandom
+>
+> That'll read two bytes and print them as an unsigned int; you still have to do your clipping.
+
+### `jot` for macOS/FreeBSD
+
+```shell
+jot -r ${NUMBER} ${MIN} ${MAX}
+# eg:
+jot -r 1 1024 65535
+# fairer distribution
+jot -w %i -r 1 ${MIN} ${MAX_PLUS_1}
+```
+
+Note: it may have unfair distributions.
+
+References:
+
+1. [Generating random number between 1 and 10 in Bash Shell Script](https://stackoverflow.com/questions/8988824/generating-random-number-between-1-and-10-in-bash-shell-script)
+2. [Random number from a range in a Bash Script](https://stackoverflow.com/questions/2556190/random-number-from-a-range-in-a-bash-script)
+3. [Generating Random Numbers in Linux Shell Scripting](https://blog.eduonix.com/shell-scripting/generating-random-numbers-in-linux-shell-scripting/)
+4. [Generate random numbers in specific range](https://unix.stackexchange.com/questions/140750/generate-random-numbers-in-specific-range/241199#241199)
+
+## Test executed command exists
+
+test exit code status
+
+`hash foo 2>/dev/null`: works with Z shell (Zsh), Bash, Dash and ash.
+
+`type -p foo`: it appears to work with Z shell, Bash and ash (BusyBox), but not Dash (it interprets -p as an argument).
+
+`command -v foo`: works with Z shell, Bash, Dash, but not ash (BusyBox) (-ash: command: not found).
+
+Also note that `builtin` is not available with ash and Dash.
+
+Refs:
+
+1. [How can I check if a program exists from a Bash script?](https://stackoverflow.com/a/24856148)
+
+### Fast if else alternatives
+
+```
+command
+status=$?
+## run date command ##
+cmd="date"
+$cmd
+## get status ##
+status=$?
+## take some decision ##
+[ $status -eq 0 ] && echo "$cmd command was successful" || echo "$cmd failed"
+```
+
+### Bash: File test operators
+
+The test command takes one of the following syntax forms:
+
+```
+test EXPRESSION
+[ EXPRESSION ]
+[[ EXPRESSION ]]
+```
+
+The test command includes the following FILE operators that allow you to test for particular types of files:
+
+- `-b FILE` - True if the FILE exists and is a special block file.
+- `-c FILE` - True if the FILE exists and is a special character file.
+- `-d FILE` - True if the FILE exists and is a directory.
+- `-e FILE` - True if the FILE exists and is a file, regardless of type (node, directory, socket, etc.).
+- `-f FILE` - True if the FILE exists and is a regular file (not a directory or device).
+- `-G FILE` - True if the FILE exists and has the same group as the user running the command.
+- `-h FILE` - True if the FILE exists and is a symbolic link.
+- `-g FILE` - True if the FILE exists and has set-group-id (sgid) flag set.
+- `-k FILE` - True if the FILE exists and has a sticky bit flag set.
+- `-L FILE` - True if the FILE exists and is a symbolic link.
+- `-O FILE` - True if the FILE exists and is owned by the user running the command.
+- `-p FILE` - True if the FILE exists and is a pipe.
+- `-r FILE` - True if the FILE exists and is readable.
+- `-S FILE` - True if the FILE exists and is a socket.
+- `-s FILE` - True if the FILE exists and has nonzero size.
+- `-u FILE` - True if the FILE exists and set-user-id (suid) flag is set.
+- `-w FILE` - True if the FILE exists and is writable.
+- `-x FILE` - True if the FILE exists and is executable.
+
+Refs:
+
+1. [How to Check if a File or Directory Exists in Bash](https://linuxize.com/post/bash-check-if-file-exists)

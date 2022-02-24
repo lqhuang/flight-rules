@@ -204,3 +204,35 @@ Refs:
 1. [how-to-git-clone-a-specific-tag](https://stackoverflow.com/questions/20280726/how-to-git-clone-a-specific-tag)
 2. [git-clone](https://git-scm.com/docs/git-clone)
 
+## Store username and password in Git
+
+Refs:
+
+1. https://git-scm.com/docs/git-credential-store
+2. https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage
+3. https://stackoverflow.com/questions/35942754/how-can-i-save-username-and-password-in-git
+
+## Ignore already modified files
+
+```sh
+git update-index --assume-unchanged
+```
+
+How to ignore changed files (temporarily)
+
+In order to ignore changed files to being listed as modified, you can use the following git command:
+
+```sh
+git update-index --assume-unchanged
+```
+
+To revert that ignorance use the following command:
+
+```sh
+git update-index --no-assume-unchanged
+```
+
+Refs:
+
+1. https://stackoverflow.com/questions/655243/ignore-modified-but-not-committed-files-in-git
+2. https://stackoverflow.com/questions/9750606/git-still-shows-files-as-modified-after-adding-to-gitignore

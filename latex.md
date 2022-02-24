@@ -1,6 +1,7 @@
 ---
 title: LaTex Notes
-published: 2017-02-13 20:15
+created: 2017-02-13
+updated: 2022-02-24
 ---
 
 # latex-flight-rules and latex-tips
@@ -17,10 +18,10 @@ published: 2017-02-13 20:15
 
 | Command              | Description                                           | Default |
 | :------------------- | :---------------------------------------------------- | :-----: |
-| `\topfraction`       | maximum fraction of page for floats at top            | 0.7     |
-| `\bottomfraction`    | maximum fraction of page for floats at bottom         | 0.3     |
-| `\textfraction`      | minimum fraction of page for text                     | 0.2     |
-| `\floatpagefraction` | minimum fraction of floatpage that should have floats | 0.5     |
+| `\topfraction`       | maximum fraction of page for floats at top            |   0.7   |
+| `\bottomfraction`    | maximum fraction of page for floats at bottom         |   0.3   |
+| `\textfraction`      | minimum fraction of page for text                     |   0.2   |
+| `\floatpagefraction` | minimum fraction of floatpage that should have floats |   0.5   |
 
 比较有效的方法是调整 `float` 对象可以占用页面的比例，而不至于占据整个页面
 
@@ -39,7 +40,9 @@ Solution:
 
     tlmgr init-usertree
 
-Ref: https://tex.stackexchange.com/questions/137428/tlmgr-cannot-setup-tlpdb
+Refs:
+
+1. [tlmgr cannot setup TLPDB](https://tex.stackexchange.com/questions/137428/tlmgr-cannot-setup-tlpdb)
 
 ## Upgrade LaTex across major version
 
@@ -67,6 +70,6 @@ Without --global, texlive will search only your local database, where the file i
 
     tlmgr install thispackage
 
-Reference: 
+Refs:
 
 1. [find-the-right-package-for-missing-files-in-texlive](https://tex.stackexchange.com/questions/274536/find-the-right-package-for-missing-files-in-texlive)
