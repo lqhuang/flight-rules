@@ -30,7 +30,8 @@ networks:
     name: custom_network
 ```
 
-docker-compose up -d will join a network called 'custom_network'. If it doesn't exist, it will be created!
+docker-compose up -d will join a network called 'custom_network'. If it doesn't
+exist, it will be created!
 
 ref:
 
@@ -55,9 +56,11 @@ Way 2: just install the `rng-tools` and run command `sudo rngd -r /dev/urandom`
 
 method 1: use `dns-proxy-server`
 
-method 2: use `domainname` in `docker-compose.yml` or `--hostname host.domain.com` for `docker run`
+method 2: use `domainname` in `docker-compose.yml` or
+`--hostname host.domain.com` for `docker run`
 
-method 3: automatically update by [script](https://stackoverflow.com/questions/36151981/local-hostnames-for-docker-containers)
+method 3: automatically update by
+[script](https://stackoverflow.com/questions/36151981/local-hostnames-for-docker-containers)
 
 method 4: `--add-host` for `docker run` / `extra_hosts` for compose file.
 
@@ -74,7 +77,11 @@ It only starts when I SSH in and do `docker ps`
 
 Then everything work fine again.
 
-> Background:The root of this is because docker is socket activated on CoreOS, ie it doesn't block the boot chain. Early versions of docker were slow to start when you had lots of containers on disk which blocked everything that depended on docker from starting quickly, which caused some interesting failures. – Rob
+> Background:The root of this is because docker is socket activated on CoreOS,
+> ie it doesn't block the boot chain. Early versions of docker were slow to
+> start when you had lots of containers on disk which blocked everything that
+> depended on docker from starting quickly, which caused some interesting
+> failures. – Rob
 
 solution 1:
 
@@ -97,19 +104,29 @@ Refs
 
 ## Environment variables in Compose
 
-Both `$VARIABLE` and `${VARIABLE}` syntax are supported. Additionally when using the 2.1 file format, it is possible to provide inline default values using typical shell syntax:
+Both `$VARIABLE` and `${VARIABLE}` syntax are supported. Additionally when using
+the 2.1 file format, it is possible to provide inline default values using
+typical shell syntax:
 
-- `${VARIABLE:-default}` evaluates to `default` if `VARIABLE` is unset or empty in the environment.
-- `${VARIABLE-default}` evaluates to `default` only if `VARIABLE` is unset in the environment.
+- `${VARIABLE:-default}` evaluates to `default` if `VARIABLE` is unset or empty
+  in the environment.
+- `${VARIABLE-default}` evaluates to `default` only if `VARIABLE` is unset in
+  the environment.
 
 Similarly, the following syntax allows you to specify mandatory variables:
 
-- `${VARIABLE:?err}` exits with an error message containing `err` if `VARIABLE` is unset or empty in the environment.
-- `${VARIABLE?err}` exits with an error message containing `err` if `VARIABLE` is unset in the environment.
+- `${VARIABLE:?err}` exits with an error message containing `err` if `VARIABLE`
+  is unset or empty in the environment.
+- `${VARIABLE?err}` exits with an error message containing `err` if `VARIABLE`
+  is unset in the environment.
 
-Other extended shell-style features, such as `${VARIABLE/foo/bar}`, are not supported.
+Other extended shell-style features, such as `${VARIABLE/foo/bar}`, are not
+supported.
 
-You can use a `$$` (double-dollar sign) when your configuration needs a literal dollar sign. This also prevents Compose from interpolating a value, so a `$$` allows you to refer to environment variables that you don’t want processed by Compose.
+You can use a `$$` (double-dollar sign) when your configuration needs a literal
+dollar sign. This also prevents Compose from interpolating a value, so a `$$`
+allows you to refer to environment variables that you don’t want processed by
+Compose.
 
 References:
 
@@ -125,14 +142,18 @@ Refs:
 
 ## Understand how CMD and ENTRYPOINT interact
 
-Both `CMD` and `ENTRYPOINT` instructions define what command gets executed when running a container. There are few rules that describe their co-operation.
+Both `CMD` and `ENTRYPOINT` instructions define what command gets executed when
+running a container. There are few rules that describe their co-operation.
 
 1. Dockerfile should specify at least one of `CMD` or `ENTRYPOINT` commands.
 2. `ENTRYPOINT` should be defined when using the container as an executable.
-3. `CMD` should be used as a way of defining default arguments for an `ENTRYPOINT` command or for executing an ad-hoc command in a container.
-4. `CMD` will be overridden when running the container with alternative arguments.
+3. `CMD` should be used as a way of defining default arguments for an
+   `ENTRYPOINT` command or for executing an ad-hoc command in a container.
+4. `CMD` will be overridden when running the container with alternative
+   arguments.
 
-The table below shows what command is executed for different `ENTRYPOINT` / `CMD` combinations:
+The table below shows what command is executed for different `ENTRYPOINT` /
+`CMD` combinations:
 
 |                            | No ENTRYPOINT              | ENTRYPOINT exec_entry p1_entry | ENTRYPOINT ["exec_entry", "p1_entry"]          |
 | -------------------------- | -------------------------- | ------------------------------ | ---------------------------------------------- |
@@ -141,7 +162,9 @@ The table below shows what command is executed for different `ENTRYPOINT` / `CMD
 | CMD ["p1_cmd", "p2_cmd"]   | p1_cmd p2_cmd              | /bin/sh -c exec_entry p1_entry | exec_entry p1_entry p1_cmd p2_cmd              |
 | CMD exec_cmd p1_cmd        | /bin/sh -c exec_cmd p1_cmd | /bin/sh -c exec_entry p1_entry | exec_entry p1_entry /bin/sh -c exec_cmd p1_cmd |
 
-Note: If `CMD` is defined from the base image, setting `ENTRYPOINT` will reset `CMD` to an empty value. In this scenario, `CMD` must be defined in the current image to have a value.
+Note: If `CMD` is defined from the base image, setting `ENTRYPOINT` will reset
+`CMD` to an empty value. In this scenario, `CMD` must be defined in the current
+image to have a value.
 
 Refs:
 
@@ -149,7 +172,8 @@ Refs:
 
 ## `ENV` variables would not be replaced in `ENTRYPOINT` and `CMD` part
 
-Environment variables are supported by the following list of instructions in the `Dockerfile`:
+Environment variables are supported by the following list of instructions in the
+`Dockerfile`:
 
 - `ADD`
 - `COPY`
@@ -163,7 +187,8 @@ Environment variables are supported by the following list of instructions in the
 - `WORKDIR`
 - `ONBUILD` (when combined with one of the supported instructions above)
 
-But this replacement won't happen in `ENTRYPOINT` and `CMD` instructions. If you want to eval them, you need use them as shell variable.
+But this replacement won't happen in `ENTRYPOINT` and `CMD` instructions. If you
+want to eval them, you need use them as shell variable.
 
     ENTRYPOINT ["sh -c", "executable", "param1", "param2", "${VAR1}", "${VAR2}"]
 
@@ -179,13 +204,19 @@ Refs:
 
 > ! Scope of build-args
 >
-> In your Dockerfile, if you specify `ARG` before the `FROM` instruction, `ARG` is not available in the build instructions under `FROM`. If you need an argument to be available in both places, also specify it under the `FROM` instruction. Refer to the understand how `ARGS` and `FROM` interact section in the documentation for usage details.
+> In your Dockerfile, if you specify `ARG` before the `FROM` instruction, `ARG`
+> is not available in the build instructions under `FROM`. If you need an
+> argument to be available in both places, also specify it under the `FROM`
+> instruction. Refer to the understand how `ARGS` and `FROM` interact section in
+> the documentation for usage details.
 >
 > ! Tip when using boolean values
 >
-> YAML boolean values (`"true"`, `"false"`, `"yes"`, `"no"`, "`on"`, `"off"`) must be enclosed in quotes, so that the parser interprets them as strings.
+> YAML boolean values (`"true"`, `"false"`, `"yes"`, `"no"`, "`on"`, `"off"`)
+> must be enclosed in quotes, so that the parser interprets them as strings.
 
-`FROM` instructions support variables that are declared by any `ARG` instructions that occur before the first `FROM`.
+`FROM` instructions support variables that are declared by any `ARG`
+instructions that occur before the first `FROM`.
 
 ```Dockerfile
 ARG  CODE_VERSION=latest

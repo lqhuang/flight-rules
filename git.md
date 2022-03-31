@@ -1,13 +1,15 @@
 ---
-title: Git cheatsheet
-created: 2017-02-13 20:15
+title: Git Cheatsheet
+created: 2017-02-13
+updated: 2022-03-31
 ---
 
 记录一些常用的相关操作。
 
 ## Fork 仓库的同步与更新
 
-> https://help.github.com/articles/syncing-a-fork/ > https://stackoverflow.com/questions/7244321/how-do-i-update-a-github-forked-repository
+> https://help.github.com/articles/syncing-a-fork/ >
+> https://stackoverflow.com/questions/7244321/how-do-i-update-a-github-forked-repository
 
     In your local clone of your forked repository, you can add the original GitHub repository as a "remote". ("Remotes" are like nicknames for the URLs of repositories - origin is one, for example.) Then you can fetch all the branches from that upstream repository, and rebase your work to continue working on the upstream version. In terms of commands that might look like:
 
@@ -54,7 +56,8 @@ https://stackoverflow.com/questions/2982055/detach-many-subdirectories-into-a-ne
 
 ## 为不同的目录下的仓库 (Repos) 设置不同的 gitconfig
 
-经常会遇到需要为不同的 Git 项目设置不同的 `user` 和 `email`。在 `Git 2.13` 以后的版本中引入了 `conditional includes`。
+经常会遇到需要为不同的 Git 项目设置不同的 `user` 和 `email`。在 `Git 2.13` 以后
+的版本中引入了 `conditional includes`。
 
 在 `~/.gitconfig` 中添加
 
@@ -87,9 +90,11 @@ You can check that that it works recursively by running `git config --list`.
 
 Hints:
 
-1. use `gitdir/i` for case-insensitive mode or when you're using case-insensitive file sytems (eg. Windows).
+1. use `gitdir/i` for case-insensitive mode or when you're using
+   case-insensitive file sytems (eg. Windows).
 2. the last `/` of `/path/to/directory/` can't be missing.
-3. For pathname, `~/` is expanded to the value of `$HOME`, and `~user/` to the specified user’s home directory. No `env` available.
+3. For pathname, `~/` is expanded to the value of `$HOME`, and `~user/` to the
+   specified user’s home directory. No `env` available.
 
 Refs:
 
@@ -110,13 +115,15 @@ If it's a single commit, amend it
 
     git commit --amend --no-edit --author "New Authorname <authoremail@mydomain.com>"
 
-An alternative is to correctly configure your author settings in git config --global author.(name|email) and then use
+An alternative is to correctly configure your author settings in git config
+--global author.(name|email) and then use
 
     git commit --amend --reset-author --no-edit
 
 If you need to change all of history, see the man page for git filter-branch.
 
-Ref: https://github.com/k88hudson/git-flight-rules#i-committed-with-the-wrong-name-and-email-configured
+Ref:
+https://github.com/k88hudson/git-flight-rules#i-committed-with-the-wrong-name-and-email-configured
 
 ### 历史提交记录中的 commit
 
@@ -164,7 +171,8 @@ Refs:
 
 不知道为啥产生的重复 commits
 
-Refs: https://stackoverflow.com/questions/38454532/remove-duplicate-commits-introduced-after-bad-rebases/38457832
+Refs:
+https://stackoverflow.com/questions/38454532/remove-duplicate-commits-introduced-after-bad-rebases/38457832
 
 ## Removing sensitive data from a repository
 
@@ -189,15 +197,24 @@ Refs:
 git clone <repo_url> --branch <tag_name> [--single-branch] [--depth 1]
 ```
 
-Use `--single-branch` option to **only clone history leading to tip of the tag**. This saves a lot of unnecessary code from being cloned.
+Use `--single-branch` option to **only clone history leading to tip of the
+tag**. This saves a lot of unnecessary code from being cloned.
 
 `--[no-]single-branch`
 
-Clone only the history leading to the tip of a single branch, either specified by the `--branch` option or the primary branch remote’s `HEAD` points at. Further fetches into the resulting repository will only update the remote-tracking branch for the branch this option was used for the initial cloning. If the `HEAD` at the remote did not point at any branch when `--single-branch` clone was made, no remote-tracking branch is created.
+Clone only the history leading to the tip of a single branch, either specified
+by the `--branch` option or the primary branch remote’s `HEAD` points at.
+Further fetches into the resulting repository will only update the
+remote-tracking branch for the branch this option was used for the initial
+cloning. If the `HEAD` at the remote did not point at any branch when
+`--single-branch` clone was made, no remote-tracking branch is created.
 
 `--depth <depth>`
 
-Create a **shallow** clone with a history truncated to the specified number of commits. Implies `--single-branch` unless `--no-single-branch` is given to fetch the histories near the tips of all branches. If you want to clone submodules shallowly, also pass `--shallow-submodules`.
+Create a **shallow** clone with a history truncated to the specified number of
+commits. Implies `--single-branch` unless `--no-single-branch` is given to fetch
+the histories near the tips of all branches. If you want to clone submodules
+shallowly, also pass `--shallow-submodules`.
 
 Refs:
 
@@ -220,7 +237,8 @@ git update-index --assume-unchanged
 
 How to ignore changed files (temporarily)
 
-In order to ignore changed files to being listed as modified, you can use the following git command:
+In order to ignore changed files to being listed as modified, you can use the
+following git command:
 
 ```sh
 git update-index --assume-unchanged
@@ -236,3 +254,17 @@ Refs:
 
 1. https://stackoverflow.com/questions/655243/ignore-modified-but-not-committed-files-in-git
 2. https://stackoverflow.com/questions/9750606/git-still-shows-files-as-modified-after-adding-to-gitignore
+
+## Only use a proxy for certain urls or domains.
+
+Update your `.gitconfig` file:
+
+```
+[http "http://my.internalgitserver.com/"]
+    proxy = "http://proxy-server"
+```
+
+References:
+
+1. [Only use a proxy for certain git urls/domains?](https://stackoverflow.com/questions/16067534/only-use-a-proxy-for-certain-git-urls-domains)
+2. [Git Configuration](https://git-scm.com/docs/git-config#Documentation/git-config.txt-httplturlgt)
