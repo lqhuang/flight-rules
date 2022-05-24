@@ -1,10 +1,8 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2022-03-31
+updated: 2022-05-24
 ---
-
-记录一些常用的相关操作。
 
 ## Fork 仓库的同步与更新
 
@@ -64,26 +62,26 @@ https://stackoverflow.com/questions/2982055/detach-many-subdirectories-into-a-ne
 ```
 ; include if $GIT_DIR is /path/to/foo/.git
 [includeIf "gitdir:/path/to/foo/.git"]
-	path = /path/to/foo.inc
+    path = /path/to/foo.inc
 
 ; include for all repositories inside /path/to/group
 [includeIf "gitdir:/path/to/group/"]
-	path = /path/to/foo.inc
+    path = /path/to/foo.inc
 
 ; include for all repositories inside $HOME/to/group
 [includeIf "gitdir:~/to/group/"]
-	path = /path/to/foo.inc
+    path = /path/to/foo.inc
 
 ; relative paths are always relative to the including
 ; file (if the condition is true); their location is not
 ; affected by the condition
 [includeIf "gitdir:/path/to/group/"]
-	path = foo.inc
+    path = foo.inc
 
 ; include only if we are in a worktree where foo-branch is
 ; currently checked out
 [includeIf "onbranch:foo-branch"]
-	path = foo.inc
+    path = foo.inc
 ```
 
 You can check that that it works recursively by running `git config --list`.
@@ -255,7 +253,7 @@ Refs:
 1. https://stackoverflow.com/questions/655243/ignore-modified-but-not-committed-files-in-git
 2. https://stackoverflow.com/questions/9750606/git-still-shows-files-as-modified-after-adding-to-gitignore
 
-## Only use a proxy for certain urls or domains.
+## Only use proxy for certain urls or domains.
 
 Update your `.gitconfig` file:
 
@@ -268,3 +266,18 @@ References:
 
 1. [Only use a proxy for certain git urls/domains?](https://stackoverflow.com/questions/16067534/only-use-a-proxy-for-certain-git-urls-domains)
 2. [Git Configuration](https://git-scm.com/docs/git-config#Documentation/git-config.txt-httplturlgt)
+
+## Leased force push after rebase
+
+If you safely rebased your branch, but found you were rejuected since commit
+tree has been changed.
+
+No need to push forcely with `--force`, just try:
+
+```
+git push --force-with-lease
+```
+
+References:
+
+1. [Git push rejected after feature branch rebase](https://stackoverflow.com/questions/8939977/git-push-rejected-after-feature-branch-rebase)

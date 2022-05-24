@@ -1,10 +1,10 @@
 ---
-title: Docker Tips
+title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2022-01-09
+updated: 2022-05-24
 ---
 
-## docker: Communication between multiple docker-compose projects
+## Communication between multiple docker-compose projects
 
 method 1: set `external_links` for `docker-compose`
 
@@ -38,13 +38,13 @@ ref:
 1. https://stackoverflow.com/questions/38088279/communication-between-multiple-docker-compose-projects
 2. https://docs.docker.com/compose/networking/
 
-## docker: Share Compose configurations between files and projects
+## Share Compose configurations between files and projects
 
 References:
 
-1. https://docs.docker.com/compose/extends/
+1. [Share Compose configurations between files and projects](https://docs.docker.com/compose/extends/)
 
-## this system doesn't provide enough entropy
+## This system doesn't provide enough entropy
 
 Way 1: mount /dev/urandom from the host as /dev/random into the container
 
@@ -52,7 +52,7 @@ Way 1: mount /dev/urandom from the host as /dev/random into the container
 
 Way 2: just install the `rng-tools` and run command `sudo rngd -r /dev/urandom`
 
-## docker: Access docker container from host using containers name
+## Access docker container from host using containers name
 
 method 1: use `dns-proxy-server`
 
@@ -102,7 +102,7 @@ Refs
 
 1. [docker-daemon-doesnt-start-on-boot-on-coreos](https://serverfault.com/questions/743087/docker-daemon-doesnt-start-on-boot-on-coreos)
 
-## Environment variables in Compose
+## Environment variables in compose file
 
 Both `$VARIABLE` and `${VARIABLE}` syntax are supported. Additionally when using
 the 2.1 file format, it is possible to provide inline default values using
@@ -131,14 +131,6 @@ Compose.
 References:
 
 1. [Environment variables in Compose](https://docs.docker.com/compose/environment-variables)
-
-## Get Docker container IP address in host machine
-
-Refs:
-
-1. [10 Examples of how to get Docker Container IP Address](http://networkstatic.net/10-examples-of-how-to-get-docker-container-ip-address)
-
-## Get Docker container IP address inside container???
 
 ## Understand how CMD and ENTRYPOINT interact
 
@@ -231,3 +223,97 @@ Refs:
 
 1. [Service configuration reference: build/args](https://docs.docker.com/compose/compose-file/compose-file-v3/#args)
 2. [Understand how ARG and FROM interact](https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact)
+
+## Get Docker container IP address in host machine
+
+Refs:
+
+1. [10 Examples of how to get Docker Container IP Address](http://networkstatic.net/10-examples-of-how-to-get-docker-container-ip-address)
+
+## Get Docker container IP address inside container???
+
+...
+
+## Get host IP inside container
+
+Get IPv4 address:
+
+```sh
+DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
+```
+
+Get IPv6 address:
+
+S - IPv6 segment = [0-9a-f]{1,4}
+
+```sh
+# not test yet
+DOCKER_HOST=$(ip -6 addr show docker0 | grep -Po 'inet6 \K(?:%[0-9a-z]+)')
+```
+
+Ref:
+
+1. [Docker Tip #65: Get Your Docker Host's IP Address from in a Container](https://nickjanetakis.com/blog/docker-tip-65-get-your-docker-hosts-ip-address-from-in-a-container)
+2. [How to get the IP address of the docker host from inside a docker container](https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container)
+
+## Squash all build layers into one
+
+`docker build --squash`: squash 功能会在 Docker 完成构建之后，将所有的 layers 压
+缩成一个 layer，也就是说，最终构建出来的 Docker image 只有一层。所以，如上在多个
+RUN 中写 clean 命令，其实也可以。我不太喜欢这种方式，因为前文提到的，多个 image
+共享 base image 以及加速 pull 的 feature 其实就用不到了。
+
+一些常见的包管理器删除缓存的方法：
+
+```
+# yum
+yum clean all
+# dnf
+dnf clean all
+# rvm
+rvm cleanup all
+# gem
+gem cleanup
+# cpan
+rm -rf ~/.cpan/{build,sources}/*
+# pip
+rm -rf ~/.cache/pip/*
+# apt-get
+apt-get clean
+```
+
+References:
+
+1. [Docker 镜像构建的一些技巧](https://www.kawabangga.com/posts/4676)
+
+## Keep your secrets during building
+
+Do not use `ARG` to pass secrets in `Dockerfile`
+
+> **Warning**:
+>
+> It is not recommended to use build-time variables for passing secrets like
+> github keys, user credentials etc. Build-time variable values are visible to
+> any user of the image with the `docker history` command. Refer to the “Build
+> images with BuildKit” section to learn about secure ways to use secrets when
+> building images.
+
+To use `BuildKit`, enable this feature firstly,
+
+    DOCKER_BUILDKIT=1 docker build --help
+
+Add option `--secret id=some-id,src=path-to-env-file` to `docker build`, then
+config how to use secrets in `Dockerfile`
+
+    # shows secret from default secret location:
+    RUN --mount=type=secret,id=some-id cat /run/secrets/some-id
+
+    # shows secret from custom secret location:
+    RUN --mount=type=secret,id=some-id,dst=/foobar/env-name cat /foobar/env-name
+
+!!! Secrets will be only present in the mounted layer, which means you cannot
+read that file again in all subsequent `RUN` commands !!!
+
+References:
+
+1. [Build Images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information)

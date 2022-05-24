@@ -1,9 +1,8 @@
 ---
 title: Python Tips
-updated: 2022-02-24
+created: 2019-01-01
+updated: 2022-05-24
 ---
-
-# Python flight rules / Python tips
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
 
@@ -14,47 +13,35 @@ def asarray(a, dtype=None, order=None):
     return array(a, dtype, copy=False, order=order)
 ```
 
-So it is like array, except it has fewer options, and copy=False. array has copy=True by default.
+So it is like array, except it has fewer options, and `copy=False`. array has
+`copy=True` by default.
 
-The main difference is that array (by default) will make a copy of the object, while asarray will not unless necessary.
+The main difference is that array (by default) will make a copy of the object,
+while asarray will not unless necessary.
 
 ref: https://stackoverflow.com/questions/14415741/numpy-array-vs-asarray
 
 ## 利用 Conda 在 64b-it 平台上创建 32-bit 的环境
 
-通过 Windows 环境变量(environmental variables)进行配置
+通过环境变量(environmental variables)进行配置
 
     set CONDA_FORCE_32BIT=1
     conda create -n py27_32bit python=2.7
 
-ref:
+Refs:
 
 1. [Conda is mixing 32-bit and 64-bit packages](https://github.com/conda/conda/issues/1744)
 2. [using-multiple-python-engines-32bit-64bit](https://stackoverflow.com/questions/33709391/using-multiple-python-engines-32bit-64bit-and-2-7-3-5)
 
-## 想同时在 console 和 logfile 中记录 log 信息
+## Enable rasterized (光栅化) for matplotlib
 
-注册两个 `handler`: `logging.StreamHandler` and `logging.FileHandler`
+Improve size of vector graphics (eg: svg, pdf, eps format)
 
-ref: https://stackoverflow.com/questions/17743019/flask-logging-cannot-get-it-to-write-to-a-file
+Ref:
 
-## CamelCase to camel_case
-
-https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
-
-## matplotlib enable rasterized (光栅化)
-
-improve size of vector graphics (eg: svg, pdf, eps format)
-
-ref: http://www.astrobetter.com/blog/2014/01/17/slim-down-your-bloated-graphics/
+1. [Slim down your bloated graphics](http://www.astrobetter.com/blog/2014/01/17/slim-down-your-bloated-graphics/)
 
 ## Axis Style
-
-ref:
-
-1. https://matplotlib.org/gallery/axisartist/demo_axisline_style.html?highlight=subplotzero
-2. https://stackoverflow.com/questions/33737736/matplotlib-axis-arrow-tip/33738359
-3. https://stackoverflow.com/questions/17646247/how-to-make-fuller-axis-arrows-with-matplotlib
 
 ```python
 from mpl_toolkits.axisartist.axislines import SubplotZero
@@ -83,9 +70,15 @@ ax.plot(x, np.sin(x*np.pi))
 plt.show()
 ```
 
+Refs:
+
+1. https://matplotlib.org/gallery/axisartist/demo_axisline_style.html?highlight=subplotzero
+2. https://stackoverflow.com/questions/33737736/matplotlib-axis-arrow-tip/33738359
+3. https://stackoverflow.com/questions/17646247/how-to-make-fuller-axis-arrows-with-matplotlib
+
 ## Deleting diagonal elements of a numpy array
 
-readable and efficient enough solution
+Readable and efficient enough solution:
 
 ```python
 def del_diag(matrix):
@@ -93,11 +86,11 @@ def del_diag(matrix):
     return matrix[~np.eye(m, n, dtype=bool)].reshape(m, n - 1)
 ```
 
-ref: https://stackoverflow.com/questions/46736258/deleting-diagonal-elements-of-a-numpy-array
+Ref:
 
-## String format
+1. [Deleting diagonal elements of a numpy array](https://stackoverflow.com/questions/46736258/deleting-diagonal-elements-of-a-numpy-array)
 
-https://docs.python.org/3/library/string.html#format-specification-mini-language
+## String format cheatsheet
 
     format*spec ::= [[fill]align][sign][#][0][width][grouping_option][.precision][type]
     fill ::= <any character>
@@ -108,44 +101,41 @@ https://docs.python.org/3/library/string.html#format-specification-mini-language
     precision ::= digit+
     type ::= "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
 
-## get nth element
+Ref:
 
-https://stackoverflow.com/questions/12440342/best-way-to-get-the-nth-element-of-each-tuple-from-a-list-of-tuples-in-python
+1. [Format Specification Mini-Language](https://docs.python.org/3/library/string.html#format-specification-mini-language)
 
 ## pytz
 
-Asia/Shanghai
-Asia/Taipei
+- Asia/Shanghai
+- Asia/Taipei
 
-LMT
-CST
+LMT vs CST
 
 local mean time
 
 TypeError: can't subtract offset-naive and offset-aware datetimes
 
-https://www.jb51.net/article/163565.htm
+Ref: https://www.jb51.net/article/163565.htm
 
 ## anaconda env activation after 4.4
 
 ```shell
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/lqhuang/Software/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$('${HOME}/Software/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/lqhuang/Software/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/lqhuang/Software/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "${HOME}/Software/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "${HOME}/Software/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/lqhuang/Software/miniconda3/bin:$PATH"
+        export PATH="${HOME}/Software/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 ```
-
-stupid
 
 Use
 
@@ -157,15 +147,21 @@ Rather than
 
 https://github.com/conda/conda/blob/master/CHANGELOG.md#440-2017-12-20
 
-## development mode
+## Install package in development mode
 
-The `pip install -e .` command allows you to follow the development branch as it changes by creating links in the right places and installing the command line scripts to the appropriate locations.
+The `pip install -e .` command allows you to follow the development branch as it
+changes by creating links in the right places and installing the command line
+scripts to the appropriate locations.
 
-## split a string at uppercase letters
+## CamelCase to camel_case
 
-https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters
+Ref:
 
-```
+1. https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
+
+## Split a string at uppercase letters
+
+```python
 >>> import re
 >>> re.findall('[A-Z][^A-Z]*', 'TheLongAndWindingRoad')
 ['The', 'Long', 'And', 'Winding', 'Road']
@@ -173,18 +169,16 @@ https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters
 ['A', 'B', 'C']
 ```
 
-```
+```python
 re.split('(?=[A-Z])', 'theLongAndWindingRoad')
 ['the', 'Long', 'And', 'Winding', 'Road']
 ```
 
-都有缺陷
+All these methods will fail in serveral corner cases, test it via:
 
-测试 theLongAndWindingRoad
-
-测试 ABCD
-
-测试 TheLongAndWindingRoad
+- "theLongAndWindingRoad"
+- "ABCD"
+- "TheLongAndWindingRoad"
 
 ```python
 re.findall('.[^A-Z]*', 'aboutTheLongAndWindingRoadABC')
@@ -233,59 +227,70 @@ def split_on_uppercase(s, keep_contiguous=False):
 ['hello world']
 ```
 
+Ref:
+
+1. [Split a string at uppercase letters](https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters)
+
 ## SQLAlchemy and asyncio (run_in_executor):
 
-https://gist.github.com/Tarliton/c494fa972a7a2594372738c96c0654a1
-https://stackoverflow.com/questions/21078696/why-is-my-scoped-session-raising-an-attributeerror-session-object-has-no-attr
-https://stackoverflow.com/questions/51446322/flask-sqlalchemy-set-expire-on-commit-false-only-for-current-session
-https://marlinux.wordpress.com/2017/05/19/python-3-6-asyncio-sqlalchemy/
-https://davidcaron.dev/sqlalchemy-multiple-threads-and-processes/
-https://docs.sqlalchemy.org/en/13/orm/session_basics.html#session-faq-whentocreate
+1. https://gist.github.com/Tarliton/c494fa972a7a2594372738c96c0654a1
+2. https://stackoverflow.com/questions/21078696/why-is-my-scoped-session-raising-an-attributeerror-session-object-has-no-attr
+3. https://stackoverflow.com/questions/51446322/flask-sqlalchemy-set-expire-on-commit-false-only-for-current-session
+4. https://marlinux.wordpress.com/2017/05/19/python-3-6-asyncio-sqlalchemy/
+5. https://davidcaron.dev/sqlalchemy-multiple-threads-and-processes/
+6. https://docs.sqlalchemy.org/en/13/orm/session_basics.html#session-faq-whentocreate
 
-## binding process into single core
+## Binding process into single core
 
 1. taskset
 
 2. modern python
 
-os.sched_setaffinity
-os.sched_getaffinity
+- `os.sched_setaffinity`
+- `os.sched_getaffinity`
 
 3. psutil
 
-proc = psutil.Process() # get self pid
-proc.cpu_affinity
+```python
+proc = psutil.Process() # get self pid proc.cpu_affinity
+```
 
 References:
 
-https://unix.stackexchange.com/questions/23106/how-to-limit-a-process-to-one-cpu-core-in-linux
+1. https://unix.stackexchange.com/questions/23106/how-to-limit-a-process-to-one-cpu-core-in-linux
+2. https://stackoverflow.com/questions/5784389/using-100-of-all-cores-with-the-multiprocessing-module/35371568
+3. http://sorami-chi.hateblo.jp/entry/2016/04/29/000000
+4. https://www.geeksforgeeks.org/python-os-sched_setaffinity-method/
+5. https://stackoverflow.com/questions/36172101/designate-specific-cpu-for-a-process-python-multiprocessing
+6. https://stackoverflow.com/questions/5784389/using-100-of-all-cores-with-the-multiprocessing-module/35371568#35371568
 
-https://stackoverflow.com/questions/5784389/using-100-of-all-cores-with-the-multiprocessing-module/35371568
-http://sorami-chi.hateblo.jp/entry/2016/04/29/000000
-https://www.geeksforgeeks.org/python-os-sched_setaffinity-method/
-https://stackoverflow.com/questions/36172101/designate-specific-cpu-for-a-process-python-multiprocessing
-https://stackoverflow.com/questions/5784389/using-100-of-all-cores-with-the-multiprocessing-module/35371568#35371568
+### extra: assign run progress in one core exclusively
 
-extra: assign run progress in one core exclusively
+1. https://superuser.com/questions/1082194/assign-an-individual-core-to-a-process
+2. https://diego.assencio.com/?index=4515794de9f941c632d593384ca39dea
+3. https://unix.stackexchange.com/questions/326579/how-to-ensure-exclusive-cpu-availability-for-a-running-process
+4. https://stackoverflow.com/questions/9072060/one-core-exclusively-for-my-process/9079117#9079117
 
-https://superuser.com/questions/1082194/assign-an-individual-core-to-a-process
-https://diego.assencio.com/?index=4515794de9f941c632d593384ca39dea
-https://unix.stackexchange.com/questions/326579/how-to-ensure-exclusive-cpu-availability-for-a-running-process
-https://stackoverflow.com/questions/9072060/one-core-exclusively-for-my-process/9079117#9079117
+## Print actual query in SQLAlchemy
 
-## print actual query
+```python
+print(stmt.compile(dialect=postgresql.dialect(),compile_kwargs={"literal_binds":
+True}))
+```
 
-print(stmt.compile(dialect=postgresql.dialect(),compile_kwargs={"literal_binds": True}))
+References:
 
-https://stackoverflow.com/questions/4617291/how-do-i-get-a-raw-compiled-sql-query-from-a-sqlalchemy-expression
-https://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query/23835766
+1. https://stackoverflow.com/questions/4617291/how-do-i-get-a-raw-compiled-sql-query-from-a-sqlalchemy-expression
+2. https://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query/23835766
 
-## `on_conflict_do_update`
+## Upsert `on_conflict_do_update` in SQLAlchemy
 
-https://gist.github.com/bhtucker/c40578a2fb3ca50b324e42ef9dce58e1
-https://docs.sqlalchemy.org/en/13/dialects/postgresql.html#insert-on-conflict-upsert
+Refs:
 
-## Understanding min_df and max_df in scikit CountVectorizer
+1. https://gist.github.com/bhtucker/c40578a2fb3ca50b324e42ef9dce58e1
+2. https://docs.sqlalchemy.org/en/13/dialects/postgresql.html#insert-on-conflict-upsert
+
+## Understanding `min_df` and `max_df` in scikit `CountVectorizer`
 
 example:
 
@@ -302,25 +307,32 @@ tfidf_vectorizer = TfidfVectorizer(
 
 explain:
 
-`max_df` is used for removing terms that appear **too frequently**, also known as "corpus-specific stop words". For example:
+`max_df` is used for removing terms that appear **too frequently**, also known
+as "corpus-specific stop words". For example:
 
-- `max_df = 0.50` means "ignore terms that appear in **more than 50% of the documents**".
+- `max_df = 0.50` means "ignore terms that appear in **more than 50% of the
+  documents**".
 - `max_df = 25` means "ignore terms that appear in **more than 25 documents**".
 
-The default `max_df` is `1.0`, which means "ignore terms that appear in **more than 100% of the documents**". Thus, the default setting does not ignore any terms.
+The default `max_df` is `1.0`, which means "ignore terms that appear in **more
+than 100% of the documents**". Thus, the default setting does not ignore any
+terms.
 
-`min_df` is used for removing terms that appear **too infrequently**. For example:
+`min_df` is used for removing terms that appear **too infrequently**. For
+example:
 
-- `min_df = 0.01` means "ignore terms that appear in **less than 1% of the documents**".
+- `min_df = 0.01` means "ignore terms that appear in **less than 1% of the
+  documents**".
 - `min_df = 5` means "ignore terms that appear in **less than 5 documents**".
 
-The default `min_df` is `1`, which means "ignore terms that appear in **less than 1 document**". Thus, the default setting does not ignore any terms.
+The default `min_df` is `1`, which means "ignore terms that appear in **less
+than 1 document**". Thus, the default setting does not ignore any terms.
 
 Ref:
 
 1. [understanding-min-df-and-max-df-in-scikit-countvectorizer](https://stackoverflow.com/questions/27697766/understanding-min-df-and-max-df-in-scikit-countvectorizer)
 
-## dataclass hidden variable
+## Hidden variable in `dataclass`
 
 Ref:
 
@@ -328,13 +340,22 @@ https://github.com/sebastian-ahmed/python-etc/tree/main/dataclasses_pandas
 
 ## Saving memory with `__slots__`
 
-If you ever wrote a program that was creating really big number of instances of some class, you might have noticed that your program suddenly needed a lot of memory. That is because Python uses dictionaries to represent attributes of instances of classes, which makes it fast but not very memory efficient, which is usually not a problem. However, if it becomes a problem for your program you might try using **slots**:
+If you ever wrote a program that was creating really big number of instances of
+some class, you might have noticed that your program suddenly needed a lot of
+memory. That is because Python uses dictionaries to represent attributes of
+instances of classes, which makes it fast but not very memory efficient, which
+is usually not a problem. However, if it becomes a problem for your program you
+might try using **slots**:
 
-What happens here is that when we define **slots** attribute, Python uses small fixed-size array for the attributes instead of dictionary, which greatly reduces memory needed for each instance. There are also some downsides to using **slots** - we can't declare any new attributes and we are restricted to using ones on **slots**. Also classes with **slots** can't use multiple inheritance.
+What happens here is that when we define **slots** attribute, Python uses small
+fixed-size array for the attributes instead of dictionary, which greatly reduces
+memory needed for each instance. There are also some downsides to using
+**slots** - we can't declare any new attributes and we are restricted to using
+ones on **slots**. Also classes with **slots** can't use multiple inheritance.
 
 Ref:
 
-https://martinheinz.dev/blog/1
+1. https://martinheinz.dev/blog/1
 
 ## Subclass instance attribute in Pydantic
 
@@ -414,20 +435,22 @@ print(type(a).__dict__)  # no information for generic types
 
 ### `if __main__ == "__name__"` must be required while using `mupltiprocess`
 
-savely import main module
+Savely import main module
 
-https://mp.weixin.qq.com/s?__biz=MzU0OTg3NzU2NA==&mid=2247489119&idx=1&sn=076b0eca8e538615973494a511669ae9&chksm=fba8740cccdffd1ac7b9a0accdcb9dbc190be17000ae1de20e95bc93d26bca59c1855d146c7e&mpshare=1&scene=1&srcid=1029DYm6Gav8PnGJMRyXAe2l&sharer_sharetime=1635489470168&sharer_shareid=a02c97b66753e49e61e3def16e4d4411&exportkey=ATmw3UkoaqFIE13cmYK%2FT18%3D&pass_ticket=R%2BX2oYnRuoXgxtQg6YovU2EyJ1pgYLZPRYAFRm7NjSc0ERiUZEHitsxXWluIPXtT&wx_header=0#rd
+References:
 
-https://docs.python.org/zh-cn/3/library/multiprocessing.html#programming-guidelines
+1. https://mp.weixin.qq.com/s?__biz=MzU0OTg3NzU2NA==&mid=2247489119&idx=1&sn=076b0eca8e538615973494a511669ae9&chksm=fba8740cccdffd1ac7b9a0accdcb9dbc190be17000ae1de20e95bc93d26bca59c1855d146c7e&mpshare=1&scene=1&srcid=1029DYm6Gav8PnGJMRyXAe2l&sharer_sharetime=1635489470168&sharer_shareid=a02c97b66753e49e61e3def16e4d4411&exportkey=ATmw3UkoaqFIE13cmYK%2FT18%3D&pass_ticket=R%2BX2oYnRuoXgxtQg6YovU2EyJ1pgYLZPRYAFRm7NjSc0ERiUZEHitsxXWluIPXtT&wx_header=0#rd
+2. https://docs.python.org/zh-cn/3/library/multiprocessing.html#programming-guidelines
 
 ## Sequence of python tools' configuration
 
-https://pycqa.github.io/isort/docs/configuration/options.html
-https://flake8.pycqa.org/en/latest/user/configuration.html
-https://mypy.readthedocs.io/en/stable/config_file.html
-https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+WIP
 
-https://waylonwalker.com/python-tool-config/
+1. https://pycqa.github.io/isort/docs/configuration/options.html
+2. https://flake8.pycqa.org/en/latest/user/configuration.html
+3. https://mypy.readthedocs.io/en/stable/config_file.html
+4. https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+5. https://waylonwalker.com/python-tool-config/
 
 ## Find reverse dependency of one package
 
@@ -483,7 +506,8 @@ Output example:
 ['starlette', 'httpcore']
 ```
 
-3. Use Python package `pip-tools` or [`pipdeptree`](https://github.com/jazzband/pip-tools)
+3. Use Python package `pip-tools` or
+   [`pipdeptree`](https://github.com/jazzband/pip-tools)
 
 For example:
 
@@ -509,3 +533,74 @@ References:
 2. [Show reverse dependencies with pip?](https://stackoverflow.com/a/57657957)
 3. [Github - naiquevin/pipdeptree](https://github.com/naiquevin/pipdeptree)
 4. [Github - jazzband/pip-tools](https://github.com/jazzband/pip-tools)
+
+## When `any` and `all` apply in empty collections
+
+In Python, logic operators `any` and `all` both are lazy function. Be care to
+their output when applying in empty collections.
+
+```python
+any([])  # False
+all([])  # True
+any([True, False])  # True
+all([True,False])  # False
+```
+
+## Round numbers in Python
+
+Python follows "round half to even" rule, aka "bankers' rounding".
+
+```python
+round(7/2)  # 4
+round(3/2)  # 2
+round(5/2)  # round(2.5) == 2, not 3!
+```
+
+Ref:
+
+1. [Rounding](https://en.wikipedia.org/wiki/Rounding#Round_half_to_even)
+
+## Confusing args shape for `pool.map`
+
+```python
+from time import sleep
+from random import random
+
+from concurrent.futures.thread import ThreadPoolExecutor
+
+
+def func(arg1, arg2, arg3):
+    sleep(random() * 3.0)
+    print(arg1, arg2, arg3)
+
+
+def test_args(aaa, *args):
+    print(f"{aaa}", args)
+
+
+if __name__ == "__main__":
+    pool = ThreadPoolExecutor(4)
+
+    args_list = [
+        (1, 2, 3),
+        (4, 5, 6),
+        (7, 8, 9),
+        (10, 11, 12),
+    ]
+    args_list = [
+        (1, 4, 7, 10),
+        (2, 5, 8, 11),
+        (3, 6, 9, 12),
+    ]
+
+    # print(list(zip(*zip(*args_list))))
+    test_args("????", *args_list)
+
+    for args in zip(*args_list):
+        print(args)
+        # func(*args)
+
+    jobs = pool.map(func, *args_list)
+
+    tuple(jobs)
+```
