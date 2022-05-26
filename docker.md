@@ -317,3 +317,64 @@ read that file again in all subsequent `RUN` commands !!!
 References:
 
 1. [Build Images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information)
+
+## `/dev/shm`
+
+WIP
+
+<https://github.com/vercel/next.js/discussions/16995#discussioncomment-132484>
+
+## Enable forwarding from Docker containers to the outside world
+
+If you're using `docker compose` to manager multiple containers, you would find
+Internet access inside services is not available under user-defined bridge
+networks except for `network_mode: bridge`.
+
+### Method 1: Enable all subnet
+
+By default, traffic from containers connected to the default bridge network is
+**not** forwarded to the outside world. To enable forwarding, you need to change
+two settings. These are not Docker commands and they affect the Docker host’s
+kernel.
+
+1. Configure the Linux kernel to allow IP forwarding.
+
+   sysctl net.ipv4.conf.all.forwarding=1
+
+2. Change the policy for the `iptables` `FORWARD` policy from `DROP` to
+   `ACCEPT`.
+
+   sudo iptables -P FORWARD ACCEPT
+
+These settings do not persist across a reboot, so you may need to add them to a
+start-up script.
+
+### Method 2: Add subnet manually
+
+First custom your new created subnet
+
+```yaml
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.233.0/24
+```
+
+Then add `iptables` rules for this subnet manually,
+
+```sh
+DOCKER_SUB_IP="10.10.233.0/24"
+iptables -A FORWARD -s ${DOCKER_SUB_IP} -j ACCEPT
+iptables -A FORWARD -d ${DOCKER_SUB_IP} -j ACCEPT
+iptables -t nat -A POSTROUTING -s ${DOCKER_SUB_IP} ! -d ${DOCKER_SUB_IP} -j MASQUERADE
+```
+
+You need to add every subnet you defined in compose file. Of course, you can
+join a pre-existing network already finely configurated.
+
+### References:
+
+- [Enable forwarding from Docker containers to the outside world](https://docs.docker.com/network/bridge/#enable-forwarding-from-docker-containers-to-the-outside-world)
+- [No internet inside docker-compose service](https://stackoverflow.com/a/68087771)
