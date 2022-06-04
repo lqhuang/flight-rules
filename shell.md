@@ -1,7 +1,7 @@
 ---
 title: Shell Tips
 created: 2019-01-20
-updated: 2022-02-24
+updated: 2022-06-03
 ---
 
 # Shell related tips
@@ -18,7 +18,8 @@ updated: 2022-02-24
 
 ## Shell: Use variable inside single quote
 
-Unfortunately, you can't expand variables in single quotes. But you can end single quotes and start double quotes, though:
+Unfortunately, you can't expand variables in single quotes. But you can end
+single quotes and start double quotes, though:
 
     echo 'visit:"'"$site"'"'
 
@@ -32,7 +33,8 @@ References:
 
 ## Shell: Single and double quotes are different in Bash
 
-Single `''` quotes won't interpolate anything, but double quotes `""` will, including: variables, backticks, certain `\` escapes, etc.
+Single `''` quotes won't interpolate anything, but double quotes `""` will,
+including: variables, backticks, certain `\` escapes, etc.
 
 For example, the following script
 
@@ -57,11 +59,28 @@ References:
 
 ## Shell: Difference among `[]`, `[[]]`, `{}`, `()`, `(())`
 
+Some of them are **Compound Commands**: A compound command is one of the
+following. In most cases a list in a command's description may be separated from
+the rest of the command by one or more newlines, and may be followed by a
+newline in place of a semicolon.
+
+- `(list)`
+- `{ list; }`
+- `((expression))`
+- `[[expression]]`
+
+Except for:
+
+- `( expression )`: is also an operator, it returns the value of expression.
+  This may be used to override the normal precedence of operators.
+- `[]`: is a builtin command same with `test expression`
+
 Refs:
 
 1. https://unix.stackexchange.com/questions/306111/what-is-the-difference-between-the-bash-operators-vs-vs-vs
 2. https://stackoverflow.com/questions/669452/is-double-square-brackets-preferable-over-single-square-brackets-in-bash
 3. https://serverfault.com/questions/52034/what-is-the-difference-between-double-and-single-square-brackets-in-bash
+4. [bash(1) — Linux manual page](https://www.man7.org/linux/man-pages/man1/bash.1.html#SHELL_GRAMMAR)
 
 ## Shell: Test if a string contains a substring
 
@@ -72,11 +91,20 @@ You need to interpolate the $testseq variable with one of the following ways:
 - `$file == *_"$testseq"_*` (here `$testseq` considered as a fixed string).
 - `$file == *_${testseq}_*` (here `$testseq` considered as a pattern).
 
-Or the `_` immediately after the variable's name will be taken as part of the variable's name (it's a valid character in a variable name).
+Or the `_` immediately after the variable's name will be taken as part of the
+variable's name (it's a valid character in a variable name).
 
-The issue you are having is due to the fact that `_` is a valid character in a variable name. The shell will thus see `*_$testseq_*` as "`*_` followed by the value of the variable `$testseq_` and an `*`". The variable `$testseq_` is undefined, so it will be expanded to an empty string, and you end up with `*_*`, which obviously matches the `$file` value that you have. You may expect to get `True` as long as the filename in `$file` contains at least one underscore.
+The issue you are having is due to the fact that `_` is a valid character in a
+variable name. The shell will thus see `*_$testseq_*` as "`*_` followed by the
+value of the variable `$testseq_` and an `*`". The variable `$testseq_` is
+undefined, so it will be expanded to an empty string, and you end up with `*_*`,
+which obviously matches the `$file` value that you have. You may expect to get
+`True` as long as the filename in `$file` contains at least one underscore.
 
-To properly delimit the name of the variable, use `"..."` around the expansion: `*_"$testseq"_*`. This would use the value of the variable as a string. Would you want to use the value of the variable as a pattern, use `*_${testseq}_*` instead.
+To properly delimit the name of the variable, use `"..."` around the expansion:
+`*_"$testseq"_*`. This would use the value of the variable as a string. Would
+you want to use the value of the variable as a pattern, use `*_${testseq}_*`
+instead.
 
 Another quick fix is to include the underscores in the value of `$testseq`:
 
@@ -88,7 +116,8 @@ and then just use `*"$testseq"*` as the pattern (for a string comparison).
 
 ### Method 2
 
-Use the `=~` operator to make regular expression comparsions in bash (and only work in bash):
+Use the `=~` operator to make regular expression comparsions in bash (and only
+work in bash):
 
     #!/bin/bash
     file="JetConst_reco_allconst_4j2t.png"
@@ -132,7 +161,9 @@ for i in "${arr[@]}"; do  # double quotes are required
 done
 ```
 
-The special parameters `*` and `@` have special meaning when in double quotes (see [Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)).
+The special parameters `*` and `@` have special meaning when in double quotes
+(see
+[Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)).
 
 If no variables used:
 
@@ -257,7 +288,8 @@ Refs:
 
 ## Shell: Output string with padding
 
-1. Use `printf`, just like in C. It's available in any POSIXly Bourne Shell (zsh, ksh, bash, ...)
+1. Use `printf`, just like in C. It's available in any POSIXly Bourne Shell
+   (zsh, ksh, bash, ...)
 
 ```shell
 FILE=$(printf %04d 42).txt
@@ -265,7 +297,10 @@ echo "$FILE"
 0042.txt
 ```
 
-2. Another internal command typeset. Earlier, we had seen the usage of typeset in arithmetic operations. typeset has an option `-Z` which is used for zero padding. So, just declare a variable using typeset with the required padding as shown below
+2. Another internal command typeset. Earlier, we had seen the usage of typeset
+   in arithmetic operations. typeset has an option `-Z` which is used for zero
+   padding. So, just declare a variable using typeset with the required padding
+   as shown below
 
 ```shell
 $ typeset -Z4 x
@@ -274,7 +309,8 @@ $ echo $x
 0023
 ```
 
-Note: This option `-Z` in typeset is not present in all the shells. ksh has this option.
+Note: This option `-Z` in typeset is not present in all the shells. ksh has this
+option.
 
 References:
 
@@ -330,11 +366,15 @@ References:
 echo ${RANDOM}
 ```
 
-> `${RANDOM}` is generated by using your current process ID (PID) and the current time/date as defined by the number of seconds elapsed since 1970. -- from Abhijeet Rastogi
+> `${RANDOM}` is generated by using your current process ID (PID) and the
+> current time/date as defined by the number of seconds elapsed since 1970. --
+> from Abhijeet Rastogi
 
-> Each time this parameter is referenced, a random integer between 0 and 32767 is generated. -- from `man bash`
+> Each time this parameter is referenced, a random integer between 0 and 32767
+> is generated. -- from `man bash`
 
-You shouldn't be using `${RANDOM}` for security purposes. For example, if you want to generate a random number between 1 and 10:
+You shouldn't be using `${RANDOM}` for security purposes. For example, if you
+want to generate a random number between 1 and 10:
 
 ```shell
 echo $(( ${RANDOM} % 10 + 1 ))
@@ -342,9 +382,11 @@ echo $(( ${RANDOM} % 10 + 1 ))
 echo ${RNADOM} % 10 + 1 | bc
 ```
 
-This is not an uniform distribution, because 0 to 32767 (unsigned 15-bit int or signed 16-bit int) obviously can not divide evenly into groups of 10.
+This is not an uniform distribution, because 0 to 32767 (unsigned 15-bit int or
+signed 16-bit int) obviously can not divide evenly into groups of 10.
 
-However, you could divide it into 8 groups equally, this would be useful to choose a random CUDA device:
+However, you could divide it into 8 groups equally, this would be useful to
+choose a random CUDA device:
 
 ```shell
 CUDA_VISIBLE_DEVICES=$(( ${RANDOM} % 8 ))
@@ -360,11 +402,13 @@ shut -i 1024-65535 -n 1
 
 ### `od`
 
-Read random bytes from `/dev/urandom` or `/dev/random` and convert it to interger.
+Read random bytes from `/dev/urandom` or `/dev/random` and convert it to
+interger.
 
 >     od -A n -N 2 -t u2 /dev/urandom
 >
-> That'll read two bytes and print them as an unsigned int; you still have to do your clipping.
+> That'll read two bytes and print them as an unsigned int; you still have to do
+> your clipping.
 
 ### `jot` for macOS/FreeBSD
 
@@ -387,13 +431,13 @@ References:
 
 ## Test executed command exists
 
-test exit code status
+Test exit code status
 
-`hash foo 2>/dev/null`: works with Z shell (Zsh), Bash, Dash and ash.
-
-`type -p foo`: it appears to work with Z shell, Bash and ash (BusyBox), but not Dash (it interprets -p as an argument).
-
-`command -v foo`: works with Z shell, Bash, Dash, but not ash (BusyBox) (-ash: command: not found).
+- `hash foo 2>/dev/null`: works with Z shell (Zsh), Bash, Dash and ash.
+- `type -p foo`: it appears to work with Z shell, Bash and ash (BusyBox), but
+  not Dash (it interprets -p as an argument).
+- `command -v foo`: works with Z shell, Bash, Dash, but not ash (BusyBox) (-ash:
+  command: not found).
 
 Also note that `builtin` is not available with ash and Dash.
 
@@ -401,7 +445,7 @@ Refs:
 
 1. [How can I check if a program exists from a Bash script?](https://stackoverflow.com/a/24856148)
 
-### Fast if else alternatives
+### Bash: Fast `if-else` alternatives
 
 ```
 command
@@ -415,37 +459,196 @@ status=$?
 [ $status -eq 0 ] && echo "$cmd command was successful" || echo "$cmd failed"
 ```
 
-### Bash: File test operators
+### Bash: Conditional expressions
 
 The test command takes one of the following syntax forms:
 
-```
-test EXPRESSION
-[ EXPRESSION ]
-[[ EXPRESSION ]]
+```bash
+test EXPRESSION  # builtin command
+[ EXPRESSION ]  # builtin command
+[[ EXPRESSION ]]  # compound command
 ```
 
-The test command includes the following FILE operators that allow you to test for particular types of files:
+When used with [[, the < and > operators sort lexicographically using the
+current locale. The test command sorts using ASCII ordering.
 
-- `-b FILE` - True if the FILE exists and is a special block file.
-- `-c FILE` - True if the FILE exists and is a special character file.
-- `-d FILE` - True if the FILE exists and is a directory.
-- `-e FILE` - True if the FILE exists and is a file, regardless of type (node, directory, socket, etc.).
-- `-f FILE` - True if the FILE exists and is a regular file (not a directory or device).
-- `-G FILE` - True if the FILE exists and has the same group as the user running the command.
-- `-h FILE` - True if the FILE exists and is a symbolic link.
-- `-g FILE` - True if the FILE exists and has set-group-id (sgid) flag set.
-- `-k FILE` - True if the FILE exists and has a sticky bit flag set.
-- `-L FILE` - True if the FILE exists and is a symbolic link.
-- `-O FILE` - True if the FILE exists and is owned by the user running the command.
-- `-p FILE` - True if the FILE exists and is a pipe.
-- `-r FILE` - True if the FILE exists and is readable.
-- `-S FILE` - True if the FILE exists and is a socket.
-- `-s FILE` - True if the FILE exists and has nonzero size.
-- `-u FILE` - True if the FILE exists and set-user-id (suid) flag is set.
-- `-w FILE` - True if the FILE exists and is writable.
-- `-x FILE` - True if the FILE exists and is executable.
+- `-a file`: True if file exists.
+- `-b file`: True if file exists and is a block special file.
+- `-c file`: True if file exists and is a character special file.
+- `-d file`: True if file exists and is a directory.
+- `-e file`: True if file exists.
+- `-f file`: True if file exists and is a regular file.
+- `-g file`: True if file exists and is set-group-id.
+- `-h file`: True if file exists and is a symbolic link.
+- `-k file`: True if file exists and its ``sticky'' bit is set.
+- `-p file`: True if file exists and is a named pipe (FIFO).
+- `-r file`: True if file exists and is readable.
+- `-s file`: True if file exists and has a size greater than zero.
+- `-t fd`: True if file descriptor fd is open and refers to a terminal.
+- `-u file`: True if file exists and its set-user-id bit is set.
+- `-w file`: True if file exists and is writable.
+- `-x file`: True if file exists and is executable.
+- `-G file`: True if file exists and is owned by the effective group id.
+- `-L file`: True if file exists and is a symbolic link.
+- `-N file`: True if file exists and has been modified since it was last read.
+- `-O file`: True if file exists and is owned by the effective user id.
+- `-S file`: True if file exists and is a socket.
+- `file1 -ef file2`: True if file1 and file2 refer to the same device and inode
+  numbers.
+- `file1 -nt file2`: True if file1 is newer (according to modification date)
+  than file2, or if file1 exists and file2 does not.
+- `file1 -ot file2`: True if file1 is older than file2, or if file2 exists and
+  file1 does not.
+- `-o optname`: True if the shell option `optname` is enabled. See the list of
+  options under the description of the `-o` option to the set builtin below.
+- `-v varname`: True if the shell variable varname is set (has been assigned a
+  value).
+- `-R varname`: True if the shell variable varname is set and is a name
+  reference.
+- `-z string`: True if the length of string is zero.
+- `-n string`: True if the length of string is non-zero.
+- `string1 == string2` / `string1 = string2`: True if the strings are equal. `=`
+  should be used with the `test` command for POSIX conformance. When used with
+  the `[[` command, this performs pattern matching as described above
+  (**Compound Commands**).
+- `string1 != string2`: True if the strings are not equal.
+- `string1 < string2`: True if string1 sorts before string2 lexicographically.
+- `string1 > string2`: True if string1 sorts after string2 lexicographically.
+- `arg1 OP arg2`: `OP` is one of `-eq`, `-ne`, `-lt`, `-le`, `-gt`, or `-ge`.
+  These arithmetic binary operators return true if arg1 is equal to, not equal
+  to, less than, less than or equal to, greater than, or greater than or equal
+  to arg2, respectively. Arg1 and arg2 may be positive or negative integers.
+  When used with the `[[` command, Arg1 and Arg2 are evaluated as arithmetic
+  expressions (see ARITHMETIC EVALUATION above).
 
 Refs:
 
 1. [How to Check if a File or Directory Exists in Bash](https://linuxize.com/post/bash-check-if-file-exists)
+2. [bash(1) — Linux manual page](https://www.man7.org/linux/man-pages/man1/bash.1.html#CONDITIONAL_EXPRESSIONS)
+
+## Bash: Reject to run script while no required variable provided
+
+If your script relys on some critical variables and want to fastly fail if a
+variable is not defined or has a default `${SOME_VARIABLE:=default}`, try:
+
+```bash
+set -u # or set -o nounset
+: "$BATCHNUM"
+```
+
+Explaination:
+
+> The first line sets the `nounset` option in the shell running the script,
+> which aborts if you try to expand an unset variable; the second line expands
+> `$BATCHNUM` in the context of a no-op ``:`, to trigger the abort before doing
+> anything else.
+
+Of course, a more helpful version is also available:
+
+```bash
+if [[ -z "$BATCHNUM" ]]; then
+    echo "Must provide 'BATCHNUM' in environment" 1>&2
+    exit 1
+fi
+```
+
+Reference:
+
+1. [Avoid running the script if a variable is not defined](https://unix.stackexchange.com/questions/228331/avoid-running-the-script-if-a-variable-is-not-defined)
+
+## Bash: Job control commands
+
+Job control refers to the ability to selectively stop (**suspend**) the
+execution of processes and continue (**resume**) their execution at a later
+point. A user typically employs this facility via an interactive interface
+supplied jointly by the operating system kernel's terminal driver and bash.
+
+The shell associates a `job` with each pipeline. It keeps a table of currently
+executing jobs, which may be listed with the jobs command. When bash starts a
+job asynchronously (in the **background**), it prints a line that looks like:
+
+    bash$ sleep 100 &
+    [1] 1384
+
+    bash$ jobs
+    [1]+  Running                 sleep 100 &
+
+There are a number of ways to refer to a job in the shell. The character `%`
+introduces a job specification (**jobspec**). Job number `n` may be referred to
+as `%n`.
+
+Then you can bring **job [1]** to foreground again:
+
+```bash
+fg %1
+```
+
+Enable job controls by using:
+
+```bash
+set -m # or set -o monitor
+```
+
+Related commands: `fg`, `bg`, `jobs`, `wait`, `kill`, `disown`, `suspend`
+
+And the following is job identifiers:
+
+| Notation | Meaning                                                                 |
+| -------- | ----------------------------------------------------------------------- |
+| `%N`     | Job number [N]                                                          |
+| `%S`     | Invocation (command-line) of job begins with string `S`                 |
+| `%?S`    | Invocation (command-line) of job contains within it string `S`          |
+| `%%`     | "current" job (last job stopped in foreground or started in background) |
+| `%+`     | "current" job (last job stopped in foreground or started in background) |
+| `%-`     | Last job                                                                |
+| `$!`     | Last background process                                                 |
+
+References:
+
+1. [Advanced Bash-Scripting Guide: 15.1. Job Control Commands](https://tldp.org/LDP/abs/html/x9644.html)
+2. [bash(1) — Linux manual page](https://www.man7.org/linux/man-pages/man1/bash.1.html#JOB_CONTROL)
+
+## Bash: Parameter expansion cheatsheet
+
+- `${parameter:-[word]}`: **Use Default Values.** If `parameter` is unset or
+  null, the expansion of `word` (or an empty string if `word` is omitted) shall
+  be substituted; otherwise, the value of `parameter` shall be substituted.
+- `${parameter:=[word]}`: **Assign Default Values.** If `parameter` is unset or
+  null, the expansion of `word` (or an empty string if `word` is omitted) shall
+  be assigned to `parameter`. In all cases, the final value of `parameter` shall
+  be substituted. Only variables, not positional parameters or special
+  parameters, can be assigned in this way.
+- `${parameter:?[word]}`: **Indicate Error if Null or Unset.** If `parameter` is
+  unset or null, the expansion of `word` (or a message indicating it is unset if
+  `word` is omitted) shall be written to standard error and the shell exits with
+  a non-zero exit status. Otherwise, the value of `parameter` shall be
+  substituted. An interactive shell need not exit.
+- `${parameter:+[word]}`: **Use Alternative Value.** If `parameter` is unset or
+  null, null shall be substituted; otherwise, the expansion of `word` (or an
+  empty string if `word` is omitted) shall be substituted.
+
+In the parameter expansions shown previously, use of the `<colon>:` in the
+format shall result in a test for a parameter that is unset or null; omission of
+the `<colon>:` shall result in a test for a parameter that is only unset. If
+parameter is '#' and the colon is omitted, the application shall ensure that
+`word` is specified (this is necessary to avoid ambiguity with the string length
+expansion). The following table summarizes the effect of the `<colon>:`
+
+| expansion            | `parameter` Set and Not Null | `parameter` Set But Null | `parameter` Unset |
+| -------------------- | ---------------------------- | ------------------------ | ----------------- |
+| `${parameter:-word}` | substitute `parameter`       | substitute `word`        | substitute `word` |
+| `${parameter-word}`  | substitute `parameter`       | substitute null          | substitute `word` |
+| `${parameter:=word}` | substitute `parameter`       | assign `word`            | assign `word`     |
+| `${parameter=word}`  | substitute `parameter`       | substitute null          | assign `word`     |
+| `${parameter:?word}` | substitute `parameter`       | error, exit              | error, exit       |
+| `${parameter?word}`  | substitute `parameter`       | substitute null          | error, exit       |
+| `${parameter:+word}` | substitute `word`            | substitute null          | substitute null   |
+| `${parameter+word}`  | substitute `word`            | substitute `word`        | substitute null   |
+
+In all cases shown with "substitute", the expression is replaced with the value
+shown. In all cases shown with "assign", `parameter` is assigned that value,
+which also replaces the expression.
+
+References:
+
+1. [Shell & Utilities: 2.6.2 Parameter Expansion](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)

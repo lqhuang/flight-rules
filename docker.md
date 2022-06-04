@@ -1,7 +1,10 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2022-05-24
+updated: 2022-06-04
+tags:
+  - docker
+  - container
 ---
 
 ## Communication between multiple docker-compose projects
@@ -89,7 +92,7 @@ solution 1:
 
 solution 2: using `cloud-init` script
 
-```ymal
+```yaml
 #cloud-config
 coreos:
   units:
@@ -378,3 +381,67 @@ join a pre-existing network already finely configurated.
 
 - [Enable forwarding from Docker containers to the outside world](https://docs.docker.com/network/bridge/#enable-forwarding-from-docker-containers-to-the-outside-world)
 - [No internet inside docker-compose service](https://stackoverflow.com/a/68087771)
+
+## Echo to docker logs output from shell script
+
+Docker logs output from **whichever processs was used to launch the container**,
+which is indeed PID 1. In some cases will use a "fake" init process so the main
+process doesn't run as such, which is also the case if you use
+`docker run --init`.
+
+But you still can manually send output to the logs collector (PID 1's stdio
+streams) within the container.
+
+```sh
+echo "text" >> /proc/1/fd/1  # fd/1 for stdout, fd/0 for stdin
+echo "text" >> /proc/1/fd/2  # fd/2 for stderr
+```
+
+References:
+
+1. [Redirecting script output to docker logs](https://stackoverflow.com/questions/55444469/redirecting-script-output-to-docker-logs)
+
+## Run post-run actions in container
+
+Sometimes, you probably want to do some extra actions (eg.: init db account,
+start specific groups for supervisor, etc) after container started, but
+container lacks specifications to execute post commands.
+
+To achieve this, you could use a helper script through **jobs control mode**
+from `bash`.
+
+> If you have one main process that needs to start first and stay running but
+> you temporarily need to run some other processes (perhaps to interact with the
+> main process) then you can use bash’s job control to facilitate that. First,
+> the wrapper script:
+
+```bash
+#!/bin/bash
+
+# turn on bash's job control
+set -m
+
+# Start the primary process and put it in the background
+./my_main_process &
+
+# Start the helper process
+./my_helper_process
+
+# the my_helper_process might need to know how to wait on the
+# primary process to start before it does its work and returns
+
+
+# now we bring the primary process back into the foreground
+# and leave it there
+fg %1
+```
+
+Then add your script to `ENTRYPOINT`:
+
+```dockerfile
+ENTRYPOINT ["/path/to/entrypoint.sh"]
+```
+
+References:
+
+1. [Run multiple services in a container]()
