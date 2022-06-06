@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-05-24
+updated: 2022-06-06
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -408,7 +408,7 @@ Refs:
 1. https://github.com/samuelcolvin/pydantic/issues/1932
 2. https://github.com/samuelcolvin/pydantic/issues/1229
 
-### get generic type in runtime
+### Get generic type in runtime
 
 ```python
 from __future__ import annotations
@@ -560,7 +560,7 @@ Ref:
 
 1. [Rounding](https://en.wikipedia.org/wiki/Rounding#Round_half_to_even)
 
-## Confusing args shape for `pool.map`
+## Confused args shape for `pool.map`
 
 ```python
 from time import sleep
@@ -604,3 +604,58 @@ if __name__ == "__main__":
 
     tuple(jobs)
 ```
+
+## Buffered IO in Python `open()` function.
+
+Python's built-in function `open()` is actually a buffered IO wrapper in most
+cases.
+
+> The type of file object returned by the `open()` function depends on the mode.
+
+| mode                                           | concrete instance            |
+| ---------------------------------------------- | ---------------------------- |
+| text mode (`'w'`, `'r'`, `'wt'`, `'rt'`, etc.) | `io.TextIOWrapper`           |
+| read binary mode `rb`                          | `io.BufferedReader`          |
+| write binary `wb` and append binary `ab` modes | `io.BufferedWriter`          |
+| read/write mode                                | `io.BufferedRandom`          |
+| buffering is disabled (`buffering=0`)          | `io.RawIOBase` / `io.FileIO` |
+
+Look back to function signature `open(file, mode='r', buffering=-1, **kwargs)`
+
+> `buffering` is an optional integer used to set the buffering policy. Pass `0`
+> to switch buffering off (only allowed in binary mode), `1` to select line
+> buffering (only usable in text mode), and an integer > 1 to indicate the size
+> in bytes of a fixed-size chunk buffer.
+
+> Note that specifying a buffer size this way applies for binary buffered I/O,
+> but `TextIOWrapper` (i.e., files opened with `mode='r+'`) would have another
+> buffering. To disable buffering in `TextIOWrapper`, consider using the
+> `write_through` flag for
+> [`io.TextIOWrapper.reconfigure()`](https://docs.python.org/3/library/io.html#io.TextIOWrapper.reconfigure).
+
+> When no _buffering_ argument is given, the default buffering policy works as
+> follows:
+>
+> - Binary files are buffered in fixed-size chunks; the size of the buffer is
+>   chosen using a heuristic trying to determine the underlying device’s “block
+>   size” and falling back on `io.DEFAULT_BUFFER_SIZE`. On many systems, the
+>   buffer will typically be 4096 or 8192 bytes long.
+> - “Interactive” text files (files for which `isatty()` returns True) use line
+>   buffering. Other text files use the policy described above for binary files.
+
+Extra comments:
+
+> Text I/O over a binary storage (such as a file) is significantly slower than
+> binary I/O over the same storage, because it requires conversions between
+> unicode and binary data using a character codec. This can become noticeable
+> handling huge amounts of text data like large log files. Also,
+> `TextIOWrapper.tell()` and `TextIOWrapper.seek()` are both quite slow due to
+> the reconstruction algorithm used.
+>
+> `StringIO`, however, is a native in-memory unicode container and will exhibit
+> similar speed to `BytesIO`.
+
+References:
+
+1. [Built-in Functions: open](https://docs.python.org/3/library/functions.html#open)
+2. [io — Core tools for working with streams](https://docs.python.org/3/library/io.html)
