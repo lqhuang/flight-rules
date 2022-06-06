@@ -659,3 +659,46 @@ References:
 
 1. [Built-in Functions: open](https://docs.python.org/3/library/functions.html#open)
 2. [io — Core tools for working with streams](https://docs.python.org/3/library/io.html)
+
+## Update `__setter__` in Runtime
+
+Wow, dynamic language XD
+
+```python
+def spy_on_changes(obj):
+    """Tweak an object instance to show attributes changing."""
+    class Wrapper(obj.__class__):
+        def __setattr__(self, name, value):
+            old = getattr(self, name, '<NOTHING>')
+            if old == '<NOTHING>':
+                print(f"Assign attr - {name}: {value!r}")
+            else:
+                print(f"Update attr - {name}: {old!r} -> {value!r}")
+            return super().__setattr__(name, value)
+    obj.__class__ = Wrapper
+```
+
+If you want to spy on changes in some special instances without affecting all
+concrete instances of that class, you can wrapper the object instance with above
+codes.
+
+```python-repl
+>>> obj = SomeClass()
+>>> obj.some_attr = "first"
+>>> obj.some_attr
+'first'
+
+>>> spy_on_changes(obj)
+>>> obj.some_attr = "second"
+Update attr - some_attr: 'first' -> 'second'
+
+>>> obj.another_attr = "foo"
+Assign attr - another_attr: 'foo'
+```
+
+Why not just monkey patch `__setattr__`? Here, we can inherit the actual class
+then use `super()` method to avoid some custom behaviors in parent.
+
+References:
+
+1. [Ned Batchelder's Status](https://twitter.com/nedbat/status/1533454622450503680)
