@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2022-06-04
+updated: 2022-06-09
 tags:
   - docker
   - container
@@ -444,4 +444,21 @@ ENTRYPOINT ["/path/to/entrypoint.sh"]
 
 References:
 
-1. [Run multiple services in a container]()
+1. [Run multiple services in a container](https://docs.docker.com/config/containers/multi-service_container/)
+
+## Cache layers with BuildKit
+
+If you're using a Docker version >= 19.03 you can use BuildKit to enable extra
+features like external caches.
+
+> In addition to local build cache, the builder can reuse the cache generated
+> from previous builds with the `--cache-from` flag pointing to an image in the
+> registry.
+>
+> To use an image as a cache source, cache metadata needs to be written into the
+> image on creation. This can be done by setting
+> `--build-arg BUILDKIT_INLINE_CACHE=1` when building the image. After that, the
+> built image can be used as a cache source for subsequent builds.
+
+- [Faster CI Builds with Docker Layer Caching and BuildKit](https://testdriven.io/blog/faster-ci-builds-with-docker-cache/)
+- [`docker build`: Specifying external cache sources](https://docs.docker.com/engine/reference/commandline/build/#specifying-external-cache-sources)
