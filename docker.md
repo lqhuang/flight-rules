@@ -462,3 +462,31 @@ features like external caches.
 
 - [Faster CI Builds with Docker Layer Caching and BuildKit](https://testdriven.io/blog/faster-ci-builds-with-docker-cache/)
 - [`docker build`: Specifying external cache sources](https://docs.docker.com/engine/reference/commandline/build/#specifying-external-cache-sources)
+
+## Docker Compose cheatsheet for ports
+
+- Specify both ports (`HOST:CONTAINER`)
+- Specify just the container port (an ephemeral host port is chosen for the host
+  port).
+- Specify the host IP address to bind to AND both ports (the default is
+  `0.0.0.0`, meaning all interfaces): (`IPADDR:HOSTPORT:CONTAINERPORT`). If
+  **HOSTPORT** is empty (for example `127.0.0.1::80`), an ephemeral port is
+  chosen to bind to on the host.
+
+```yaml
+ports:
+  - "3000"
+  - "3000-3005"
+  - "8000:8000"
+  - "9090-9091:8080-8081"
+  - "49100:22"
+  - "127.0.0.1:8001:8001"
+  - "127.0.0.1:5000-5010:5000-5010"
+  - "127.0.0.1::5000"
+  - "6060:6060/udp"
+  - "12400-12500:1240"
+```
+
+References:
+
+1. [Compose file version 3 reference: ports](https://docs.docker.com/compose/compose-file/compose-file-v3/#ports)
