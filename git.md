@@ -281,3 +281,9 @@ git push --force-with-lease
 References:
 
 1. [Git push rejected after feature branch rebase](https://stackoverflow.com/questions/8939977/git-push-rejected-after-feature-branch-rebase)
+
+## Skip CI after pushing
+
+1. https://docs.gitlab.com/ee/user/project/push_options.html
+2. https://devops.stackexchange.com/questions/6809/is-there-a-ci-skip-option-in-gitlab-ci
+

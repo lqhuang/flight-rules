@@ -27,8 +27,10 @@ Ref:
 
 ## 创建用户 adduser 和 useradd 的区别
 
-`adduser`: 会自动为创建的用户指定主目录，系统 shell，并在创建时提示用户输入密码和其他信息，同时会建立一个同名的用户组。
-`useradd`: 需要使用利用各种参数指定，如果不使用参数，则创建的用户无密码、无主目录、没有指定 shell 版本。
+- `adduser`: 会自动为创建的用户指定主目录，系统 shell，并在创建时提示用户输入密
+  码和其他信息，同时会建立一个同名的用户组。
+- `useradd`: 需要使用利用各种参数指定，如果不使用参数，则创建的用户无密码、无主
+  目录、没有指定 shell 版本。
 
 `useradd`常用选项:
 
@@ -72,7 +74,8 @@ sudo 组为专门有 sudo 权限的组别
 
 ## Ubuntu 18.04 禁用 DHCP，手动设置 IP 地址
 
-Ubuntu 17.10 以后引入了 `netplan` 来替代原来的 `ifupdown`，如果再通过原来的 `ifupdown` 工具包继续在 /etc/network/interfaces 文件里配置管理网络接口是无效的。
+Ubuntu 17.10 以后引入了 `netplan` 来替代原来的 `ifupdown`，如果再通过原来的
+`ifupdown` 工具包继续在 /etc/network/interfaces 文件里配置管理网络接口是无效的。
 `netplan` 允许利用 `yaml` 文件来配置网络。
 
 手动设置 IP 需要在 `/etc/netplan` 添加 `99-static-ip.yaml`:
@@ -110,7 +113,8 @@ manually:
 
     cat ~/.ssh/id_ecdsa.pub | ssh username@remote_host "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
 
-`chhmod -R go= ~/.ssh` this recursively removes all "group" and "other" permissions for the `~/.ssh/` directory.
+`chmod -R go= ~/.ssh` this recursively removes all "group" and "other"
+permissions for the `~/.ssh/` directory.
 
 Permisson of `~/.ssh/authorized_keys` must be `rw-------`/`600`
 
@@ -124,13 +128,16 @@ Ref:
 
 ### config pi-hole
 
-With a little configuration, you can use your pi-hole as the DNS server for your LAN, if, for example, your router isn’t doing a very good job serving local names. Here’s how:
+With a little configuration, you can use your pi-hole as the DNS server for your
+LAN, if, for example, your router isn’t doing a very good job serving local
+names. Here’s how:
 
 Create a second dnsmasq configuration file:
 
     echo "addn-hosts=/etc/pihole/lan.list" | sudo tee /etc/dnsmasq.d/02-lan.conf
 
-create a "hosts file" for your network `/etc/pihole/lan.list` with the format `ipaddress fqdn hostname`, eg
+create a "hosts file" for your network `/etc/pihole/lan.list` with the format
+`ipaddress fqdn hostname`, eg
 
     192.168.1.40  marvin.your.lan  marvin
     192.168.1.41  eddie.your.lan   eddie
@@ -140,7 +147,9 @@ Finally, restart your name server:
 
     sudo pihole restartdns
 
-PS: Adding `local=/home.lan/` or `local=/local/` or both to `/etc/dnsmasq.d/02-pihole.conf` will prevent upstream lookups for domains ending with those.
+PS: Adding `local=/home.lan/` or `local=/local/` or both to
+`/etc/dnsmasq.d/02-pihole.conf` will prevent upstream lookups for domains ending
+with those.
 
 ref:
 
@@ -186,27 +195,40 @@ ref:
 
 ## Use customized dns server for specific domains
 
-If you are using `NetworkManager` for network and `dnsmasq` for dns resolver. Here is the solution:
+If you are using `NetworkManager` for network and `dnsmasq` for dns resolver.
+Here is the solution:
 
 1. Create or edit `/etc/NetworkManager/dnsmasq.d/custom-dns`
-2. Add these lines so that `domain.intra` will be resolved by `192.168.30.1` and home.intra will be resolved by `192.168.0.1`. Add all of them as you wished.
+2. Add these lines so that `domain.intra` will be resolved by `192.168.30.1` and
+   home.intra will be resolved by `192.168.0.1`. Add all of them as you wished.
 
-   server=/domain.intra/192.168.30.1
-   server=/home.intra/192.168.0.1
+```conf
+server=/domain.intra/192.168.30.1
+server=/home.intra/192.168.0.1
+```
 
-3. Check whether `dnsmasq` is eabled as dns resolver by `NetworkManager`. Set `main.dns=dnsmasq` with a configuration file in `/etc/NetworkManager/conf.d/dns.conf`
+3. Check whether `dnsmasq` is eabled as dns resolver by `NetworkManager`. Set
+   `main.dns=dnsmasq` with a configuration file in
+   `/etc/NetworkManager/conf.d/dns.conf`
 
-   [main]
-   dns=dnsmasq
+```conf
+[main]
+dns=dnsmasq
+```
 
-4. Restart `NetworkManager.service`. NetworkManager will automatically start dnsmasq and add `127.0.0.1` to `/etc/resolv.conf`. The original DNS servers can be found in /`run/NetworkManager/no-stub-resolv.conf`.
+4. Restart `NetworkManager.service`. NetworkManager will automatically start
+   dnsmasq and add `127.0.0.1` to `/etc/resolv.conf`. The original DNS servers
+   can be found in /`run/NetworkManager/no-stub-resolv.conf`.
 
-> IPv6: Enabling `dnsmasq` in NetworkManager may break IPv6-only DNS lookups (i.e. `drill -6 [hostname]`) which would otherwise work. In order to resolve this, creating the following file will configure `dnsmasq` to also listen to the IPv6 loopback:
+> IPv6: Enabling `dnsmasq` in NetworkManager may break IPv6-only DNS lookups
+> (i.e. `drill -6 [hostname]`) which would otherwise work. In order to resolve
+> this, creating the following file will configure `dnsmasq` to also listen to
+> the IPv6 loopback:
 >
 > # add /etc/NetworkManager/dnsmasq.d/ipv6_listen.conf
 >
-> listen-address=::1
-> In addition, `dnsmasq` also does not prioritize upstream IPv6 DNS.
+> listen-address=::1 In addition, `dnsmasq` also does not prioritize upstream
+> IPv6 DNS.
 
 Of course, `systemd-resolved` is also configurable.
 
@@ -218,7 +240,9 @@ References:
 
 ## The general list of blocked ports from chromium based browser
 
-Some ports generate an error (`ERR_UNSAFE_PORT`) when browsing to them via `Chrome`. Hence, if you're developing something, you could try to avoid using these ports. The following ports are considered as unsafe by default.
+Some ports generate an error (`ERR_UNSAFE_PORT`) when browsing to them via
+`Chrome`. Hence, if you're developing something, you could try to avoid using
+these ports. The following ports are considered as unsafe by default.
 
     1,       // tcpmux
     7,       // echo
@@ -288,7 +312,8 @@ Some ports generate an error (`ERR_UNSAFE_PORT`) when browsing to them via `Chro
     6669,    // Alternate IRC [Apple addition]
     6697,    // IRC + TLS
 
-See similar blocking list from [Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Mozilla_Port_Blocking).
+See similar blocking list from
+[Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Mozilla_Port_Blocking).
 
 ref:
 
@@ -304,7 +329,8 @@ Three ways:
 
 So, we choose the last one.
 
-We can disable SSH locale environment variable forwarding to fix this error. Open the SSH client configuration file on your local computer.
+We can disable SSH locale environment variable forwarding to fix this error.
+Open the SSH client configuration file on your local computer.
 
     sudo nano /etc/ssh/ssh_config
 
@@ -342,7 +368,8 @@ If you're upgrading from `testing` to `buster`, also be sure to run
 
     apt-get update --allow-releaseinfo-change
 
-If not, `apt-get update` won't let you update with Buster and will spit out messages like these:
+If not, `apt-get update` won't let you update with Buster and will spit out
+messages like these:
 
     N: Repository 'http://deb.debian.org/debian buster InRelease' changed its 'Version' value from '' to '10.0'
     E: Repository 'http://deb.debian.org/debian buster InRelease' changed its 'Suite' value from 'testing' to 'stable'
@@ -351,7 +378,8 @@ If not, `apt-get update` won't let you update with Buster and will spit out mess
     E: Repository 'http://security.debian.org/debian-security buster/updates InRelease' changed its 'Suite' value from 'testing' to 'stable'
     N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
 
-ref: https://unix.stackexchange.com/questions/528751/cannot-update-apt-list-repository-no-longer-has-a-release-file
+ref:
+https://unix.stackexchange.com/questions/528751/cannot-update-apt-list-repository-no-longer-has-a-release-file
 
 ## Debian upgrades between release channels
 
@@ -361,13 +389,17 @@ Like from `Debian 9 strench` to `Debian 10 buster`
 sed s/jessie/stretch/g /etc/apt/sources.list | sudo tee /etc/apt/sources.list
 ```
 
-很多 package 是有配置文件的。不管你是使用 apt 还是 aptitude，只要是用默认的 remove 删除，都只是删除程序文件，保留配置文件的；而使用 purge 则是一个不留的全部删除。
+很多 package 是有配置文件的。不管你是使用 apt 还是 aptitude，只要是用默认的
+remove 删除，都只是删除程序文件，保留配置文件的；而使用 purge 则是一个不留的全部
+删除。
 
 # 查看 （以下 3 个等价）
 
+```bash
 aptitude search "~o"
 aptitude search ~o
 aptitude search ?obsolete
+```
 
 # 清除
 
@@ -386,20 +418,22 @@ dpkg --list | grep "^rc"
 dpkg --list | grep "^rc" | cut -d " " -f 3 | xargs sudo dpkg --purge
 ```
 
-https://blog.csdn.net/yanxiangtianji/article/details/88075587
+Refs:
 
-https://linuxprograms.wordpress.com/2010/05/11/status-dpkg-list/
-
-https://www.debian.org/releases/stable/amd64/release-notes/ch-information.en.html
-https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html
+1. https://blog.csdn.net/yanxiangtianji/article/details/88075587
+2. https://linuxprograms.wordpress.com/2010/05/11/status-dpkg-list/
+3. https://www.debian.org/releases/stable/amd64/release-notes/ch-information.en.html
+4. https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html
 
 ## Ubuntu UTC 时间设置
 
-当装着 Windows 和 Ubuntu 双系统的时候。由于 Windows 和 Ubuntu 时间设置的方式不一样，切换系统的时候会出现时间误差。
+当装着 Windows 和 Ubuntu 双系统的时候。由于 Windows 和 Ubuntu 时间设置的方式不一
+样，切换系统的时候会出现时间误差。
 
 比较方便的方式是改变 Ubuntu 的 UTC 时间设置。把 UTC=yes 改变为 UTC=no 即可。
 
-在最新的 Ubuntu 16.04 更新的情况下，网络上其他很多的改变方式并不正确，并且传统的修改 /etc/default/rcS 的方式已经无法成功。
+在最新的 Ubuntu 16.04 更新的情况下，网络上其他很多的改变方式并不正确，并且传统的
+修改 /etc/default/rcS 的方式已经无法成功。
 
 先查看当下的 UTC 时间设置
 
@@ -407,13 +441,15 @@ https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html
 
 默认是 UTC=yes 的配置下，应当会显示
 
-          Local time: 四 2016-08-25 19:46:11 CST
-      Universal time: 四 2016-08-25 11:46:11 UTC
-            RTC time: 四 2016-08-25 11:46:11
-           Time zone: Asia/Shanghai (CST, +0800)
-     Network time on: yes
-    NTP synchronized: yes
-     RTC in local TZ: no
+```
+      Local time: 四 2016-08-25 19:46:11 CST
+  Universal time: 四 2016-08-25 11:46:11 UTC
+        RTC time: 四 2016-08-25 11:46:11
+       Time zone: Asia/Shanghai (CST, +0800)
+ Network time on: yes
+NTP synchronized: yes
+ RTC in local TZ: no
+```
 
 所以需要进行调整
 
@@ -421,13 +457,15 @@ https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html
 
 设置以后，再查看 timedatectl 可以发现，以及变为 UTC=no 了:
 
-          Local time: 四 2016-08-25 19:46:45 CST
-      Universal time: 四 2016-08-25 11:46:45 UTC
-            RTC time: 四 2016-08-25 11:46:45
-           Time zone: Asia/Shanghai (CST, +0800)
-     Network time on: yes
-    NTP synchronized: no
-     RTC in local TZ: yes
+```
+      Local time: 四 2016-08-25 19:46:45 CST
+  Universal time: 四 2016-08-25 11:46:45 UTC
+        RTC time: 四 2016-08-25 11:46:45
+       Time zone: Asia/Shanghai (CST, +0800)
+ Network time on: yes
+NTP synchronized: no
+ RTC in local TZ: yes
+```
 
 此时再切换会 Windows 下就不会再发生时间错误的情况了。
 
@@ -435,13 +473,15 @@ https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html
 
 There are three types of port forwarding with SSH:
 
-    Local port forwarding: connections from the SSH client are forwarded via the SSH server, then to a destination server
+- Local port forwarding: connections from the SSH client are forwarded via the
+  SSH server, then to a destination server
+- Remote port forwarding: connections from the SSH server are forwarded via the
+  SSH client, then to a destination server
+- Dynamic port forwarding: connections from various programs are forwarded via
+  the SSH client, then via the SSH server, and finally to several destination
+  servers
 
-    Remote port forwarding: connections from the SSH server are forwarded via the SSH client, then to a destination server
-
-    Dynamic port forwarding: connections from various programs are forwarded via the SSH client, then via the SSH server, and finally to several destination servers
-
-ref:
+Refs:
 
 1. https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding
 2. https://www.tunnelsup.com/how-to-create-ssh-tunnels/
@@ -453,32 +493,41 @@ Just but not maintain a terminal session
 
     exit
 
-The `-f` option is the one that actually backgrounds things, but `-N` and `-T` will save resources which you don't need to allocate for an SSH session whose sole purpose is to carry your tunnel.
+The `-f` option is the one that actually backgrounds things, but `-N` and `-T`
+will save resources which you don't need to allocate for an SSH session whose
+sole purpose is to carry your tunnel.
 
     -f    Requests ssh to go to background just before command execution.
     -N    Do not execute a remote command.
     -T    Disable pseudo-tty allocation.
 
-Addtional option `-o ControlPersist=yes` would be useful to prevent the connection from being closed when combines with `ControlMaster=auto` or in some specific system setups.
+Addtional option `-o ControlPersist=yes` would be useful to prevent the
+connection from being closed when combines with `ControlMaster=auto` or in some
+specific system setups.
 
-ref:
+Refs:
 
 1. https://superuser.com/questions/827934/ssh-port-forwarding-without-session/827972
 2. https://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work/46271
 
 ## How to fix VIM freezes
 
-I noticed that I have a subconscious habit of pressing `Ctrl+S` when editing a file. But hey `Ctrl+S` has special meaning for Linux terminal, it’s a terminal scroll lock - basically it freezes program that wants to write to standard output/error.
+I noticed that I have a subconscious habit of pressing `Ctrl+S` when editing a
+file. But hey `Ctrl+S` has special meaning for Linux terminal, it’s a terminal
+scroll lock - basically it freezes program that wants to write to standard
+output/error.
 
 You need use `Ctrl+Q` to unfreeze terminal
 
 This feature is called Software Flow Control (XON/XOFF flow control)
 
-To disable this feature you need the following in either `~/.bash_profile` or `~/.bashrc`:
+To disable this feature you need the following in either `~/.bash_profile` or
+`~/.bashrc`:
 
     stty -ixon
 
-To disable this altogether, stick `stty -ixon` in a startup script. To allow any key to get things flowing again, use `stty ixany`.
+To disable this altogether, stick `stty -ixon` in a startup script. To allow any
+key to get things flowing again, use `stty ixany`.
 
 ref:
 
@@ -492,31 +541,31 @@ References:
 
 ## Check for errors
 
-Linux is great but it’s not perfect, that’s why it is good to check for errors in your Manjaro system from time to time. For example, you can check for any failed systemd processes.
+Linux is great but it’s not perfect, that’s why it is good to check for errors
+in your Manjaro system from time to time. For example, you can check for any
+failed systemd processes.
 
 Open a terminal and run this command:
 
     sudo systemctl --failed
 
-If you see a screen as above, this is very good. There are no failed processes. If there’s an erroneous process, you can search in Google for a way to fix it.
+If you see a screen as above, this is very good. There are no failed processes.
+If there’s an erroneous process, you can search in Google for a way to fix it.
 
 In addition, you can also check if there any errors in your log files:
 
     sudo journalctl -p 3 -xb
 
-By executing this command, you will be able to see if there are other system errors.
+By executing this command, you will be able to see if there are other system
+errors.
 
 ## HiDPI setting for different monitors
 
-https://unix.stackexchange.com/questions/253727/is-it-possible-to-configure-a-scaled-desktop-in-xorg-conf-similar-to-using-xra
-
-https://ricostacruz.com/til/fractional-scaling-on-xorg-linux
-
-https://wiki.archlinux.org/index.php/Xrandr#Configuration
-
-    https://wiki.archlinux.org/index.php/Multihead_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
-
-    https://forum.manjaro.org/t/scaling-problems-with-dual-monitor-setup-with-different-resolutions/48515
+1. https://unix.stackexchange.com/questions/253727/is-it-possible-to-configure-a-scaled-desktop-in-xorg-conf-similar-to-using-xra
+2. https://ricostacruz.com/til/fractional-scaling-on-xorg-linux
+3. https://wiki.archlinux.org/index.php/Xrandr#Configuration
+4. https://wiki.archlinux.org/index.php/Multihead_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+5. https://forum.manjaro.org/t/scaling-problems-with-dual-monitor-setup-with-different-resolutions/48515
 
 ## dns ia able to resolve a domain but failed to ssh/ping a name service
 
@@ -562,16 +611,20 @@ References:
 
 ## Permission denied while using `cat` and `echo` to redirection
 
-Yes, when you tried to `cat` or `echo` string redirect to file directly, it raise permission denied error.
+Yes, when you tried to `cat` or `echo` string redirect to file directly, it
+raise permission denied error.
 
     sudo echo "something" >> target.file
 
-The problem is that the redirection is being processed by your original shell, not by `sudo`. Shells are not capable of reading minds and do not know that that particular `>>` is meant for the `sudo` and not for it.
+The problem is that the redirection is being processed by your original shell,
+not by `sudo`. Shells are not capable of reading minds and do not know that that
+particular `>>` is meant for the `sudo` and not for it.
 
 You need to:
 
 1. quote the redirection ( so it is passed on to sudo)
-2. **and** use `sudo -s` (so that sudo uses a shell to process the quoted redirection.)
+2. **and** use `sudo -s` (so that sudo uses a shell to process the quoted
+   redirection.)
 
 example:
 
@@ -583,7 +636,10 @@ Or the more elegant way is
     # add -a for append (>>)
     echo "something" | sudo tee -a target.file > /dev/null
 
-`/dev/null` on the end because `tee` sends its output to both the named file **and** its own standard output, and I don't need to see it on my terminal. (The `tee` command acts like a "T" connector in a physical pipeline, which is where it gets its name.)
+`/dev/null` on the end because `tee` sends its output to both the named file
+**and** its own standard output, and I don't need to see it on my terminal. (The
+`tee` command acts like a "T" connector in a physical pipeline, which is where
+it gets its name.)
 
 Also, a here-document is available for a multiple lines content
 
@@ -595,7 +651,9 @@ Server = http://repo.archlinux.fr/$arch
 EOF
 ```
 
-Notice that the behavior of `'EOF'` and `EOF` after `<<` is quite differnet. single quotes (`'`...`'`) instead of doubles (`"`...`"`) so that everything is literal and you didn't have to put a backslash in front of the `$` in `$arch`.
+Notice that the behavior of `'EOF'` and `EOF` after `<<` is quite differnet.
+single quotes (`'`...`'`) instead of doubles (`"`...`"`) so that everything is
+literal and you didn't have to put a backslash in front of the `$` in `$arch`.
 
 References:
 
@@ -612,7 +670,8 @@ Try export function, then calling it in a subshell
     export -f echo_func
     (ls) | xargs -L1 -I {} bash -c 'echo_func "$@"' -- {}
 
-Don't forget the last `--` options, due to position parameters of `bash -c` are quite different.
+Don't forget the last `--` options, due to position parameters of `bash -c` are
+quite different.
 
 References:
 
@@ -622,17 +681,20 @@ References:
 
 ## Pass a list / to pipe style shell
 
-when you have a list of values need to pass into shell pipe to execute each elements individually.
+when you have a list of values need to pass into shell pipe to execute each
+elements individually.
 
 Try `xargs`, here is example:
 
     (cd ~; ls) | xargs -L1 echo
 
-The `-L1` option tells xargs to use each line as a sole argument to an invocation of the command.
+The `-L1` option tells xargs to use each line as a sole argument to an
+invocation of the command.
 
 And Use `-I` to set replace string with combine command.
 
-Extra notes: [Why you shouldn't parse the output of ls(1)](http://mywiki.wooledge.org/ParsingLs)
+Extra notes:
+[Why you shouldn't parse the output of ls(1)](http://mywiki.wooledge.org/ParsingLs)
 
 References:
 
@@ -641,13 +703,17 @@ References:
 
 ## Swappiness
 
-Swappiness can have a value between 0 and 100, the default value is 60. A low value causes the kernel to avoid swapping, a higher value causes the kernel to try to use swap space. Using a low value on sufficient memory is known to improve responsiveness on many systems.
+Swappiness can have a value between 0 and 100, the default value is 60. A low
+value causes the kernel to avoid swapping, a higher value causes the kernel to
+try to use swap space. Using a low value on sufficient memory is known to
+improve responsiveness on many systems.
 
 To temporarily set the swappiness value:
 
     sudo sysctl -w vm.swappiness=10
 
-To set the swappiness value permanently, create a sysctl.d(5) configuration file. For example:
+To set the swappiness value permanently, create a sysctl.d(5) configuration
+file. For example:
 
     echo vm.swappiness=10 | sudo tee /etc/sysctl.d/99-swappiness.conf > /dev/null
 
@@ -664,7 +730,8 @@ References:
 
 Try to using escape characters `~.` to terminate current session.
 
-Other more, tune `ClientAliveInterval` and `ClientAliveCountMax` parameters in `sshd_config`
+Other more, tune `ClientAliveInterval` and `ClientAliveCountMax` parameters in
+`sshd_config`
 
 References:
 
@@ -786,3 +853,14 @@ curl icanhazip.com
 Refs:
 
 1. https://unix.stackexchange.com/questions/7870/how-to-check-how-long-a-process-has-been-running
+
+## Smart tree print without `tree`
+
+If you do not have `tree` command installed, you can get a pretty close
+approximation with
+
+```
+find . | sort | sed 's@[^/]*/@  @g'
+```
+
+1. [Tweet of Tim Chase](https://twitter.com/gumnos/status/1545379459771109377)
