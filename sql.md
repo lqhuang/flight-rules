@@ -267,3 +267,38 @@ References:
 
 1. [FAQ: Why do I get PostgresSyntaxError when using expression IN $1?](https://magicstack.github.io/asyncpg/current/faq.html#why-do-i-get-postgressyntaxerror-when-using-expression-in-1)
 2. [Issue #94: Passing a list as parameter](https://github.com/MagicStack/asyncpg/issues/94)
+
+## PostgreSQL: server-side timeouts
+
+As documented runtime configs:
+
+- `statement_timeout` (integer)
+  - Abort any statement that takes more than the specified amount of time. If
+    `log_min_error_statement` is set to `ERROR` or lower, the statement that
+    timed out will also be logged. If this value is specified without units, it
+    is taken as milliseconds. A value of zero (the default) disables the
+    timeout.
+  - The timeout is measured from the time a command arrives at the server until
+    it is completed by the server. If multiple SQL statements appear in a single
+    simple-Query message, the timeout is applied to each statement separately.
+    (PostgreSQL versions before 13 usually treated the timeout as applying to
+    the whole query string.) In extended query protocol, the timeout starts
+    running when any query-related message (Parse, Bind, Execute, Describe)
+    arrives, and it is canceled by completion of an Execute or Sync message.
+  - Setting `statement_timeout` in `postgresql.conf` is not recommended because
+    it would affect all sessions.
+- `lock_timeout` (integer)
+- `idle_in_transaction_session_timeout` (integer)
+- `idle_session_timeout` (integer)
+
+You can also set the timeout in your connected sessions:
+
+```sql
+SET statement_timeout = 10000;
+SELECT * from your_table;
+```
+
+Refs:
+
+1. [Is it possible to limit timeout on Postgres server?](https://dba.stackexchange.com/questions/164419/is-it-possible-to-limit-timeout-on-postgres-server)
+2. [Docs: 20.11. Client Connection Defaults](https://www.postgresql.org/docs/current/runtime-config-client.html)
