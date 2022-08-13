@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-06-06
+updated: 2022-08-13
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -702,3 +702,35 @@ then use `super()` method to avoid some custom behaviors in parent.
 References:
 
 1. [Ned Batchelder's Status](https://twitter.com/nedbat/status/1533454622450503680)
+
+## What is `conftest.py` for `pytest`
+
+There are four major features with `conftest.py`:
+
+- **Fixtures**: Define fixtures for static data used by tests. This data can be
+  accessed by all tests in the suite unless specified otherwise. This could be
+  data as well as helpers of modules which will be passed to all tests.
+- **External plugin loading**: `conftest.py` is used to import external plugins
+  or modules. By defining the following global variable, pytest will load the
+  module and make it available for its test. Plugins are generally files defined
+  in your project or other modules which might be needed in your tests. You can
+  also load a set of predefined plugins as explained
+  [here](https://pytest.org/en/latest/plugins.html#requiring-loading-plugins-in-a-test-module-or-conftest-file).
+- **Hooks**: You can specify hooks such as setup and teardown methods and much
+  more to improve your tests. For a set of available hooks, read
+  [Hooks link](https://docs.pytest.org/en/6.2.x/reference.html#hooks).
+- **Test root path**: This is a bit of a hidden feature. By defining
+  `conftest.py` in your root path, you will have `pytest` recognizing your
+  application modules without specifying `PYTHONPATH`. In the background,
+  `py.test` modifies your `sys.path` by including all submodules which are found
+  from the root path.
+
+`conftest.py` files have directory scope. Therefore, creating targeted fixtures
+and helpers is good practice.
+
+Refercens:
+
+1. [Uncommon Uses of Python in Commonly Used Libraries](https://eugeneyan.com/writing/uncommon-python/#a-hidden-feature-of-conftestpy)
+2. [pytest fixtures: explicit, modular, scalable](https://docs.pytest.org/en/6.2.x/fixture.html#conftest-py-sharing-fixtures-across-multiple-files)
+3. [In pytest, what is the use of conftest.py files?](https://stackoverflow.com/a/34520971)
+4. [scikit-learn/scikit-learn/blob/main/conftest.py](https://github.com/scikit-learn/scikit-learn/blob/main/conftest.py)
