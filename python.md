@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-08-13
+updated: 2022-08-25
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -734,3 +734,39 @@ Refercens:
 2. [pytest fixtures: explicit, modular, scalable](https://docs.pytest.org/en/6.2.x/fixture.html#conftest-py-sharing-fixtures-across-multiple-files)
 3. [In pytest, what is the use of conftest.py files?](https://stackoverflow.com/a/34520971)
 4. [scikit-learn/scikit-learn/blob/main/conftest.py](https://github.com/scikit-learn/scikit-learn/blob/main/conftest.py)
+
+### `conda activate ...` doesn't work in shell script
+
+```
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+
+Currently supported shells are:
+  - bash
+  - fish
+  - tcsh
+  - xonsh
+  - zsh
+  - powershell
+
+See 'conda init --help' for more information and options.
+
+IMPORTANT: You may need to close and restart your shell after running 'conda init'.
+```
+
+The reason is functions are not exported by default to be made available in
+subshells. So it's recommended to add
+
+    $(conda info --base)/etc/profile.d/conda.sh
+
+or
+
+    eval "$(conda shell.bash hook)"
+
+before `conda activate` in your shell script.
+
+References:
+
+1. [Can't execute `conda activate` from bash script #7980](https://github.com/conda/conda/issues/7980)

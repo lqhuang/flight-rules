@@ -1,10 +1,8 @@
 ---
 title: Shell Tips
 created: 2019-01-20
-updated: 2022-06-03
+updated: 2022-08-25
 ---
-
-# Shell related tips
 
 ## Useful rules
 
@@ -652,3 +650,39 @@ which also replaces the expression.
 References:
 
 1. [Shell & Utilities: 2.6.2 Parameter Expansion](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
+
+## Makefile: Sensible defaults
+
+```Makefile
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+
+.ONESHELL:
+.DELETE_ON_ERROR:
+
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+```
+
+First two lines are trying to always use a recnent bash in strict mode.
+
+- `.ONESHELL` ensures each Make recipe is ran as one single shell session,
+  rather than one new shell per line. This both - in my opinion - is more
+  intuitive, and it lets you do things like loops, variable assignments and so
+  on in bash.
+- `.DELETE_ON_ERROR` does what it says on the box - if a Make rule fails, it’s
+  target file is deleted. This ensures the next time you run Make, it’ll
+  properly re-run the failed rule, and guards against broken files.
+- `MAKEFLAGS += --warn-undefined-variables`: This does what it says on the tin -
+  if you are referring to Make variables that don’t exist, that’s probably wrong
+  and it’s good to get a warning.
+- `MAKEFLAGS += --no-builtin-rules`: This disables the bewildering array of
+  built in rules to automatically build Yacc grammars out of your data if you
+  accidentally add the wrong file suffix. Remove magic, don’t do things unless I
+  tell you to, Make.
+
+References:
+
+1. [Your Makefiles are wrong](https://tech.davis-hansson.com/p/make/)
+2. [Use Bash Strict Mode (Unless You Love Debugging)](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
+3. [10.2 Catalogue of Built-In Rules](https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html)
