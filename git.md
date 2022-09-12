@@ -287,3 +287,26 @@ References:
 1. https://docs.gitlab.com/ee/user/project/push_options.html
 2. https://devops.stackexchange.com/questions/6809/is-there-a-ci-skip-option-in-gitlab-ci
 
+## Fixup any history commit
+
+在 `gitconfig` 中添加 `fixup` 的 alias
+
+```gitconfig
+[alias]
+    fixup = "!f() { TARGET=$(git rev-parse \"$1\"); shift; git commit --fixup=$TARGET ${@} && GIT_EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
+```
+
+有了这个 fixup 之后，我们可以非常方便的修改任意提交. 操作步骤：
+
+1. 做修改
+2. `git add -u1`
+3. git fixup 需要修改的 `commit id`
+
+> **warning**
+>
+> 所有在 `$TARGET` 之后（当然包括 `$TARGET` 本身）的 commit id 都将被重写.
+
+Refs:
+
+1. [超实用的 Git fixup 神技 – 一键修复任意 commit](https://ttys3.dev/post/git-fixup-amend-for-any-older-commits-quickly/)
+2. [GIT FIXUP: --AMEND FOR OLDER COMMITS](https://words.filippo.io/git-fixup-amending-an-older-commit/)
