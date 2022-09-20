@@ -1,7 +1,7 @@
 ---
 title: Shell Tips
 created: 2019-01-20
-updated: 2022-08-25
+updated: 2022-09-20
 ---
 
 ## Useful rules
@@ -686,3 +686,28 @@ References:
 1. [Your Makefiles are wrong](https://tech.davis-hansson.com/p/make/)
 2. [Use Bash Strict Mode (Unless You Love Debugging)](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
 3. [10.2 Catalogue of Built-In Rules](https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html)
+
+## Moving around in the command line
+
+There are key shortcuts available in Bash which will help you to move around
+faster. They are by the way very similar to the standard emacs keybindings, a
+number of key combinations that you will discover in many places and therefore
+are very handy to memorize and internalize. The following table is a good
+starting point.
+
+| Key combination | Action                                         |
+| --------------- | ---------------------------------------------- |
+| Ctrl + A        | Move to the beginning of the line              |
+| Ctrl + E        | Move to the end of the line                    |
+| Alt + B         | Move to the previous word                      |
+| Alt + F         | Move to the next word                          |
+| Ctrl + U        | Cuts to the beginning of the line              |
+| Ctrl + K        | Cuts to the end of the line                    |
+| Ctrl + W        | Cuts the previous word                         |
+| Ctrl + P        | Browse previously entered commands             |
+| Ctrl + R        | Reverse search for previously entered commands |
+| Ctrl + Y        | Pastes the text in buffer                      |
+
+Ref:
+
+- [LYM: Moving around in the command line](https://lym.readthedocs.io/en/latest/startingcommands.html#using-to-redirect-output-to-a-file)
