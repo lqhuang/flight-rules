@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-08-25
+updated: 2022-11-04
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -770,3 +770,78 @@ before `conda activate` in your shell script.
 References:
 
 1. [Can't execute `conda activate` from bash script #7980](https://github.com/conda/conda/issues/7980)
+
+## Turn flat list to pair tuple
+
+Usual way to take a flat list of key/value data and turn them into paired tuple
+/ dictionary:
+
+```python
+flat = ["color", "red", "style", "striped", "debug", True]
+
+flat[::2]
+# >>> ['color', 'style', 'debug']
+flat[1::2]
+# >>> ['red', 'striped', True]
+
+dict(zip(flat[::2], flat[1::2]))
+# >>> {'color': 'red', 'style': 'striped', 'debug': True}
+```
+
+Prefer approach to make an iterator and zip over it twice, no need to have
+multiple lists.
+
+```python
+flat = ["color", "red", "style", "striped", "debug", True]
+_iter = iter(flat)
+dict(zip(_iter, _iter))
+# >>> {'color': 'red', 'style': 'striped', 'debug': True}
+```
+
+- [Tweet status from @nedbat](https://twitter.com/nedbat/status/1542124221396144129)
+- [Tweet reply from @1mikegrn](https://twitter.com/1mikegrn/status/1542147388810399745)
+
+## Python Decorator Library
+
+Outdated gallery with code pieces for Python decorator, but still a good
+learning resource.
+
+- [Python Decorator Library](https://wiki.python.org/moin/PythonDecoratorLibrary)
+
+## Object inheritance influences match ordering sequence
+
+Some interesting foot-gun case in Python's pattern match syntax. Order is
+important.
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Parent:
+    x: int
+
+@dataclass
+class Child(Parent):
+    y: int
+
+def which(obj):
+    match obj:
+        case Parent(x):
+            print("Parent:", x)
+        case Child(x, y):
+            print("Child:", x, y)
+
+which(Parent(1))   # --> "Parent: 1"
+which(Child(1, 2)) # --> "Parent: 1"
+```
+
+In the match statement the specialized subclass should be placed before the
+generic base class.
+
+Just as the specialized exceptions should be caught before the generic
+Exception.
+
+Exception handling follows similar rules. E.g. if you catch `OSError` before
+`ConnectionError`, the `ConnectionError` case will never be hit.
+
+- [Tweet status and replies from @dabeaz](https://twitter.com/dabeaz/status/1458181263257391104)
