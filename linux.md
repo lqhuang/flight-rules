@@ -864,3 +864,7 @@ find . | sort | sed 's@[^/]*/@  @g'
 ```
 
 1. [Tweet of Tim Chase](https://twitter.com/gumnos/status/1545379459771109377)
+
+## Using Brace Expansion in Bash Shell
+
+- https://linuxhandbook.com/brace-expansion/

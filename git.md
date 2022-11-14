@@ -310,3 +310,11 @@ Refs:
 
 1. [超实用的 Git fixup 神技 – 一键修复任意 commit](https://ttys3.dev/post/git-fixup-amend-for-any-older-commits-quickly/)
 2. [GIT FIXUP: --AMEND FOR OLDER COMMITS](https://words.filippo.io/git-fixup-amending-an-older-commit/)
+
+## Serach all related pattern in history
+
+- https://stackoverflow.com/questions/4468361/search-all-of-git-history-for-a-string
+
+## Locally clean up squash-merge
+
+- https://adamj.eu/tech/2022/10/30/git-how-to-clean-up-squash-merged-branches/
