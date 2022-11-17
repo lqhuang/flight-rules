@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-11-04
+updated: 2022-11-17
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -845,3 +845,24 @@ Exception handling follows similar rules. E.g. if you catch `OSError` before
 `ConnectionError`, the `ConnectionError` case will never be hit.
 
 - [Tweet status and replies from @dabeaz](https://twitter.com/dabeaz/status/1458181263257391104)
+
+## `setattr`-like builtin functions cannot access private varialbe inside class
+
+> Notice that code passed to `exec()` or `eval()` does not consider the
+> classname of the invoking class to be the current class; this is similar to
+> the effect of the `global` statement, the effect of which is likewise
+> restricted to code that is byte-compiled together. The same restriction
+> applies to `getattr()`, `setattr()` and `delattr()`, as well as when
+> referencing `__dict__` directly.
+
+This rule also should be considered inside class itself.
+
+```python
+class A:
+    def __init__(self):
+        setattr(self, '__private_var')
+        # You cannot get a `self.__private_var` here even you
+        # invoke `setattr` inside this class
+```
+
+- [9.6. Private Variables](https://docs.python.org/3/tutorial/classes.html#private-variables)
