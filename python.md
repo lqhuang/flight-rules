@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-11-17
+updated: 2022-11-27
 ---
 
 ## `numpy.asarray` 和 `numpy.array` 的区别
@@ -846,7 +846,7 @@ Exception handling follows similar rules. E.g. if you catch `OSError` before
 
 - [Tweet status and replies from @dabeaz](https://twitter.com/dabeaz/status/1458181263257391104)
 
-## `setattr`-like builtin functions cannot access private varialbe inside class
+## `setattr`-series built-in functions cannot access private varialbe inside class
 
 > Notice that code passed to `exec()` or `eval()` does not consider the
 > classname of the invoking class to be the current class; this is similar to
@@ -866,3 +866,31 @@ class A:
 ```
 
 - [9.6. Private Variables](https://docs.python.org/3/tutorial/classes.html#private-variables)
+
+## 'No space left' raised from `multiprocessing`
+
+```
+OSError: [Errno 28] No space left on device
+```
+
+Ops, an critical exception raised from my parallel python codes. If you try to
+use `df -h` to check disk usage but found everything is ok. Do not worry, it
+doesn't stand your disk is almost full.
+
+In most cases happended under `multiprocessing`, it says your shared memory
+`/dev/shm` is no space left.
+
+Try to check whether your shared data (like `multiprocessing.Array`) between
+subprocesses is larger than your `/dev/shm` (from `df -h /dev/shm`). And may
+also be propagated by too many semaphores allocated. Use the following cli
+
+```shell
+ipcs -u -c
+```
+
+to find how many semaphores are allocated when this happens.
+
+Refs:
+
+- [Github Issues - OSError: \[Errno 28\] No space left on device](https://github.com/psf/black/issues/1036)
+- [No space left while using Multiprocessing.Array in shared memory](https://stackoverflow.com/questions/43573500/no-space-left-while-using-multiprocessing-array-in-shared-memory)

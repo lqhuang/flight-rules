@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2022-06-09
+updated: 2022-11-27
 tags:
   - docker
   - container
@@ -490,3 +490,30 @@ ports:
 References:
 
 1. [Compose file version 3 reference: ports](https://docs.docker.com/compose/compose-file/compose-file-v3/#ports)
+
+## Add CA Certificates to Alpine image
+
+```shell
+apk add --no-cache ca-certificates && update-ca-certificates
+```
+
+## `shm_size`
+
+> What is `/dev/shm`? `/dev/shm` is nothing but implementation of traditional
+> **shared memory** concept. It is an efficient means of passing data between
+> **processes**.
+>
+> `shm` / `shmfs` is also known as `tmpfs`, which is a common name for a
+> temporary file storage facility on many Unix-like operating systems. It is
+> intended to appear as a mounted file system, but one which uses virtual memory
+> instead of a persistent storage device.
+
+In container, `shm_size` could be set in both build and run stage. Increasing
+`shm_size` may improve serveral programs' perfomace which affected by IPC (inter
+process communication). For example, PostgreSQL is an process-based parallel
+model, so `shm_size` is important when `postgresql` is running inside of docker.
+
+Refs:
+
+- [What Is `/dev/shm` And Its Practical Usage](https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html)
+- [When should I use `/dev/shm/` and when should I use `/tmp/`?](https://superuser.com/questions/45342/when-should-i-use-dev-shm-and-when-should-i-use-tmp)
