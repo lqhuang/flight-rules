@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2022-05-24
+updated: 2022-12-01
 ---
 
 ## Fork 仓库的同步与更新
@@ -318,3 +318,14 @@ Refs:
 ## Locally clean up squash-merge
 
 - https://adamj.eu/tech/2022/10/30/git-how-to-clean-up-squash-merged-branches/
+
+## Add an empty commit with forced push to trigger CI jobs.
+
+Sometimes, CI on GitHub or GitLab may stuck in unknown stale status, what you
+can do is to forcely push an empty commit to the branch of the PR, which will
+re-trigger all the checks you have in CI.
+
+    git commit --amend --no-edit
+    git push -f
+
+- [Github pull request - Waiting for status to be reported](https://stackoverflow.com/questions/52200096/github-pull-request-waiting-for-status-to-be-reported)
