@@ -894,3 +894,107 @@ Refs:
 
 - [Github Issues - OSError: \[Errno 28\] No space left on device](https://github.com/psf/black/issues/1036)
 - [No space left while using Multiprocessing.Array in shared memory](https://stackoverflow.com/questions/43573500/no-space-left-while-using-multiprocessing-array-in-shared-memory)
+
+## Package binaries and other files with wheel format
+
+If you ship python packages with `wheel` format, there is a special `.data`
+directory strucutre to contain serveral auxiliary files.
+
+```python
+{
+    'bindir': '$eprefix/bin',
+    'sbindir': '$eprefix/sbin',
+    'libexecdir': '$eprefix/libexec',
+    'sysconfdir': '$prefix/etc',
+    'sharedstatedir': '$prefix/com',
+    'localstatedir': '$prefix/var',
+    'libdir': '$eprefix/lib',
+    'static_libdir': r'$prefix/lib',
+    'includedir': '$prefix/include',
+    'datarootdir': '$prefix/share',
+    'datadir': '$datarootdir',
+    'mandir': '$datarootdir/man',
+    'infodir': '$datarootdir/info',
+    'localedir': '$datarootdir/locale',
+    'docdir': '$datarootdir/doc/$dist_name',
+    'htmldir': '$docdir',
+    'dvidir': '$docdir',
+    'psdir': '$docdir',
+    'pdfdir': '$docdir',
+    'pkgdatadir': '$datadir/$dist_name'
+}
+```
+
+For example, adding a cli entrypoint (in `setup.py`) could also be
+
+```py
+setup(
+    data_files=[("bin", ["bin/you-cli"])],
+)
+```
+
+instead of
+
+```py
+setup(
+    entry_points={
+        "console_scripts": ["app=app.cmd:app",],
+    },
+)
+```
+
+- [PEP 491 – The Wheel Binary Package Format 1.9](https://peps.python.org/pep-0491/#the-data-directory)
+- [tensorchord/envd - fix: put the binary under bin directly](https://github.com/tensorchord/envd/pull/1254#issuecomment-1334902545)
+
+## Different statistics styles of `stddev` function in numerical libraries
+
+Different standard deviation in common numerical libraries
+
+```python
+# Population statistics style
+
+## Numpy
+import numpy as np
+a = np.array([1., 2., 3.])
+np.std(a)
+# >>> 0.816496580927726
+
+## Tensorflow
+import tensorflow as tf
+a = tf.convert_to_tensor([1., 2., 3.])
+tf.math.reduce_std(a)
+# >>> <tf.Tensor: shape=(), dtype=float32, numpy=0.8164966>
+
+# Sample statistics style
+
+## Torch
+import torch
+a = torch.tensor([1., 2., 3.])
+torch.std(a)
+# >>> tensor(1.)
+
+## Pandas
+import pandas as pd
+a = pd.Series([1., 2., 3.])
+a.std()
+# >>> 1.0
+```
+
+The Bessel's correction is known as the unbiased variance (`n-1` in the
+denominator)
+
+```python
+import torch
+a = torch.tensor([1., 2., 3.])
+
+torch.std(a, unbiased=True)  # default
+# >>> tensor(1.)
+torch.std(a, unbiased=False)  # default
+# >>> tensor(0.8165)
+```
+
+- [Twitter status from Sebastian Raschka (@rasbt)](https://twitter.com/rasbt/status/1598324299034554368)
+
+## What is the Python Buffer Protocol?
+
+- [An Introduction to the Python Buffer Protocol](https://jakevdp.github.io/blog/2014/05/05/introduction-to-the-python-buffer-protocol/)
