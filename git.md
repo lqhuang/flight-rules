@@ -329,3 +329,16 @@ re-trigger all the checks you have in CI.
     git push -f
 
 - [Github pull request - Waiting for status to be reported](https://stackoverflow.com/questions/52200096/github-pull-request-waiting-for-status-to-be-reported)
+
+## Custom git log display
+
+Add your custom alias in `.gitconfig`:
+
+```
+[alias]
+    sl = log --pretty=tformat:'* %C(auto)%h%C(auto)%d %s%Creset %C(auto,blue)(%an)%Creset - %C(auto)%ad'
+```
+
+Inspired by:
+
+- [Tweet status from @goinggodotnet](https://twitter.com/goinggodotnet/status/1594214358623850496)

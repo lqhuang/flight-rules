@@ -1,6 +1,6 @@
 ---
 title: Jupyter Tips
-updated: 2022-07-08
+updated: 2022-12-08
 tags:
   - jupyter
   - python
@@ -10,10 +10,21 @@ tags:
 
 Make `matplotlib` output vector graphics format in Jupyter Notebook
 
-    import matplotlib
-    import matplotlib.pyplot as plt
-    %matplotlib inline
-    %config InlineBackend.figure_format = 'svg'
+```python
+import matplotlib
+import matplotlib.pyplot as plt
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+```
+
+Save vector graphics format with `matplotlib`
+
+```
+plt.savefig('tmp.pdf', bbox_inches='tight')
+plt.show()
+```
+
+- [如何优雅地使用 Jupyter? - 陈乐群](https://www.zhihu.com/question/59392251)
 
 ## jupyter-themes
 
@@ -34,23 +45,31 @@ Refs:
 
 ## Let `mathjax` support `\bm` synatx
 
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        displayMath: [['$$', '$$'], ["\\[", "\\]"]],
-        processEscapes: true
-      },
-      TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        extensions: ["boldsymbol.js"],
-        macros: {
-          bm: ["\\boldsymbol{#1}", 1]
-        }
-      },
-      'HTML-CSS': {
-        imageFont: null
-      }
-    });
+```js
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [
+      ["$", "$"],
+      ["\\(", "\\)"],
+    ],
+    displayMath: [
+      ["$$", "$$"],
+      ["\\[", "\\]"],
+    ],
+    processEscapes: true,
+  },
+  TeX: {
+    equationNumbers: { autoNumber: "AMS" },
+    extensions: ["boldsymbol.js"],
+    macros: {
+      bm: ["\\boldsymbol{#1}", 1],
+    },
+  },
+  "HTML-CSS": {
+    imageFont: null,
+  },
+});
+```
 
 ref:
 

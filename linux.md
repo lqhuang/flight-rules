@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2022-01-15
+updated: 2022-12-08
 ---
 
 ## Change permissions of all files and subfolders
@@ -867,4 +867,102 @@ find . | sort | sed 's@[^/]*/@  @g'
 
 ## Using Brace Expansion in Bash Shell
 
-- https://linuxhandbook.com/brace-expansion/
+### Basic syntax
+
+Brace expansion `{..}` is one of the most underutilized but awesome shell
+features in Linux.
+
+```console
+$ echo {1..10}
+1 2 3 4 5 6 7 8 9 10
+$ echo {7..1}
+7 6 5 4 3 2 1
+$ echo {3..-4}
+3 2 1 0 -1 -2 -3 -4
+```
+
+Add leading zeroes
+
+```console
+$ echo {01..10}
+01 02 03 04 05 06 07 08 09 10
+```
+
+The brace expansion in the form of `{x..y..z}` to generate values from `x` till
+`y` while incrementing by `z`.
+
+```console
+$ echo {0..15..2}
+0 2 4 6 8 10 12 14
+$ echo {1..15..2}
+1 3 5 7 9 11 13 15
+```
+
+Using sequence of letters
+
+```console
+$ echo {H..A..2}
+H F D B
+$ echo {a..f}
+a b c d e f
+```
+
+### Detail examples
+
+Create files with a particular name pattern:
+
+```console
+$ touch file_{1..10}.txt
+$ ls
+file_10.txt  file_2.txt  file_4.txt  file_6.txt  file_8.txt
+file_1.txt   file_3.txt  file_5.txt  file_7.txt  file_9.txt
+```
+
+Use multiple braces like matrix
+
+```console
+$ touch {a,b,c}.{hpp,cpp}
+$ ls
+a.cpp  a.hpp  b.cpp  b.hpp  c.cpp  c.hpp
+```
+
+Create backup file with out `cp -p long_filename.txt long_filename.txt.bak`
+
+```console
+$ cp -p long_filename.txt{,.bak}
+$ ls
+long_filename.txt  long_filename.txt.bak
+```
+
+Using brace expansion in path
+
+```sh
+mv project/{new,old}/dir/file
+# The above command is equivalent to:
+mv project/new/dir/file project/old/dir/file
+```
+
+Ref:
+[Using Brace Expansion in Bash Shell](https://linuxhandbook.com/brace-expansion/)
+
+## HDD - Check supported sector sizes
+
+Hard disk drives with a translation layer (see above) will usually report a
+logical block size of 512 (for backwards compatibility) and a physical block
+size of 4096 (indicating they are Advanced Format drives).
+
+Tools which will report the sector of a drive (provided the drive will report it
+correctly) includes:
+
+```shell
+# fdisk
+fdisk -l /dev/sdX | grep 'Sector size'
+
+# smartmontools
+smartctl -a /dev/sdX | grep 'Sector Size'
+
+# hdparm
+hdparm -I /dev/sdX | grep 'Sector size:'
+```
+
+- [Arch Wiki: Advanced Format](https://wiki.archlinux.org/title/Advanced_Format)
