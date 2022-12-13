@@ -1,10 +1,10 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-11-27
+updated: 2022-12-13
 ---
 
-## `numpy.asarray` 和 `numpy.array` 的区别
+## Difference between `numpy.asarray` and `numpy.array`
 
 The definition of asarray is:
 
@@ -36,6 +36,13 @@ Refs:
 ## Enable rasterized (光栅化) for matplotlib
 
 Improve size of vector graphics (eg: svg, pdf, eps format)
+
+```python
+import pylab as py
+arr = py.randn(100000, 2)
+py.plot(arr[:,0], arr[:,1], 'o', alpha=0.1, rasterized=True)
+py.savefig('dots.pdf', dpi=600)
+```
 
 Ref:
 
@@ -112,11 +119,7 @@ Ref:
 
 LMT vs CST
 
-local mean time
-
-TypeError: can't subtract offset-naive and offset-aware datetimes
-
-Ref: https://www.jb51.net/article/163565.htm
+LMT is "local mean time"
 
 ## anaconda env activation after 4.4
 
@@ -145,7 +148,7 @@ Rather than
 
     export PATH="/home/<user>/miniconda3/bin:$PATH"
 
-https://github.com/conda/conda/blob/master/CHANGELOG.md#440-2017-12-20
+> [Recommended change to enable conda in your shell](https://github.com/conda/conda/blob/master/CHANGELOG.md#440-2017-12-20)
 
 ## Install package in development mode
 
@@ -155,9 +158,33 @@ scripts to the appropriate locations.
 
 ## CamelCase to camel_case
 
+Camel case to snake case
+
+```python
+import re
+
+name = 'CamelCaseName'
+name = re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+print(name)  # camel_case_name
+```
+
+To handle more advanced cases specially (this is not reversible anymore):
+
+```python
+
+```
+
+Snake case to pascal case
+
+```python
+name = 'snake_case_name'
+name = ''.join(word.title() for word in name.split('_'))
+print(name)  # SnakeCaseName
+```
+
 Ref:
 
-1. https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
+1. [Elegant Python function to convert CamelCase to snake_case?](https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case)
 
 ## Split a string at uppercase letters
 
@@ -336,7 +363,7 @@ Ref:
 
 Ref:
 
-https://github.com/sebastian-ahmed/python-etc/tree/main/dataclasses_pandas
+- [Python Data-Classes and pandas](https://github.com/sebastian-ahmed/python-etc/tree/main/dataclasses_pandas)
 
 ## Saving memory with `__slots__`
 
@@ -355,7 +382,7 @@ ones on **slots**. Also classes with **slots** can't use multiple inheritance.
 
 Ref:
 
-1. https://martinheinz.dev/blog/1
+1. [Python Tips and Trick, You Haven't Already Seen](https://martinheinz.dev/blog/1)
 
 ## Subclass instance attribute in Pydantic
 
@@ -441,16 +468,6 @@ References:
 
 1. https://mp.weixin.qq.com/s?__biz=MzU0OTg3NzU2NA==&mid=2247489119&idx=1&sn=076b0eca8e538615973494a511669ae9&chksm=fba8740cccdffd1ac7b9a0accdcb9dbc190be17000ae1de20e95bc93d26bca59c1855d146c7e&mpshare=1&scene=1&srcid=1029DYm6Gav8PnGJMRyXAe2l&sharer_sharetime=1635489470168&sharer_shareid=a02c97b66753e49e61e3def16e4d4411&exportkey=ATmw3UkoaqFIE13cmYK%2FT18%3D&pass_ticket=R%2BX2oYnRuoXgxtQg6YovU2EyJ1pgYLZPRYAFRm7NjSc0ERiUZEHitsxXWluIPXtT&wx_header=0#rd
 2. https://docs.python.org/zh-cn/3/library/multiprocessing.html#programming-guidelines
-
-## Sequence of python tools' configuration
-
-WIP
-
-1. https://pycqa.github.io/isort/docs/configuration/options.html
-2. https://flake8.pycqa.org/en/latest/user/configuration.html
-3. https://mypy.readthedocs.io/en/stable/config_file.html
-4. https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
-5. https://waylonwalker.com/python-tool-config/
 
 ## Find reverse dependency of one package
 
@@ -863,6 +880,15 @@ class A:
         setattr(self, '__private_var')
         # You cannot get a `self.__private_var` here even you
         # invoke `setattr` inside this class
+```
+
+**Update 2022-12-13**: A magic trick to use `getattr` and `setattr` for private
+varialbe
+
+```python
+attr = f'_{self.__class__.__qualname__}__private_var'
+val = getattr(self, attr)
+setattr(self, attr, val)
 ```
 
 - [9.6. Private Variables](https://docs.python.org/3/tutorial/classes.html#private-variables)
