@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2022-12-13
+updated: 2023-01-05
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1042,3 +1042,62 @@ The result of `mock()` is an async function which will have the outcome of
 
 Ref:
 [unittest.mock — mock object library: `AsyncMock`](https://docs.python.org/3/library/unittest.mock.html#unittest.mock.AsyncMock)
+
+## Less known magic functions
+
+- `__length_hint__`:
+  [PEP 424 – A method for exposing a length hint](https://peps.python.org/pep-0424/)
+- `__getattribute__` vs `__getattr__`
+
+> Final meta-programming related magic method we will try out is
+> `__getattribute__`. This one looks very similar to the previous `__getattr__`.
+> There's however a slight difference - as already mentioned `__getattr__` gets
+> invoked only when attribute lookup fails, while `__getattribute__` is invoked
+> _before_ attribute lookup is attempted.
+
+- [Python Magic Methods You Haven't Heard About](https://martinheinz.dev/blog/87)
+
+## `deque` cannot use index slice
+
+```python
+from collections import deque
+
+d = deque(range(20))
+# deque([0, 1, 2])
+
+d[2:4]
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+#     d[2:4]
+# TypeError: sequence index must be integer, not 'slice'
+```
+
+The correct way is to use `islice` to make a lazy iterator.
+
+```python
+from itertools import islice
+
+size = len(d)
+it = islice(d, size - 10, size)
+
+print(list(it))
+# [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+print(list(d)[-10:])
+# [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+```
+
+And you should initiate an array by `np.fromiter(iterable, dtype=...)` from
+`islice` (also other containers in `itertools`) instead of
+`np.asarray()`/`np.array()`.
+
+```python
+print(np.asarray(it))
+# <itertools.islice object at 0x7fad68bdd800>
+print(np.fromiter(it, float))
+# [10. 11. 12. 13. 14. 15. 16. 17. 18. 19.]
+```
+
+Ref:
+
+- [How to slice a deque?](https://stackoverflow.com/questions/10003143/how-to-slice-a-deque)
