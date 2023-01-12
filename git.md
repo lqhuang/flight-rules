@@ -1,13 +1,13 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2022-12-01
+updated: 2023-01-12
 ---
 
 ## Fork 仓库的同步与更新
 
-> https://help.github.com/articles/syncing-a-fork/ >
-> https://stackoverflow.com/questions/7244321/how-do-i-update-a-github-forked-repository
+> - https://help.github.com/articles/syncing-a-fork/
+> - https://stackoverflow.com/questions/7244321/how-do-i-update-a-github-forked-repository
 
     In your local clone of your forked repository, you can add the original GitHub repository as a "remote". ("Remotes" are like nicknames for the URLs of repositories - origin is one, for example.) Then you can fetch all the branches from that upstream repository, and rebase your work to continue working on the upstream version. In terms of commands that might look like:
 
@@ -40,17 +40,18 @@ updated: 2022-12-01
 
 ### method 1
 
-https://blessing.studio/splitting-a-subfolder-out-into-a-new-git-repository/
-
-https://help.github.com/articles/splitting-a-subfolder-out-into-a-new-repository/
+- https://blessing.studio/splitting-a-subfolder-out-into-a-new-git-repository/
+- https://help.github.com/articles/splitting-a-subfolder-out-into-a-new-repository/
 
 注意这两种方式都会使得根部目录变换到该文件夹下.
 
 ### method 2 (多文件夹)
 
-https://stackoverflow.com/questions/2982055/detach-many-subdirectories-into-a-new-separate-git-repository?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+- https://stackoverflow.com/questions/2982055/detach-many-subdirectories-into-a-new-separate-git-repository?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
-    git filter-branch --index-filter 'git rm --cached -qr --ignore-unmatch -- . && git reset -q $GIT_COMMIT -- DIR_A DIR_B' --prune-empty -- --all
+```sh
+git filter-branch --index-filter 'git rm --cached -qr --ignore-unmatch -- . && git reset -q $GIT_COMMIT -- DIR_A DIR_B' --prune-empty -- --all
+```
 
 ## 为不同的目录下的仓库 (Repos) 设置不同的 gitconfig
 
@@ -170,7 +171,8 @@ Refs:
 不知道为啥产生的重复 commits
 
 Refs:
-https://stackoverflow.com/questions/38454532/remove-duplicate-commits-introduced-after-bad-rebases/38457832
+
+- https://stackoverflow.com/questions/38454532/remove-duplicate-commits-introduced-after-bad-rebases/38457832
 
 ## Removing sensitive data from a repository
 
@@ -342,3 +344,11 @@ Add your custom alias in `.gitconfig`:
 Inspired by:
 
 - [Tweet status from @goinggodotnet](https://twitter.com/goinggodotnet/status/1594214358623850496)
+
+## Old-school style git cooperation: by email!
+
+> Git ships with built-in tools for collaborating over email. With this guide,
+> you'll be contributing to email-driven projects like the Linux kernel,
+> PostgreSQL, or even git itself in no time.
+
+- [email + git = <3](https://git-send-email.io/)

@@ -966,3 +966,13 @@ hdparm -I /dev/sdX | grep 'Sector size:'
 ```
 
 - [Arch Wiki: Advanced Format](https://wiki.archlinux.org/title/Advanced_Format)
+
+## How to test and validate DNSSEC using dig command line
+
+- https://www.cyberciti.biz/faq/unix-linux-test-and-validate-dnssec-using-dig-command-line/
+
+## Check owned files by packages
+
+```
+dpkg -L zlib1g-dev | grep libz.a
+```
