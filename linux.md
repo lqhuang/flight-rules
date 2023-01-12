@@ -4,6 +4,10 @@ created: 2017-02-13
 updated: 2022-12-08
 ---
 
+## Resources
+
+- [Linux Cheat Sheet](https://sites.google.com/site/mrxpalmeiras/linux/linux-cheat-sheet)
+
 ## Change permissions of all files and subfolders
 
 To change all the directories to 755 (`drwxr-xr-x`):

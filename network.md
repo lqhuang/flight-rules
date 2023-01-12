@@ -4,6 +4,10 @@ created: 2022-11-15
 updated: 2023-01-12
 ---
 
+## Resources
+
+- [`iptables` Basics](https://sites.google.com/site/mrxpalmeiras/linux/iptables-basics)
+
 ## cURL an IP address with specific domain name
 
 First approach, add `HOST` header let server knows:

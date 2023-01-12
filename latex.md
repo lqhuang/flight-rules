@@ -1,10 +1,12 @@
 ---
 title: LaTex Notes
 created: 2017-02-13
-updated: 2022-02-24
+updated: 2023-01-12
 ---
 
-# latex-flight-rules and latex-tips
+## Resources
+
+- [The Art of LaTeX: Common Mistakes, and Advice for Typesetting Beautiful, Delightful Proofs](https://fanpu.io/blog/2023/latex-tips/)
 
 ## float object always fill a full page
 
@@ -66,7 +68,8 @@ To find a file flagged as missing try
 
     tlmgr search --global --file ptmr7t.mf.
 
-Without --global, texlive will search only your local database, where the file is obviously missing. Once the package found, you can install it
+Without --global, texlive will search only your local database, where the file
+is obviously missing. Once the package found, you can install it
 
     tlmgr install thispackage
 
