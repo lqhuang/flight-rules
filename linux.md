@@ -980,3 +980,39 @@ hdparm -I /dev/sdX | grep 'Sector size:'
 ```
 dpkg -L zlib1g-dev | grep libz.a
 ```
+
+## Check whether AES-NI is enabled
+
+find out AES-NI (Advanced Encryption) Enabled on Linux System
+
+```sh
+grep -m1 -o aes /proc/cpuinfo
+```
+
+Check if AES-NI is enabled on Linux with cpuid
+
+```
+cpuid | grep -i aes | sort | uniq
+```
+
+Is Intel AES-NI instructions optimized driver loaded?
+
+```
+sort -u /proc/crypto | grep module
+```
+
+Is Intel AES-NI enabled for openssl enabled?
+
+```
+openssl engine
+```
+
+benchmark openssl performance
+
+```sh
+openssl speed aes-128-cbc
+# or
+openssl speed -evp aes-256-cbc
+```
+
+- [How to find out AES-NI Enabled on Linux System](https://www.cyberciti.biz/faq/how-to-find-out-aes-ni-advanced-encryption-enabled-on-linux-system/)
