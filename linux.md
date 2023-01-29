@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2022-12-08
+updated: 2023-01-09
 ---
 
 ## Resources
@@ -1016,3 +1016,15 @@ openssl speed -evp aes-256-cbc
 ```
 
 - [How to find out AES-NI Enabled on Linux System](https://www.cyberciti.biz/faq/how-to-find-out-aes-ni-advanced-encryption-enabled-on-linux-system/)
+
+## 检查后台进程是否成功启动
+
+```shell
+set -e -o pipefail
+sleep 1000 &
+pid=$!
+kill -0 ${pid} # kill -0 检查进程是否存活
+```
+
+Ref:
+[shell 编程的若干实用技巧 - satanson 的文章 - 知乎](https://zhuanlan.zhihu.com/p/46100771)
