@@ -1101,3 +1101,15 @@ print(np.fromiter(it, float))
 Ref:
 
 - [How to slice a deque?](https://stackoverflow.com/questions/10003143/how-to-slice-a-deque)
+
+## (draft) Cannot invoke `asyncio.get_event_loop().run_untile_complete(...)`
+
+- https://stackoverflow.com/a/51342468
+- https://discuss.python.org/t/supporting-asyncio-get-event-loop-run-until-complete-in-repls/5573/13
+- https://stackoverflow.com/questions/46827007/runtimeerror-this-event-loop-is-already-running-in-python
+
+## (draft) Unit test notes
+
+1. AsyncMock only have `return_value` after `await`, but sometime, we won't
+   `await` it
+2. "TypeError: object AsyncMock can't be used in 'await' expression"

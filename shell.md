@@ -1,7 +1,7 @@
 ---
 title: Shell Tips
 created: 2019-01-20
-updated: 2022-09-20
+updated: 2023-02-04
 ---
 
 ## Useful rules
@@ -711,3 +711,32 @@ starting point.
 Ref:
 
 - [LYM: Moving around in the command line](https://lym.readthedocs.io/en/latest/startingcommands.html#using-to-redirect-output-to-a-file)
+
+## Shell: Use nested variable names for variables
+
+```sh
+#!/bin/bash
+export HELLO="HELLO"
+export HELLOWORLD="Hello, world!"
+
+# This command does not work properly in bash
+echo ${${HELLO}WORLD}
+
+# However, a two-step process does work (variable indirection)
+export TEMP=${HELLO}WORLD
+echo ${!TEMP}
+```
+
+Output
+
+```
+Hello, world!
+```
+
+You can also use `eval`, variable indirection `${!...}`(mentioned above), or
+reference variables `declare -n`.
+
+Refs:
+
+- [Can `${var}` parameter expansion expressions be nested in bash?](https://stackoverflow.com/questions/917260/can-var-parameter-expansion-expressions-be-nested-in-bash)
+- [Bash - Get the VALUE of 'nested' variable into another variable [Edit: Indirect Variable Expansion]](https://stackoverflow.com/a/46383462)

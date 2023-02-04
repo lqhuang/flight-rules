@@ -1028,3 +1028,15 @@ kill -0 ${pid} # kill -0 检查进程是否存活
 
 Ref:
 [shell 编程的若干实用技巧 - satanson 的文章 - 知乎](https://zhuanlan.zhihu.com/p/46100771)
+
+## A trick to check current shell
+
+```sh
+ps -p $$
+```
+
+## (draft) SSH pattern
+
+- https://askubuntu.com/questions/605479/what-does-h-mean-in-sshd-configuration
+- https://unix.stackexchange.com/questions/61655/multiple-similar-entries-in-ssh-config
+- https://en.wikibooks.org/wiki/OpenSSH/Pattern_Matching_in_OpenSSH_Configuration
