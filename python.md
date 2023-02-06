@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-01-05
+updated: 2023-02-06
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1113,3 +1113,21 @@ Ref:
 1. AsyncMock only have `return_value` after `await`, but sometime, we won't
    `await` it
 2. "TypeError: object AsyncMock can't be used in 'await' expression"
+
+## `fcntl` - the fcntl and ioctl system calls
+
+Python has a std library to perform file control and I/O control on file
+descriptors (for example, we could lock files exclusively). It is an interface
+to the `fcntl()` and `ioctl()` **Unix** routines.
+
+```python
+fh = open("foobar.txt", "w")
+fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fnctl.LOCK_NB)
+```
+
+- `LOCK_UN` – unlock
+- `LOCK_SH` – acquire a shared lock
+- `LOCK_EX` – acquire an exclusive lock
+
+Ref:
+[fcntl — The fcntl and ioctl system calls](https://docs.python.org/3/library/fcntl.html)
