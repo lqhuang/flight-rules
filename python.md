@@ -1114,6 +1114,8 @@ Ref:
    `await` it
 2. "TypeError: object AsyncMock can't be used in 'await' expression"
 
+Ref: https://pytest-mock.readthedocs.io/en/latest/usage.html
+
 ## `fcntl` - the fcntl and ioctl system calls
 
 Python has a std library to perform file control and I/O control on file
