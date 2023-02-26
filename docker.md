@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2022-11-27
+updated: 2023-02-26
 tags:
   - docker
   - container
@@ -297,7 +297,7 @@ Do not use `ARG` to pass secrets in `Dockerfile`
 >
 > It is not recommended to use build-time variables for passing secrets like
 > github keys, user credentials etc. Build-time variable values are visible to
-> any user of the image with the `docker history` command. Refer to the “Build
+> any user of the image with the `docker history` command. Refer to the "Buil"
 > images with BuildKit” section to learn about secure ways to use secrets when
 > building images.
 
@@ -517,3 +517,32 @@ Refs:
 
 - [What Is `/dev/shm` And Its Practical Usage](https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html)
 - [When should I use `/dev/shm/` and when should I use `/tmp/`?](https://superuser.com/questions/45342/when-should-i-use-dev-shm-and-when-should-i-use-tmp)
+
+## Capabilities for container
+
+By default, containers are "unprivileged" and is not allowed to access any
+devices, but a "privileged" container is given access to all devices
+
+| cli flag       | Features                                   |
+| -------------- | ------------------------------------------ |
+| `--cap-add`    | Add Linux capabilities                     |
+| `--cap-drop`   | Drop Linux capabilities                    |
+| `--privileged` | Give extended privileges to this container |
+
+Example for compose file:
+
+```
+privileged: true
+cap_add:
+  - ALL
+cap_drop:
+  - NET_ADMIN
+  - SYS_ADMIN
+```
+
+The full list of capabilities is available on the Linux man page
+
+Ref:
+
+- [capabilities(7) — Linux manual page](https://man7.org/linux/man-pages/man7/capabilities.7.html)
+- [Capabilities - Docker - Beginners | Intermediate | Advanced](https://dockerlabs.collabnix.com/advanced/security/capabilities/)
