@@ -1,10 +1,11 @@
 ---
 title: MongoDB Tips
+updated: 2023-03-16
 ---
 
 ## Query last record or fisrt record
 
-```javascript
+```js
 db.collection
   .find()
   .sort(($natural: -1))
@@ -15,7 +16,14 @@ db.collection
 
 ### mongoegine Model class 可以默认指定 collection
 
-> Document classes that inherit **directly** from `Document` will have their own **collection** in the database. The name of the collection is by default the name of the class, converted to lowercase (so in the example above, the collection would be called page). If you need to change the name of the collection (e.g. to use MongoEngine with an existing database), then create a class dictionary attribute called `meta` on your document, and set `collection` to the name of the collection that you want your document class to use:
+> Document classes that inherit **directly** from `Document` will have their own
+> **collection** in the database. The name of the collection is by default the
+> name of the class, converted to lowercase (so in the example above, the
+> collection would be called page). If you need to change the name of the
+> collection (e.g. to use MongoEngine with an existing database), then create a
+> class dictionary attribute called `meta` on your document, and set
+> `collection` to the name of the collection that you want your document class
+> to use:
 
 rule: UserInfo -> user_info
 
@@ -27,17 +35,18 @@ class Page(Document):
     meta = {'collection': 'cmsPage'}
 ```
 
-references:
+References:
 
-(1) [specifying-collection-name-with-mongoengine](https://stackoverflow.com/questions/53976963)specifying-collection-name-with-mongoengine
-(2) [document-collections](http://docs.mongoengine.org/guide/defining-documents.html#document-collections)
-(3) [mongoengine 中 collection 名称自动生成机制浅探 - Chinese](https://www.cnblogs.com/AcAc-t/p/mongoengine_collection_name.html)
+1. [specifying-collection-name-with-mongoengine](https://stackoverflow.com/questions/53976963)specifying-collection-name-with-mongoengine
+2. [document-collections](http://docs.mongoengine.org/guide/defining-documents.html#document-collections)
+3. [mongoengine 中 collection 名称自动生成机制浅探 - Chinese](https://www.cnblogs.com/AcAc-t/p/mongoengine_collection_name.html)
 
 ### to dictionary
 
 way 1:
 
-calling .to_mongo() converts the object to a SON instance. Once you have it, you can call its .to_dict() method to convert it to a dictionary.
+calling `.to_mongo()` converts the object to a SON instance. Once you have it,
+you can call its `.to_dict()` method to convert it to a dictionary.
 
 ```python
 sons = [ob.to_mongo() for ob in query_set]
@@ -51,8 +60,8 @@ way 2: just return raw values from pymongo
 
 references:
 
-(1) [convert-mongodb-return-object-to-dictionary](https://stackoverflow.com/questions/13230284/convert-mongodb-return-object-to-dictionary)
-(2) [mongoengine.queryset.QuerySet.as_pymongo](http://docs.mongoengine.org/apireference.html#mongoengine.queryset.QuerySet.as_pymongo)
+1. [convert-mongodb-return-object-to-dictionary](https://stackoverflow.com/questions/13230284/convert-mongodb-return-object-to-dictionary)
+2. [mongoengine.queryset.QuerySet.as_pymongo](http://docs.mongoengine.org/apireference.html#mongoengine.queryset.QuerySet.as_pymongo)
 
 ### exclude "\_id"
 
@@ -60,13 +69,13 @@ references:
 # there is one exception for _id field,
 # which will be excluded even if only() is called,
 # actually the following is the only way to exclude _id field
-BlogPost.objects.only('title').exclude('_id').find_all(..
+BlogPost.objects.only('title').exclude('_id').find_all(...)
 ```
 
 References:
 
-1. https://motorengine.readthedocs.io/en/latest/getting-and-querying.html#motorengine.queryset.QuerySet.exclude
-2. https://github.com/MongoEngine/mongoengine/issues/641
+1. [QuerySet.exclude](https://motorengine.readthedocs.io/en/latest/getting-and-querying.html#motorengine.queryset.QuerySet.exclude)
+2. [mongoengine.queryset.QuerySet exclude the mongodb id field "\_id" in query #641](https://github.com/MongoEngine/mongoengine/issues/641)
 
 # 删除 sentiment.prediction 一定范围内的数据
 
@@ -96,7 +105,7 @@ Refs:
 
 ## Count number of distinct values for target field/key
 
-```javascript
+```js
 db.articles.aggregate(
   [
     {
@@ -117,13 +126,13 @@ db.articles.aggregate(
 );
 ```
 
-Refs
+Refs:
 
 1. [mongodb count num of distinct values per field/key](https://stackoverflow.com/questions/14924495/mongodb-count-num-of-distinct-values-per-field-key)
 
 ## Remove duplicates in same collection
 
-```javascript
+```js
 var duplicates = [];
 
 db.getCollection("coll")
@@ -159,28 +168,39 @@ db.getCollection("coll").remove({
 ```
 
 Now we will do an analysis of the above-written query.
-1. `var duplicatesIds = []`: This is an array declaration where this query will push the duplicate IDs.
 
-2. `{$group:{_id:{EmpId:"$EmpId"},dups:{"$addToSet":"$_id"} ,count:{"$sum":1}}}`: Here we are grouping the records on behalf of `EmpId`, and using `$addToSet` command, we can create an array "dups", and `count:{"$sum":1}` is counting the duplicate records.
+1. `var duplicatesIds = []`: This is an array declaration where this query will
+   push the duplicate IDs.
 
-3. `{$match:{count:{"$gt":1}}}`: Here we are filtering the records that have a count greater than 1. As the above group pipeline, we are counting the duplicate records on behalf of `EmpId`.
+2. `{$group:{_id:{EmpId:"$EmpId"},dups:{"$addToSet":"$_id"} ,count:{"$sum":1}}}`:
+   Here we are grouping the records on behalf of `EmpId`, and using `$addToSet`
+   command, we can create an array "dups", and `count:{"$sum":1}` is counting
+   the duplicate records.
 
-4.  `ForEach`: we are iterating records one by one here which are grouped EmpId, here we will find the array of duplicate records, for example
+3. `{$match:{count:{"$gt":1}}}`: Here we are filtering the records that have a
+   count greater than 1. As the above group pipeline, we are counting the
+   duplicate records on behalf of `EmpId`.
 
-```
-"dups" : [
-ObjectId("5e5f5d20cad2677f9f839327"),
-ObjectId("5e5f5d27cad2677f9f839328"),
-ObjectId("5e5f5cf8cad2677f9f839323")
-]
-```
+4. `ForEach`: we are iterating records one by one here which are grouped EmpId,
+   here we will find the array of duplicate records, for example
 
-5. `doc.dups.shift()`:Here we are removing one record which will not be deleted, and It means we will delete the duplicates except one document.
+   ```
+   "dups" : [
+     ObjectId("5e5f5d20cad2677f9f839327"),
+     ObjectId("5e5f5d27cad2677f9f839328"),
+     ObjectId("5e5f5cf8cad2677f9f839323")
+   ]
+   ```
 
-6. `doc.dups.forEach(function (dupId)`: here again, we are iterating the array to push (duplicatesIds.push(dupId)) it records (duplicatesIds)on the above-declared array.
+5. `doc.dups.shift()`:Here we are removing one record which will not be deleted,
+   and It means we will delete the duplicates except one document.
 
-7. `db.Employee.find()`: to fetch the records.
-Now finally execute the above MongoDB query, and you will find the following records.
+6. `doc.dups.forEach(function (dupId)`: here again, we are iterating the array
+   to push (duplicatesIds.push(dupId)) it records (duplicatesIds)on the
+   above-declared array.
+
+7. `db.Employee.find()`: to fetch the records. Now finally execute the above
+   MongoDB query, and you will find the following records.
 
 Refs:
 
@@ -201,7 +221,7 @@ db.myCollection.find({}, { _id: 1 }).forEach((doc) => {
 
 如果量太大的话,
 
-```javascript
+```js
 let myCursor = db.myCollection.find({}, { _id: 1 });
 var i = 0;
 
@@ -217,7 +237,7 @@ while (myCursor.hasNext()) {
 
 这个方法太慢了
 
-```javascript
+```js
 let myCursor = db.myCollection
   .find({}, { _id: 1 })
   .batchSize(500)
@@ -249,10 +269,10 @@ while (myCursor.hasNext()) {
 db.myCollection.bulkWrite(bulkUpdateOps, { ordered: false });
 ```
 
-Ref:
+Refs:
 
-1. https://stackoverflow.com/questions/23839021/add-a-field-in-all-documents-in-an-existing-collection-mongodb
-2. https://stackoverflow.com/questions/62326370/add-ascending-serial-number-field-to-all-existing-mongodb-documents-in-a-collect
+1. [Add a field in all documents in an existing collection (mongodb)?](https://stackoverflow.com/questions/23839021/add-a-field-in-all-documents-in-an-existing-collection-mongodb)
+2. [Add ascending serial number field to all existing mongodb documents in a collection](https://stackoverflow.com/questions/62326370/add-ascending-serial-number-field-to-all-existing-mongodb-documents-in-a-collect)
 
 ## Experience `CursorNotFound` error
 
@@ -282,5 +302,5 @@ Solutions:
 
 Refs:
 
-1. https://stackoverflow.com/questions/44248108/mongodb-error-getmore-command-failed-cursor-not-found/44250410
-2. https://stackoverflow.com/questions/51526688/mongodb-cursornotfound-error-on-collection-find-for-a-few-hundred-small-record/51701154
+1. [MongoDB - Error: getMore command failed: Cursor not found](https://stackoverflow.com/questions/44248108/mongodb-error-getmore-command-failed-cursor-not-found/44250410)
+2. [MongoDB CursorNotFound Error on collection.find() for a few hundred small records](https://stackoverflow.com/questions/51526688/mongodb-cursornotfound-error-on-collection-find-for-a-few-hundred-small-record/51701154)
