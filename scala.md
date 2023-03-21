@@ -1,8 +1,15 @@
 ---
 title: Scala Tips
 created: 2023-02-05
-updated: 2023-02-05
+updated: 2023-03-21
 ---
+
+## Cheatsheet
+
+Thank good! Finally, I got all? compiler flags.
+
+- [Compiler Options Lookup Table](https://docs.scala-lang.org/scala3/guides/migration/options-lookup.html)
+- [New Compiler Options](https://docs.scala-lang.org/scala3/guides/migration/options-new.html)
 
 ## sbt: Running commands in cli
 
