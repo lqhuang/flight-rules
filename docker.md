@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-02-26
+updated: 2023-03-21
 tags:
   - docker
   - container
@@ -546,3 +546,25 @@ Ref:
 
 - [capabilities(7) — Linux manual page](https://man7.org/linux/man-pages/man7/capabilities.7.html)
 - [Capabilities - Docker - Beginners | Intermediate | Advanced](https://dockerlabs.collabnix.com/advanced/security/capabilities/)
+
+## tini
+
+What is Tini?
+
+> Tini is the simplest `init` you could think of. All Tini does is spawn a
+> single child (Tini is meant to be run in a container), and wait for it to exit
+> all the while reaping zombies and performing signal forwarding.
+
+Why is this tip here?
+
+> If you are using Docker 1.13 or greater, Tini is included in Docker itself.
+> This includes all versions of Docker CE. To enable Tini, just pass the
+> `--init` flag to docker run
+
+Refs:
+
+- [krallin/tini](https://github.com/krallin/tini): A tiny but valid `init` for
+  containers
+- [Compose file specification #init](https://docs.docker.com/compose/compose-file/#init)
+- [What is advantage of tini?#8](https://github.com/krallin/tini/issues/8)
+- [執行 Docker 容器可使用 dumb-init 或 tini 改善程序優雅結束的問題](https://blog.miniasp.com/post/2021/07/09/Use-dumb-init-in-Docker-Container)

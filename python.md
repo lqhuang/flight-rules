@@ -1133,3 +1133,29 @@ fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fnctl.LOCK_NB)
 
 Ref:
 [fcntl — The fcntl and ioctl system calls](https://docs.python.org/3/library/fcntl.html)
+
+## Find reverse dependencies
+
+```python
+#!/bin/env python3
+import pkg_resources
+import sys
+
+
+def find_reverse_deps(package_name):
+    return [
+        pkg.project_name
+        for pkg in pkg_resources.WorkingSet()
+        if package_name in {req.project_name for req in pkg.requires()}
+    ]
+
+if __name__ == "__main__":
+    print(find_reverse_deps(sys.argv[1]))
+```
+
+## `iterrows` is slow ?
+
+有哪些操作是 vectorized 过的呢?
+
+- https://realpython.com/pandas-iterate-over-rows/
+- https://ryxcommar.com/2020/01/15/for-the-love-of-god-stop-using-iterrows/
