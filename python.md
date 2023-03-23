@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-02-06
+updated: 2023-03-23
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1153,9 +1153,47 @@ if __name__ == "__main__":
     print(find_reverse_deps(sys.argv[1]))
 ```
 
-## `iterrows` is slow ?
+## (draft) `iterrows` is slow ?
 
 有哪些操作是 vectorized 过的呢?
 
 - https://realpython.com/pandas-iterate-over-rows/
 - https://ryxcommar.com/2020/01/15/for-the-love-of-god-stop-using-iterrows/
+
+## Pylance and PEP 660 – Editable installs
+
+When your project's building toolchain switch to `pyproject.toml` based, Pylance
+(PyRight) cannot normally recognize your "editable" install
+(`pip install -e .`). The error hint looks like
+
+```
+Import "xxx" coulde not be resolved. Pylance (reportMissingImports)
+```
+
+There are three mechanisms now for "Editable Installs":
+
+1. `PEP 660`: using import hooks to direct the import machinery to the package's
+   source files
+2. `compat` mode: create a special `.pth` file in the target directory
+3. `strict` mode: create a tree of file links in an auxiliary directory by using
+   symlinks
+
+For `pip` + `setuptools` toolchain, you could switch to `strict`/`compat` mode
+while using development mode
+
+```sh
+pip install -e . --config-settings editable_mode=strict
+```
+
+For `Hatch/Hatchling` or `PDM`, both of them use `.pth` files by default
+(identifiable by Pylance). Only use import hooks (PEP 660) if:
+
+- `Hatch/Hatchling`: set `dev-mode-exact` to `true`
+- `PDM`: set `editable-backend` to `"editables"`.
+
+Refs:
+
+- [PyLance not recognizing imports from PEP-660 editable installs #3473](https://github.com/microsoft/pylance-release/issues/3473)
+- [PEP 660 – Editable installs for pyproject.toml based builds (wheel based)](https://peps.python.org/pep-0660)
+- [Development Mode - "Strict" editable installs](https://setuptools.pypa.io/en/latest/userguide/development_mode.html#strict-editable-installs)
+- [pylance-release/TROUBLESHOOTING.md#Editable install modules not found](https://github.com/microsoft/pylance-release/blob/main/TROUBLESHOOTING.md#editable-install-modules-not-found)
