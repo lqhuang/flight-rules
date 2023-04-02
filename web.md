@@ -4,6 +4,40 @@ created: 2023-04-02
 updated: 2023-04-02
 ---
 
+## Limit web crawler from search engine
+
+Besides `robots.txt`, there are several other approaches to adjust web crawler's
+behaviors on your sites.
+
+1. `meta` tags in html page
+
+   ```html
+   <meta name="robots" content="noindex, follow" />
+   <meta name="robots" content="index, nofollow" />
+   <meta name="robots" content="noindex, nofollow" />
+   ```
+
+2. `X-Robots-Tag` headers in response
+
+   ```
+   X-Robots-Tag: noindex
+   X-Robots-Tag: unavailable_after: 25 Jun 2010 15:00:00 PST
+   ```
+
+3. Using the `data-nosnippet` HTML attribute
+
+   ```html
+   <div data-nosnippet>not in snippet</div>
+   <div data-nosnippet="true">also not in snippet</div>
+   <div data-nosnippet="false">also not in snippet</div>
+   <!-- all values are ignored -->
+   ```
+
+- [robots.txt 是什么?](https://www.tomczhen.com/2019/11/18/what-is-robots-txt)
+- [About the Robots <META> tag](https://www.robotstxt.org/meta.html)
+- [Google Search Central - Introduction to robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro)
+- [Google Search Central - Robots meta tag, data-nosnippet, and X-Robots-Tag specifications](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag)
+
 ## Preflight `OPTIONS` request
 
 > A CORS preflight request is a CORS request that checks to see if the CORS

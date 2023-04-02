@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-03-21
+updated: 2023-04-02
 tags:
   - docker
   - container
@@ -233,11 +233,11 @@ Refs:
 
 1. [10 Examples of how to get Docker Container IP Address](http://networkstatic.net/10-examples-of-how-to-get-docker-container-ip-address)
 
-## Get Docker container IP address inside container???
+## Get Docker container IP address inside container?
 
 ...
 
-## Get host IP inside container
+## Get host IP inside or outside container
 
 Get IPv4 address:
 
@@ -254,10 +254,23 @@ S - IPv6 segment = [0-9a-f]{1,4}
 DOCKER_HOST=$(ip -6 addr show docker0 | grep -Po 'inet6 \K(?:%[0-9a-z]+)')
 ```
 
-Ref:
+### Hard codes sometimes work
+
+> Sometimes hard code is also work. AFAIK, in the case of Docker for Linux
+> (standard distribution), the IP address of the host will always be
+> `172.17.0.1`.
+
+Based on this thought, we could check from host to get default HOST IP.
+
+```
+docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}'
+```
+
+Refs:
 
 1. [Docker Tip #65: Get Your Docker Host's IP Address from in a Container](https://nickjanetakis.com/blog/docker-tip-65-get-your-docker-hosts-ip-address-from-in-a-container)
 2. [How to get the IP address of the docker host from inside a docker container](https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container)
+3. [How to get the IP address of the docker host from inside a docker container](https://stackoverflow.com/a/67160733)
 
 ## Squash all build layers into one
 
