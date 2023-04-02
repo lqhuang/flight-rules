@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-03-23
+updated: 2023-04-02
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -79,9 +79,9 @@ plt.show()
 
 Refs:
 
-1. https://matplotlib.org/gallery/axisartist/demo_axisline_style.html?highlight=subplotzero
-2. https://stackoverflow.com/questions/33737736/matplotlib-axis-arrow-tip/33738359
-3. https://stackoverflow.com/questions/17646247/how-to-make-fuller-axis-arrows-with-matplotlib
+1. [Axis line styles](https://matplotlib.org/stable/gallery/axisartist/demo_axisline_style.html)
+2. [matplotlib axis arrow tip](https://stackoverflow.com/questions/33737736/matplotlib-axis-arrow-tip/33738359)
+3. [How to make 'fuller' axis arrows with matplotlib](https://stackoverflow.com/questions/17646247/how-to-make-fuller-axis-arrows-with-matplotlib)
 
 ## Deleting diagonal elements of a numpy array
 
@@ -150,15 +150,9 @@ Rather than
 
 > [Recommended change to enable conda in your shell](https://github.com/conda/conda/blob/master/CHANGELOG.md#440-2017-12-20)
 
-## Install package in development mode
+## `CamelCase` to `camel_case`
 
-The `pip install -e .` command allows you to follow the development branch as it
-changes by creating links in the right places and installing the command line
-scripts to the appropriate locations.
-
-## CamelCase to camel_case
-
-Camel case to snake case
+Snippet to transform from camel case to snake case
 
 ```python
 import re
@@ -171,7 +165,13 @@ print(name)  # camel_case_name
 To handle more advanced cases specially (this is not reversible anymore):
 
 ```python
+def camel_to_snake(name):
+    name = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
+print(camel_to_snake('camel2_camel2_case'))  # camel2_camel2_case
+print(camel_to_snake('getHTTPResponseCode'))  # get_http_response_code
+print(camel_to_snake('HTTPResponseCodeXYZ'))  # http_response_code_xyz
 ```
 
 Snake case to pascal case
@@ -471,7 +471,7 @@ References:
 
 ## Find reverse dependency of one package
 
-1. From command line:
+### From command line:
 
 Step 1. find your `site-packages` directory of your Python environment:
 
@@ -498,7 +498,7 @@ will output:
 ./fastapi-0.70.1.dist-info/METADATA:Requires-Dist: anyio[trio] >=3.2.1,<4.0.0 ; extra == "test"
 ```
 
-2. Use Python script:
+### Use Python script:
 
 ```python
 #!/bin/env python3
@@ -515,33 +515,28 @@ if __name__ == '__main__':
     print(find_reverse_deps(sys.argv[1]))
 ```
 
-You can copy these and run with `python -c "..." package-name` fastly.
-
-Output example:
+You can copy these and run with `python -c "..." package-name` fastly. Output
+will be like:
 
 ```shell
 ['starlette', 'httpcore']
 ```
 
-3. Use Python package `pip-tools` or
-   [`pipdeptree`](https://github.com/jazzband/pip-tools)
+### Third packages
 
-For example:
+Use Python package `pip-tools` or
+[`pipdeptree`](https://github.com/jazzband/pip-tools)
 
 ```shell
 pipdeptree -r -p anyio
-```
 
-will output
-
-```
-anyio==3.5.0
-  - httpcore==0.14.3 [requires: anyio==3.*]
-    - httpx==0.21.1 [requires: httpcore>=0.14.0,<0.15.0]
-      - foam==0.3.0 [requires: httpx]
-  - starlette==0.16.0 [requires: anyio>=3.0.0,<4]
-    - fastapi==0.70.1 [requires: starlette==0.16.0]
-      - foam==0.3.0 [requires: fastapi]
+# anyio==3.5.0
+#   - httpcore==0.14.3 [requires: anyio==3.*]
+#     - httpx==0.21.1 [requires: httpcore>=0.14.0,<0.15.0]
+#       - foam==0.3.0 [requires: httpx]
+#   - starlette==0.16.0 [requires: anyio>=3.0.0,<4]
+#     - fastapi==0.70.1 [requires: starlette==0.16.0]
+#       - foam==0.3.0 [requires: fastapi]
 ```
 
 References:
@@ -1134,25 +1129,6 @@ fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fnctl.LOCK_NB)
 Ref:
 [fcntl — The fcntl and ioctl system calls](https://docs.python.org/3/library/fcntl.html)
 
-## Find reverse dependencies
-
-```python
-#!/bin/env python3
-import pkg_resources
-import sys
-
-
-def find_reverse_deps(package_name):
-    return [
-        pkg.project_name
-        for pkg in pkg_resources.WorkingSet()
-        if package_name in {req.project_name for req in pkg.requires()}
-    ]
-
-if __name__ == "__main__":
-    print(find_reverse_deps(sys.argv[1]))
-```
-
 ## (draft) `iterrows` is slow ?
 
 有哪些操作是 vectorized 过的呢?
@@ -1197,3 +1173,57 @@ Refs:
 - [PEP 660 – Editable installs for pyproject.toml based builds (wheel based)](https://peps.python.org/pep-0660)
 - [Development Mode - "Strict" editable installs](https://setuptools.pypa.io/en/latest/userguide/development_mode.html#strict-editable-installs)
 - [pylance-release/TROUBLESHOOTING.md#Editable install modules not found](https://github.com/microsoft/pylance-release/blob/main/TROUBLESHOOTING.md#editable-install-modules-not-found)
+
+## Use `conda` to install specific BUILD of a package
+
+The way you install any specific version from that information is:
+
+```sh
+conda install pillow=4.2.1=py27h7cd2321_0
+# conda install <package_name>=<version>=<build_string>
+```
+
+The `pillow` package has a version of `4.2.1`, and a build of `py27h7cd2321_0`.
+
+Besides, it supports `*` as a wildcard like following:
+
+```sh
+conda install 'pillow==4.2.1=py27*'
+```
+
+Refs:
+
+- [Installing specific BUILD of an anaconda package](https://stackoverflow.com/questions/48128029/installing-specific-build-of-an-anaconda-package)
+
+## Custom flag to override CUDA version by `conda`
+
+> As an effort to maximize accessibility for users with lower connection and/or
+> storage bandwidth, there is an ongoing effort to limit installing packages
+> compiled for GPUs unnecessarily on CPU-only machines by default. This is
+> accomplished by adding a run dependency, `__cuda`, that detects if the local
+> machine has a GPU. However, this introduces challenges to users who may prefer
+> to still download and use GPU-enabled packages even on a non-GPU machine.
+
+Interesting case:
+
+> For example, login nodes on HPCs often do not have GPUs and their compute
+> counterparts with GPUs often do not have internet access. In this case, a user
+> can override the default setting via the environment variable
+> `CONDA_OVERRIDE_CUDA` to install GPU packages on the login node to be used
+> later on the compute node.
+
+> In order to override the default behavior, a user can set the environment
+> variable `CONDA_OVERRIDE_CUDA` like below to install TensorFlow with GPU
+> support even on a machine with CPU only.
+>
+> ```sh
+> CONDA_OVERRIDE_CUDA="11.2" conda install "tensorflow==2.7.0=cuda112*" -c conda-forge
+> ```
+
+- [conda-forge » User Documentation » Tips & tricks](https://conda-forge.org/docs/user/tipsandtricks.html)
+
+## (draft) how to select version of `cudatoolkit` in Conda
+
+> You should select the `cudatoolkit` version most appropriate for your GPU
+
+the relationship to version of CUDA and cuDNN?
