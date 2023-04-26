@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2023-01-12
+updated: 2023-04-18
 ---
 
 ## Fork 仓库的同步与更新
@@ -352,3 +352,23 @@ Inspired by:
 > PostgreSQL, or even git itself in no time.
 
 - [email + git = <3](https://git-send-email.io/)
+
+## Permanently remove files and folders from Git repo
+
+Sometimes you want to remove entire directory from git repo even from history,
+try:
+
+```sh
+git filter-branch --tree-filter 'rm -rf your-dir' HEAD
+```
+
+This will rewrite all history commits, so you need to push forcely
+
+```sh
+git push origin --force --all
+git push origin --force --tags
+```
+
+Refs:
+
+1. [Permanently remove files and folders from Git repo](https://dalibornasevic.com/posts/2-permanently-remove-files-and-folders-from-a-git-repository)
