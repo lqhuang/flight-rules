@@ -1,7 +1,7 @@
 ---
 title: Miscellaneous Tips
 created: 2021-12-14
-updated: 2022-11-14
+updated: 2023-04-27
 tags:
   - general
 ---
@@ -118,3 +118,16 @@ Refs:
 2. [Brief YAML reference](https://camel.readthedocs.io/en/latest/yamlref.html)
 3. [YAML specification v1.2.2 - 6.8. Directives](https://yaml.org/spec/1.2.2/#68-directives)
 4. [YAML specification v1.2.2 - 9.1.4. Explicit Documents](https://yaml.org/spec/1.2.2/#914-explicit-documents)
+
+## What's your gateway out to OpenAI?
+
+You know, OpenAI has very strict risk control strategy. Here are some official
+tracing information to hint your gateway environments.
+
+- <https://chat.openai.com/cdn-cgi/trace>
+- <https://api.openai.com/cdn-cgi/trace>
+- <https://platform.openai.com/cdn-cgi/trace>
+
+Be sure you're in
+[Supported countries and territories](https://platform.openai.com/docs/supported-countries)
+before you try to visit, LOL.
