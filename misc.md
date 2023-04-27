@@ -151,3 +151,64 @@ kex=X25519
 Be sure you're in
 [Supported countries and territories](https://platform.openai.com/docs/supported-countries)
 before you try to visit, LOL.
+
+## How to manager and select version of `cudatoolkit` in Conda
+
+> You should select the `cudatoolkit` version most appropriate for your GPU
+
+The major NVIDIA Toolkits divide into two part: 1. driver; 2. Runtime.
+
+A sensible minimal installation for better operation and maintenance would be:
+
+1. Install NVIDIA driver for GPU Card from system package manager (`apt`, `dnf`,
+   ...) **without CUDA** (eg. NVIDIA Toolkit Installer will install them all
+   into OS)
+   - Why: We can easy upgrade driver with system/kernel update
+2. Install CUDA and related runtime libaries (cuDNN, cuBLAS) from `conda` or
+   similar binary distribution tools.
+   - Why: Easy to do fine-grained controls for the runtime what you need
+
+And you could check NVIDIA release notes to find compatibility matrix between
+driver version and CUDA version.
+
+Bonus: How to find NVIDIA driver version on Linux?
+
+Display the **installed** driver revision
+
+```sh
+cat /proc/driver/nvidia/version
+```
+
+To see the loaded version type
+
+```sh
+cat /sys/module/nvidia/version
+```
+
+View Dynamic Kernel Module Support (dkms) for Nvidia driver
+
+```sh
+dkms status nvidia
+```
+
+Also, the well known tool `nvidia-smi`
+
+```sh
+nvidia-smi
+# the version of the installed NVIDIA display driver
+# pass the `--query-gpu=driver_version` option
+nv_version="$(nvidia-smi --query-gpu=driver_version --format=csv,noheader)"
+```
+
+Finally,
+
+```sh
+modinfo nvidia | more
+modinfo nvidia | grep -E 'firmware|version|filename'
+```
+
+Refs:
+
+- [Tweet Status from @real_doctormin](https://twitter.com/real_doctormin/status/1644241714465632257?t=vYm0PkQRhQuIGMbWade2Hw)
+- [CUDA Toolkit and Minimum Required Driver Version for CUDA Minor Version Compatibility](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id3)
+- [How to find NVIDIA driver version on Linux](https://www.cyberciti.biz/faq/check-print-find-nvidia-driver-version-on-linux-command/)
