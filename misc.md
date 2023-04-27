@@ -127,6 +127,26 @@ tracing information to hint your gateway environments.
 - <https://chat.openai.com/cdn-cgi/trace>
 - <https://api.openai.com/cdn-cgi/trace>
 - <https://platform.openai.com/cdn-cgi/trace>
+- <https://auth0.openai.com/cdn-cgi/trace>
+
+```
+fl=467f51
+h=api.openai.com
+ip=127.0.0.1
+ts=1682579563.501
+visit_scheme=https
+uag=*
+colo=???
+sliver=none
+http=http/3
+loc=??
+tls=TLSv1.3
+sni=plaintext
+warp=off
+gateway=off
+rbi=off
+kex=X25519
+```
 
 Be sure you're in
 [Supported countries and territories](https://platform.openai.com/docs/supported-countries)
