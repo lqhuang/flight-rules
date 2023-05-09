@@ -581,3 +581,63 @@ Refs:
 - [Compose file specification #init](https://docs.docker.com/compose/compose-file/#init)
 - [What is advantage of tini?#8](https://github.com/krallin/tini/issues/8)
 - [執行 Docker 容器可使用 dumb-init 或 tini 改善程序優雅結束的問題](https://blog.miniasp.com/post/2021/07/09/Use-dumb-init-in-Docker-Container)
+
+### Updating file content by VIM is using file copy instead write directly default
+
+TIL, the `inode` value of a file changes after being modified by Vim (in
+default), that's probably the reason why I always have to restart containers to
+apply changes.
+
+```vim
+:h backupcopy
+```
+
+```
+"yes"  make a copy of the file and overwrite the original one
+"no"   rename the file and write a new one
+"auto" one of the previous, what works best
+```
+
+Without `set backupcopy=yes`
+
+```console
+$ inotifywait -m test.txt
+Setting up watches.
+Watches established.
+test.txt OPEN
+test.txt CLOSE_NOWRITE,CLOSE
+test.txt OPEN
+test.txt ACCESS
+test.txt CLOSE_NOWRITE,CLOSE
+test.txt MOVE_SELF
+test.txt ATTRIB
+test.txt DELETE_SELF
+```
+
+With `set backupcopy=yes`
+
+```console
+$ inotifywait -m test.txt
+Setting up watches.
+Watches established.
+test.txt OPEN
+test.txt CLOSE_NOWRITE,CLOSE
+test.txt OPEN
+test.txt ACCESS
+test.txt CLOSE_NOWRITE,CLOSE
+test.txt OPEN
+test.txt ACCESS
+test.txt CLOSE_NOWRITE,CLOSE
+test.txt MODIFY
+test.txt OPEN
+test.txt MODIFY
+test.txt CLOSE_WRITE,CLOSE
+test.txt ATTRIB
+```
+
+Refs:
+
+- [Twitter status from @laixintao](https://twitter.com/laixintao/status/1651149195401887746)
+- [VIM options 'backupcopy'](https://vimdoc.sourceforge.net/htmldoc/options.html#'backupcopy')
+- [Why inode value changes when we edit in "vi" editor?](https://unix.stackexchange.com/questions/36467/why-inode-value-changes-when-we-edit-in-vi-editor)
+- [set `backupcopy=yes` doesn't work still writes the file twice](https://vi.stackexchange.com/questions/11629/set-backupcopy-yes-doesnt-still-writes-the-file-twice)
