@@ -1,23 +1,25 @@
 ---
 title: Tips for Pandas
 created: unknown
-updated: 2022-11-04
-draft: true
+updated: 2023-05-10
 ---
 
 ## Append new row to dataframe
 
-https://stackoverflow.com/questions/10715965/add-one-row-to-pandas-dataframe
+List of `dict` is faster than `dataframe.append()`.
 
-list of dict is faster than dataframe.append()
+> from Pandas >= 2.0, `append` has been removed!
+
+- [Create a Pandas Dataframe by appending one row at a time](https://stackoverflow.com/questions/10715965/add-one-row-to-pandas-dataframe)
 
 ## Show `nan` value
 
-```python df_nan = df[df.isna().any(axis=1)]
+```python
+df_nan = df[df.isna().any(axis=1)]
 print(df_nan)
 ```
 
-https://stackoverflow.com/questions/43424199/display-rows-with-one-or-more-nan-values-in-pandas-dataframe
+- [Display rows with one or more NaN values in pandas dataframe](https://stackoverflow.com/questions/43424199/display-rows-with-one-or-more-nan-values-in-pandas-dataframe)
 
 ## Print options
 
@@ -57,7 +59,7 @@ df.groupby(increased).groups
 
 References:
 
-1. https://kite.com/blog/python/pandas-groupby-count-value-count/
+1. [How to Use Pandas GroupBy, Counts and Value Counts](https://kite.com/blog/python/pandas-groupby-count-value-count/)
 
 ## 在其他列上 aggregate
 
@@ -89,8 +91,8 @@ References:
 df.groupby("column_A").agg(lambda x:x.value_counts().index[0])
 ```
 
-`pandas` >= 0.16: the "mode" function (most common element) `pd.Series.mode` is
-available.
+`pandas>=0.16`: the "mode" function (most common element) is added.
+`pd.Series.mode` is available.
 
 ```python
 df.groupby("column_A").agg(pd.Series.mode)
@@ -122,16 +124,16 @@ permanently with
 
 References:
 
-1. https://stackoverflow.com/questions/17477979/dropping-infinite-values-from-dataframes-in-pandas
+1. [Dropping infinite values from dataframes in pandas?](https://stackoverflow.com/questions/17477979/dropping-infinite-values-from-dataframes-in-pandas)
 
 ## counting consecutive positive value in Python
 
-先用 shift 进行转换然后判断是否和前一个元素是不同的用 cumsum() 计算出台阶 step
-level 用 groupby 和 cumcount 进行分组统计
+先用 `shift` 进行转换然后判断是否和前一个元素是不同的用 `cumsum()` 计算出台阶
+step level 用 `groupby` 和 `cumcount` 进行分组统计
 
 Second method:
 
-groupby function from `itertools`
+`groupby` function from `itertools`
 
 Ref:
 
@@ -140,15 +142,13 @@ Ref:
 
 ## multiple aggregation for same column
 
-Named aggregation
-
-"但是不能混用"
+Named aggregation "但是不能混用"
 
 Ref:
 
 1. [Multiple aggregations of the same column](https://stackoverflow.com/questions/12589481/multiple-aggregations-of-the-same-column-using-pandas-groupby-agg)
 
-## converting table to hierarchical tree structure with pandas
+## (draft) converting table to hierarchical tree structure with pandas
 
 1. generate dict-like data
 
@@ -166,11 +166,25 @@ refs:
 
 ## Check missing datetime
 
-- https://stackoverflow.com/questions/52044348/check-for-any-missing-dates-in-the-index
+> `DatetimeIndex.difference()`
+
+- [check for any missing dates in the index](https://stackoverflow.com/questions/52044348/check-for-any-missing-dates-in-the-index)
 
 ## Efficiently iterating over rows in a Pandas DataFrame
 
-- https://mlabonne.github.io/blog/iterating-over-rows-pandas-dataframe/
+> Never use iterrows and itertuples again!
+
+(😅 ???)
+
+1. ❌❌ Iterrows
+2. ❌ For loop with .loc or .iloc (3× faster)
+3. ❌ Apply (4× faster)
+4. ❌ Itertuples (10× faster)
+5. ❌ List comprehensions (200× faster)
+6. ✅ Pandas vectorization (1500× faster)
+7. ✅✅ NumPy vectorization (1900× faster)
+
+- [Efficiently iterating over rows in a Pandas DataFrame](https://mlabonne.github.io/blog/iterating-over-rows-pandas-dataframe/)
 
 ## This's a feature not bug
 
@@ -238,3 +252,52 @@ Refs:
 
 - [Tweet from @marktenenholtz](https://twitter.com/marktenenholtz/status/1557336004721160192)
 - [GitHub Gist - rrherr/apply_parallel.py](https://gist.github.com/rrherr/ae9cb03bcdb0d322eeac156db9494fcd)
+
+## When is inplace in Pandas faster?
+
+Use of The `inplace=True` keyword is discouraged, it's generally seen as bad
+practice and often unnecessary. Not only because `inplace=True` breaks method
+chaining and efficiency optimization, but also an extra reason which is easy to
+miss or forget.[^1][^2]
+
+> Operations that re-arrange the rows of a DataFrame can't be executed without
+> copying. Avoid the inplace argument for these methods.
+>
+> Some DataFrame methods can never operate inplace. Their operation (like
+> reordering rows) requires copying, so they create a copy even if you provide
+> `inplace=True`.
+>
+> For these methods, inplace doesn't bring a performance gain.
+>
+> It's only a "syntactic sugar for reassigning the new result to the calling
+> DataFrame/Series."
+
+PDEP-8[^3] is an ongoing proposal to remove `inplcae` keyword from Group 4
+methods.
+
+- Group 1: Methods that always operate inplace (no user-control with
+  inplace/copy keyword)
+- Group 2: Methods that modify the underlying data of the DataFrame/Series
+  object and can be done inplace
+- Group 3: Methods that modify the DataFrame/Series object, but not the
+  pre-existing values
+- Group 4: Methods that can never operate inplace
+
+Alright, for methods that can happen with or without copying the `DataFrame`
+object, the `inplace` argument (possibly) is OK and can bring performance gains.
+
+- delete rows from the end (`pop`),
+- add columns
+- delete columns (`drop`)
+- mutate the elements (`update`, `where`, `fillna`, `replace`)
+
+But in generally, method chaining style is still recommended.
+
+Refs:
+
+- [^1]
+  [When is inplace in Pandas faster?](https://sourcery.ai/blog/pandas-inplace/)
+- [^2]
+  [Pandas: Avoid inplace](https://docs.sourcery.ai/Reference/Python/Default-Rules/pandas-avoid-inplace/)
+- [^3]
+  [PDEP-8: In-place methods in pandas](https://github.com/pandas-dev/pandas/pull/51466/files?short_path=f2cc21a#diff-f2cc21ad9c9caffa3506c4719e07e1db49a2a3368bd6b41a1abf90eb8e3e416c)

@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-04-02
+updated: 2023-05-10
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -19,7 +19,9 @@ So it is like array, except it has fewer options, and `copy=False`. array has
 The main difference is that array (by default) will make a copy of the object,
 while asarray will not unless necessary.
 
-ref: https://stackoverflow.com/questions/14415741/numpy-array-vs-asarray
+ref:
+
+- [What is the difference between np.array() and np.asarray()?](https://stackoverflow.com/questions/14415741/numpy-array-vs-asarray)
 
 ## 利用 Conda 在 64b-it 平台上创建 32-bit 的环境
 
@@ -321,7 +323,7 @@ Refs:
 
 example:
 
-```
+```python
 tfidf_vectorizer = TfidfVectorizer(
     max_features=max_features,
     max_df=0.8,
@@ -466,8 +468,8 @@ Savely import main module
 
 References:
 
-1. https://mp.weixin.qq.com/s?__biz=MzU0OTg3NzU2NA==&mid=2247489119&idx=1&sn=076b0eca8e538615973494a511669ae9&chksm=fba8740cccdffd1ac7b9a0accdcb9dbc190be17000ae1de20e95bc93d26bca59c1855d146c7e&mpshare=1&scene=1&srcid=1029DYm6Gav8PnGJMRyXAe2l&sharer_sharetime=1635489470168&sharer_shareid=a02c97b66753e49e61e3def16e4d4411&exportkey=ATmw3UkoaqFIE13cmYK%2FT18%3D&pass_ticket=R%2BX2oYnRuoXgxtQg6YovU2EyJ1pgYLZPRYAFRm7NjSc0ERiUZEHitsxXWluIPXtT&wx_header=0#rd
-2. https://docs.python.org/zh-cn/3/library/multiprocessing.html#programming-guidelines
+1. [多进程场景下, 必须用 if main](https://mp.weixin.qq.com/s?__biz=MzU0OTg3NzU2NA==&mid=2247489119&idx=1&sn=076b0eca8e538615973494a511669ae9&chksm=fba8740cccdffd1ac7b9a0accdcb9dbc190be17000ae1de20e95bc93d26bca59c1855d146c7e&mpshare=1&scene=1&srcid=1029DYm6Gav8PnGJMRyXAe2l&sharer_sharetime=1635489470168&sharer_shareid=a02c97b66753e49e61e3def16e4d4411&exportkey=ATmw3UkoaqFIE13cmYK%2FT18%3D&pass_ticket=R%2BX2oYnRuoXgxtQg6YovU2EyJ1pgYLZPRYAFRm7NjSc0ERiUZEHitsxXWluIPXtT&wx_header=0#rd)
+2. [multiprocessing — Process-based parallelism](https://docs.python.org/3/library/multiprocessing.html)
 
 ## Find reverse dependency of one package
 
@@ -1129,13 +1131,6 @@ fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fnctl.LOCK_NB)
 Ref:
 [fcntl — The fcntl and ioctl system calls](https://docs.python.org/3/library/fcntl.html)
 
-## (draft) `iterrows` is slow ?
-
-有哪些操作是 vectorized 过的呢?
-
-- https://realpython.com/pandas-iterate-over-rows/
-- https://ryxcommar.com/2020/01/15/for-the-love-of-god-stop-using-iterrows/
-
 ## Pylance and PEP 660 – Editable installs
 
 When your project's building toolchain switch to `pyproject.toml` based, Pylance
@@ -1222,8 +1217,143 @@ Interesting case:
 
 - [conda-forge » User Documentation » Tips & tricks](https://conda-forge.org/docs/user/tipsandtricks.html)
 
-## (draft) how to select version of `cudatoolkit` in Conda
+## Hint on execute order of decorators
 
-> You should select the `cudatoolkit` version most appropriate for your GPU
+Execution order of decorators in Python sometimes is confused.
 
-the relationship to version of CUDA and cuDNN?
+```python
+@decorator_outer
+@decorator_inner
+def func():
+    ...
+
+# totally equivalent to
+decorator_outer(decorator_inner(func))()
+```
+
+at the first sight, the execution order is: `decorator_inner` ->
+`decorator_outer` -> `func`
+
+But it actually depends on where you place your logic codes inside or outside of
+wrapper in decorator.
+
+```python
+def decorator_outer(func):
+    print("seq 3: Here is executed after inner decorator")
+
+    def wrapper():
+        print("seq 5: belong to outer decorator, before `func()`")
+        func()
+        print("seq 8: belong to outer decorator, after `func()`")
+
+    print("seq 4: Cleanup step for outer decorator")
+    return wrapper
+
+
+def decorator_inner(func):
+    print("seq 1: Here is the closest postion to the wrapped function")
+
+    def wrapper():
+        print("seq 6: belong to inner decorator, before `func()`")
+        func()
+        print("seq 7: belong to inner decorator, after `func()`")
+
+    print("seq 2: after wrapper is defined. use for cleanup or something")
+    return wrapper
+
+
+@decorator_outer
+@decorator_inner
+def func():
+    print("* Real function call")
+
+
+if __name__ == "__main__":
+    func()
+```
+
+Output will be
+
+```
+seq 1: Here is the closest postion to the wrapped function
+seq 2: after wrapper is defined. use for cleanup or something
+seq 3: Here is executed after inner decorator
+seq 4: Cleanup step for outer decorator
+seq 5: belong to outer decorator, before `func()`
+seq 6: belong to inner decorator, before `func()`
+* Real function call
+seq 7: belong to inner decorator, after `func()`
+seq 8: belong to outer decorator, after `func()`
+```
+
+More precisely,
+
+- the code **outside** of wrapper in decorator
+  - the inner decorator will complete execution **before** the outer decorator
+  - execution affinity: from the nearest to the farthest
+  - except `wrapper`, all codes will be pre-executed in sequencely.
+- the code **inside** of wrapper in decorator
+  - the inner decorator will complete execution **after** the outer decorator
+  - execution affinity: from the farthest to the nearest
+  - codes before/after real wrapped function follow the FIFO execution order.
+
+For example, in FastAPI or Flask, it's very common to use decorator to do user
+authentication and permission control. So, if you put your extended logic inside
+of wrapper, you have to carefully note the sequence of decorator
+
+```python
+def check_login(func):
+    """Check login"""
+    def wrapper(*args, **kwargs):
+        is_login = False
+        if not is_login:
+            return {'success': False, "msg": "Not logged in yet"}
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def check_data_set_permission(func):
+    """Check role and data permission for logged user"""
+    def wrapper(*args, **kwargs):
+        has_data_set_permission = True
+        if not has_data_set_permission:
+            return {'success': False, "msg": "No data permission"}
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+Obviously, A user must be logged in already before checking its data accessing
+permission. The entrypoint would be like
+
+```python
+# bad case
+@check_data_set_permission
+@check_login
+def do_query_dataset(dataset_id):
+    ...
+
+# good case
+@check_login
+@check_data_set_permission
+def do_query_dataset(dataset_id):
+    ...
+```
+
+Refs:
+
+- [Python 装饰器的执行顺序](https://mp.weixin.qq.com/s/PXu-68puFUpxzJRqUHJwBw)
+
+## reduced condas index fetch bandwidth
+
+> The new conda 23.3.1 release from Mar, 2023, by enabling the
+> `experimental: ["jlap"]` feature in `.condarc`, conda users can see more than
+> a 99% reduction in index fetch bandwith.
+
+```yaml
+experimental: ["jlap"]
+# flag `jlap`: conda 23.3.1 release from March, 2023
+```
+
+Refs:
+
+- [How we reduced conda’s index fetch bandwidth by 99%](https://conda.discourse.group/t/how-we-reduced-condas-index-fetch-bandwidth-by-99/257)
