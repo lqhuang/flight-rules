@@ -1,7 +1,33 @@
 ---
+title: Tips for macOS
 created: 2023-01-29
-updated: 2023-04-26
+updated: 2023-05-11
 ---
+
+## Remove `.DS_Store` via Terminal
+
+Recursively remove all `.DS_Store` files from your machine
+
+```sh
+sudo find / -name ".DS_Store" -depth -exec rm {} \;
+```
+
+To do the same thing for a specific directory only:
+
+```sh
+find . -name '*.DS_Store' -type f -delete
+```
+
+Disable .DS_Store on external drives. Note that you may need to log out and/or
+restart your machine after executing this command.
+
+```sh
+defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+```
+
+Ref:
+
+- [Remove .DS_Store in macOS](https://wp-mix.com/remove-ds_store-in-macos/)
 
 ## Configure repeat scheduled power events (`sleep`/`wakeup`/`shutdown`) in macOS 13 Ventura
 
