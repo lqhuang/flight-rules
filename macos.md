@@ -1,7 +1,7 @@
 ---
 title: Tips for macOS
 created: 2023-01-29
-updated: 2023-05-11
+updated: 2023-05-16
 ---
 
 ## Remove `.DS_Store` via Terminal
@@ -251,3 +251,13 @@ Refs:
 - non-interactive + non-login
 
 ...
+
+## Create a password-protected zip archive on macOS
+
+Yeah, you cannot do it with GUI. Open terminal and then
+
+```bash
+zip -er archive.zip /content-you-wanna-compress
+```
+
+Terminal will show a prompt to let you confirm your secret.
