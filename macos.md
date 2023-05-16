@@ -261,3 +261,50 @@ zip -er archive.zip /content-you-wanna-compress
 ```
 
 Terminal will show a prompt to let you confirm your secret.
+
+## Diving into a hidden macOS tool - networkQuality
+
+The networkQuality tool is a built-in tool released in macOS Monterey that can
+help diagnose network issues and measure network performance.
+
+```sh
+networkQuality -v
+```
+
+This command starts the tool and performs the default set of tests, displaying
+the results in the Terminal window.
+
+```
+=== SUMMARY ====
+Uplink capacity: 4.140 Mbps (Accuracy: High)
+Downlink capacity: 736.244 Mbps (Accuracy: High)
+Responsiveness: Low (90 RPM) (Accuracy: High)
+Idle Latency: 122.667 milliseconds (Accuracy: High)
+Interface: lo0
+Uplink bytes transferred: 21.890 MB
+Downlink bytes transferred: 1.127 GB
+Uplink Flow count: 8
+Downlink Flow count: 16
+Start: 5/16/23, 16:44:44
+End: 5/16/23, 16:45:00
+OS Version: Version 13.3.1 (a) (Build 22E772610a)
+```
+
+Usage
+
+```
+USAGE: networkQuality [-C <configuration_url>] [-c] [-h] [-I <network interface name>] [-k] [-p] [-r host] [-s] [-v]
+    -C: override Configuration URL or path (with scheme file://)
+    -c: Produce computer-readable output
+    -h: Show help (this message)
+    -I: Bind test to interface (e.g., en0, pdp_ip0,...)
+    -k: Disable certificate validation
+    -p: Use Private Relay
+    -r: Connect to host or IP, overriding DNS for initial config request
+    -s: Run tests sequentially instead of parallel upload/download
+    -v: Verbose output
+```
+
+Even more, it allow you to create your own server as test server.
+
+- [Diving into a hidden macOS tool - networkQuality](https://cyberhost.uk/the-hidden-macos-speedtest-tool-networkquality/)
