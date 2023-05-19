@@ -4,6 +4,10 @@ created: 2023-01-29
 updated: 2023-05-16
 ---
 
+## Resources
+
+- [Gist - macOS Internals](https://gist.github.com/kconner/cff08fe3e0bb857ea33b47d965b3e19f)
+
 ## Remove `.DS_Store` via Terminal
 
 Recursively remove all `.DS_Store` files from your machine
@@ -18,7 +22,7 @@ To do the same thing for a specific directory only:
 find . -name '*.DS_Store' -type f -delete
 ```
 
-Disable .DS_Store on external drives. Note that you may need to log out and/or
+Disable `.DS_Store` on external drives. Note that you may need to log out and/or
 restart your machine after executing this command.
 
 ```sh

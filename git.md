@@ -352,6 +352,7 @@ Inspired by:
 > PostgreSQL, or even git itself in no time.
 
 - [email + git = <3](https://git-send-email.io/)
+- [How to submit a patch by email, 2023 edition](https://peter.eisentraut.org/blog/2023/05/09/how-to-submit-a-patch-by-email-2023-edition)
 
 ## Permanently remove files and folders from Git repo
 
