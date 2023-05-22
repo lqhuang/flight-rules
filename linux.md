@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-01-09
+updated: 2023-05-22
 ---
 
 ## Resources
@@ -1040,3 +1040,44 @@ ps -p $$
 - https://askubuntu.com/questions/605479/what-does-h-mean-in-sshd-configuration
 - https://unix.stackexchange.com/questions/61655/multiple-similar-entries-in-ssh-config
 - https://en.wikibooks.org/wiki/OpenSSH/Pattern_Matching_in_OpenSSH_Configuration
+
+## Tar on the fly
+
+TIL, I just found you don't need to write archive file to disk then uncompress
+it while you're downloading something. You can do it ON THE FLY! The keys is the
+`-f -` option
+
+```sh
+curl -L https://url/xxx.tar.bz | tar -C ${TARGET_LOCATION} -xJf -
+```
+
+On the opposite, compressing may isn't that easy, but still be available to
+compress a single file, The same `-f -` option works as well.
+
+```sh
+ls -sR | tar -cf - something
+ls -sR | tar -c something
+```
+
+or just use `gzip`:
+
+```sh
+ls -sR | gzip > documents_tree.txt.gz
+```
+
+You can then use `gunzip documents_tree.txt` to uncompress it, or tools like
+`gzcat` and `zless` to view it without having to uncompress it first.
+
+You also could use
+
+```sh
+ls -sR | tee /dev/tty | gzip > documents_tree.txt.gz
+```
+
+Then you'll see the `ls` output in parallel with it being written to the gzip
+file.
+
+Refs:
+
+- [How to tar/untar the output on the fly](https://superuser.com/questions/345376/how-to-tar-untar-the-output-on-the-fly)
+- [TAR-ing on-the-fly](https://stackoverflow.com/questions/42910343/tar-ing-on-the-fly)

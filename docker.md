@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-05-09
+updated: 2023-05-22
 tags:
   - docker
   - container
@@ -641,3 +641,51 @@ Refs:
 - [VIM options 'backupcopy'](https://vimdoc.sourceforge.net/htmldoc/options.html#'backupcopy')
 - [Why inode value changes when we edit in "vi" editor?](https://unix.stackexchange.com/questions/36467/why-inode-value-changes-when-we-edit-in-vi-editor)
 - [set `backupcopy=yes` doesn't work still writes the file twice](https://vi.stackexchange.com/questions/11629/set-backupcopy-yes-doesnt-still-writes-the-file-twice)
+
+## Provenance attestations
+
+The provenance attestations include facts about the build process, which are a
+set of features that allows users to verify the authenticity and integrity of
+the content of a (Docker) container.
+
+Provenance attestations follow the
+[SLSA provenance schema, version 0.2](https://slsa.dev/provenance/v0.2#schema).
+
+```yaml
+provenance: false
+# or
+provenance: mode=min,inline-only=true
+```
+
+For docker cli, To create a provenance attestation, pass the
+`--attest type=provenance` option to the docker `buildx` build command:
+
+```bash
+docker buildx build --tag <namespace>/<image>:<version> \
+  --attest type=provenance,mode=[min,max] .
+```
+
+But, up to May 20, 2023, the different container registries (ghcr.io, gcp, aws,
+...) have different support status and compatibilities. For example, using
+default options to build container by GitHub Action `docker/build-push-action`,
+your registry will show `unknown/unknown` architecture. One solution is to
+disable provenance
+
+```yaml
+provenance: false
+```
+
+This may cause output image cannot run on Google Cloud Run or AWS Lambda/ECS.
+For now, you could the following config to fix them.
+
+```yaml
+provenance: mode=min,inline-only=true
+```
+
+Refs:
+
+- [docker/build-push-action](https://github.com/docker/build-push-action)
+- [GitHub Action produces unknown architecture and OS](https://github.com/docker/build-push-action/issues/820)
+- [revert disable provenance by default if not set](https://github.com/docker/build-push-action/pull/784)
+- [Default image output from buildx v0.10 cannot run on Google Cloud Run or AWS Lambda/ECS](https://github.com/gabrieldemarmiesse/python-on-whales/issues/407)
+- [Provenance attestations](https://docs.docker.com/build/attestations/slsa-provenance/)
