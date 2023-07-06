@@ -373,3 +373,24 @@ git push origin --force --tags
 Refs:
 
 1. [Permanently remove files and folders from Git repo](https://dalibornasevic.com/posts/2-permanently-remove-files-and-folders-from-a-git-repository)
+
+### Remove all your local branches which are remotely deleted
+
+While you're listing your branches by using `git branch -a` or `git show-ref`,
+you may find some branches are already deleted on remote, but still exist in
+local repo.
+
+From git 1.8.5+, you can use `git fetch --prune` (`git fetch -p`) to remove all
+your local branches which are remotely deleted.
+
+You cloud also set this automatically by:
+
+```sh
+git config fetch.prune true
+# or
+git config --global fetch.prune true
+```
+
+Ref:
+
+1. [How do you remove an invalid remote branch reference from Git?](https://stackoverflow.com/a/8255687)
