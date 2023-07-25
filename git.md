@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2023-04-18
+updated: 2023-07-25
 ---
 
 ## Fork 仓库的同步与更新
@@ -394,3 +394,16 @@ git config --global fetch.prune true
 Ref:
 
 1. [How do you remove an invalid remote branch reference from Git?](https://stackoverflow.com/a/8255687)
+
+## Reinitialized existing Git repository
+
+You may have some problem with local git repo. Try only clone bare records and
+reinitialize current repo.
+
+```sh
+rm -rf ./.git
+git clone --bare <repo_url> .git # only clone bare git records
+git init # Reinitialized existing Git repository with new `.git`
+git add . # Readd all files
+git status
+```

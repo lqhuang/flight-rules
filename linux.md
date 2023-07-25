@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-05-22
+updated: 2023-07-13
 ---
 
 ## Resources
@@ -1081,3 +1081,58 @@ Refs:
 
 - [How to tar/untar the output on the fly](https://superuser.com/questions/345376/how-to-tar-untar-the-output-on-the-fly)
 - [TAR-ing on-the-fly](https://stackoverflow.com/questions/42910343/tar-ing-on-the-fly)
+
+## Find Out DNS Server IP Address
+
+1. Try to do real DNS lookup using command and check the output:
+
+```sh
+host -a www.cyberciti.biz | grep from
+dig www.cyberciti.biz | grep SERVER
+```
+
+2. Check system configuration file:
+
+```sh
+cat /etc/resolv.conf
+# or
+grep nameserver /etc/resolv.conf
+```
+
+or using `resolvectl` to query (requires `systemd-resolved` service enabled):
+
+```sh
+resolvectl status
+```
+
+Some distros may start `systemd-resolved.service`,
+
+- If using `NetworkManager` to manage network, try this:
+
+  ```sh
+  nmcli dev show | grep 'IP4.DNS'
+  ```
+
+- If using `systemd-networkd` to manage network, try this:
+
+  ```sh
+  networkctl status -l --no-pager | grep 'DNS'
+  ```
+
+3. Dump and view traffic on a network (recommended for advanced users only)
+
+> You can use the tcpdump command to dump traffic on a network and view dns
+> traffic. tcpdump command works on most Unix-like operating systems. tcpdump
+> command analyzes network behavior, performance and applications that generate
+> or receive network traffic including dns traffic. To view dns traffic only run
+> tcpudmp as root user in a separate window:
+
+```sh
+tcpdump udp and src port 53
+tcpdump udp and dst port 53
+tcpdump -n -s 1500 -i eth0 udp port 53
+```
+
+Ref:
+
+- [How To Find Out DNS Server IP Address Used By My Router](https://www.cyberciti.biz/faq/how-to-find-out-dns-for-router/)
