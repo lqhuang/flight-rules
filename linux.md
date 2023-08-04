@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-07-13
+updated: 2023-08-04
 ---
 
 ## Resources
@@ -24,10 +24,10 @@ Two command in one line:
     find destination_project '(' -type f -exec chmod 644 {} ';' ')' -o '(' -type d -exec chmod 755 {} ';' ')' # current directory
     find ./ '(' -type f -exec chmod 644 {} ';' ')' -o '(' -type d -exec chmod 755 {} ';' ')'
 
-Ref:
+Refs:
 
-1. https://stackoverflow.com/questions/3740152/how-do-i-set-chmod-for-a-folder-and-all-of-its-subfolders-and-files-in-linux-ubu
-2. https://unix.stackexchange.com/questions/349053/change-all-folder-permissions-with-1-command
+1. [How do I change permissions for a folder and its subfolders/files?](https://stackoverflow.com/questions/3740152/how-do-i-change-permissions-for-a-folder-and-its-subfolders-files)
+2. [Change all folder permissions with 1 command](https://unix.stackexchange.com/questions/349053/change-all-folder-permissions-with-1-command)
 
 ## 创建用户 adduser 和 useradd 的区别
 
@@ -42,8 +42,6 @@ Ref:
     -m: 如果存在不再创建，但是此目录并不属于新创建用户；如果主目录不存在，则强制创建，配合-d使用
     -M: 不创建主目录
     -s: 指定用户登录时的shell版本
-
-useradd -d
 
 ## 添加 sudo 权限
 
@@ -397,7 +395,7 @@ sed s/jessie/stretch/g /etc/apt/sources.list | sudo tee /etc/apt/sources.list
 remove 删除，都只是删除程序文件，保留配置文件的；而使用 purge 则是一个不留的全部
 删除。
 
-# 查看 （以下 3 个等价）
+### 查看 （以下 3 个等价）
 
 ```bash
 aptitude search "~o"
@@ -405,7 +403,7 @@ aptitude search ~o
 aptitude search ?obsolete
 ```
 
-# 清除
+### 清除
 
 ```
 sudo aptitude purge "~o"
@@ -846,7 +844,7 @@ curl ident.me
 curl icanhazip.com
 ```
 
-### References
+References:
 
 1. [How to get the primary IP address of the local machine on Linux and OS X?](https://stackoverflow.com/questions/13322485/how-to-get-the-primary-ip-address-of-the-local-machine-on-linux-and-os-x)
 2. [Determine Your Private and Public IP Addresses from the Command Line](https://www.linuxtrainingacademy.com/determine-public-ip-address-command-line-curl)
@@ -1136,3 +1134,40 @@ tcpdump -n -s 1500 -i eth0 udp port 53
 Ref:
 
 - [How To Find Out DNS Server IP Address Used By My Router](https://www.cyberciti.biz/faq/how-to-find-out-dns-for-router/)
+
+## What are Exit Codes in Linux?
+
+| Exit code | Meaning of the code                                                               |
+| --------- | --------------------------------------------------------------------------------- |
+| `0`       | Command executed with no errors                                                   |
+| `1`       | Code for generic errors                                                           |
+| `2`       | Incorrect command (or argument) usage                                             |
+| `126`     | Permission denied (or) unable to execute                                          |
+| `127`     | Command not found, or PATH error                                                  |
+| `128+n`   | Command terminated externally by passing signals, or it encountered a fatal error |
+| `130`     | Termination by Ctrl+C or SIGINT (termination code 2 or keyboard interrupt)        |
+| `143`     | Termination by SIGTERM (default termination)                                      |
+| `255/*`   | Exit code exceeded the range 0-255, hence wrapped up                              |
+
+> **NOTE**
+>
+> The termination signals like `130` (SIGINT or `^C`) and `143` (SIGTERM) are
+> prominent, which are just `128+n` signals with n standing for the termination
+> code.
+>
+> For examples:
+>
+> - 130 = 128 + 2 (SIGINT)
+> - 137 = 128 + 9 (SIGKILL)
+> - 143 = 128 + 15 (SIGTERM)
+
+The exit code of the previously executed command is stored in the special
+variable `$?`. You can retrieve the exit status by running:
+
+```sh
+echo $?
+```
+
+Ref:
+
+- [What are Exit Codes in Linux?](https://itsfoss.com/linux-exit-codes/)
