@@ -276,8 +276,11 @@ Refs:
 
 In the past, `host.docker.internal` was a host alias for the gateway IP address
 inside of Docker, but only worked on Docker Desktop for macOS/Windows. Now,
-`host.docker.internal` is available on Linux, too. Through this alias, you still
-you need to provide the following run flag
+`host.docker.internal` is available on Linux, too. However, version `20.10.0` of
+Docker was released in December 2020, and the subsequent versions support using
+the `host.docker.internal` command to connect to the host on Linux machines.
+
+Through this alias, you still you need to provide the following run flag
 
 ```sh
 docker run ... --add-host=host.docker.internal:host-gateway ...
@@ -309,6 +312,7 @@ Refs:
 
 1. [How to connect to the Docker host from inside a Docker container?](https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66)
 2. [Reference / Command-line reference / Docker CLI / docker run](https://docs.docker.com/engine/reference/commandline/run/#add-host)
+3. [Host Docker Internal in Linux](https://www.delftstack.com/howto/docker/host-docker-internal/)
 
 ## Squash all build layers into one
 
