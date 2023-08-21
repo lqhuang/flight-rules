@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-05-22
+updated: 2023-08-21
 tags:
   - docker
   - container
@@ -57,20 +57,20 @@ Way 2: just install the `rng-tools` and run command `sudo rngd -r /dev/urandom`
 
 ## Access docker container from host using containers name
 
-method 1: use `dns-proxy-server`
+Method 1: use `dns-proxy-server`
 
-method 2: use `domainname` in `docker-compose.yml` or
+Method 2 (recommend!): use `hostname` in `docker-compose.yml` or
 `--hostname host.domain.com` for `docker run`
 
-method 3: automatically update by
+Method 3: automatically update by
 [script](https://stackoverflow.com/questions/36151981/local-hostnames-for-docker-containers)
 
-method 4: `--add-host` for `docker run` / `extra_hosts` for compose file.
+Method 4: `--add-host` for `docker run` / `extra_hosts` for compose file.
 
 ref:
 
-1. https://stackoverflow.com/questions/37242217/access-docker-container-from-host-using-containers-name
-2. https://stackoverflow.com/questions/36151981/local-hostnames-for-docker-containers
+1. [Access docker container from host using containers name](https://stackoverflow.com/questions/37242217/access-docker-container-from-host-using-containers-name)
+2. [Local hostnames for Docker containers](https://stackoverflow.com/questions/36151981/local-hostnames-for-docker-containers)
 
 ## Docker daemon doesn't start on boot on CoreOS
 
@@ -272,6 +272,44 @@ Refs:
 2. [How to get the IP address of the docker host from inside a docker container](https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container)
 3. [How to get the IP address of the docker host from inside a docker container](https://stackoverflow.com/a/67160733)
 
+### Updated solution from official implementation
+
+In the past, `host.docker.internal` was a host alias for the gateway IP address
+inside of Docker, but only worked on Docker Desktop for macOS/Windows. Now,
+`host.docker.internal` is available on Linux, too. Through this alias, you still
+you need to provide the following run flag
+
+```sh
+docker run ... --add-host=host.docker.internal:host-gateway ...
+```
+
+or configure it in compose file
+
+```yaml
+services:
+  app:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+```
+
+The `--add-host` flag supports a special `host-gateway` value that resolves to
+the internal IP address of the host. This is useful when you want containers to
+connect to services running on the host machine.
+
+> [!Note] If you have set port mapping `127.0.0.1:8080:8080`, you probably
+> cannot access that container by `host.docker.internal:80` from other
+> containers. You need to use `172.17.0.1:8080:8080` instead, where the
+> `172.17.0.1` is the gateway IP address of `bridge` network.
+
+> [!Warning] `host.docker.internal` or `gateway.docker.internal` both are the
+> special DNS name and only **natively** supported on Docker Desktop for macOS
+> and Windows.
+
+Refs:
+
+1. [How to connect to the Docker host from inside a Docker container?](https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66)
+2. [Reference / Command-line reference / Docker CLI / docker run](https://docs.docker.com/engine/reference/commandline/run/#add-host)
+
 ## Squash all build layers into one
 
 `docker build --squash`: squash 功能会在 Docker 完成构建之后，将所有的 layers 压
@@ -333,12 +371,6 @@ read that file again in all subsequent `RUN` commands !!!
 References:
 
 1. [Build Images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information)
-
-## `/dev/shm`
-
-WIP
-
-<https://github.com/vercel/next.js/discussions/16995#discussioncomment-132484>
 
 ## Enable forwarding from Docker containers to the outside world
 
@@ -523,13 +555,39 @@ apk add --no-cache ca-certificates && update-ca-certificates
 
 In container, `shm_size` could be set in both build and run stage. Increasing
 `shm_size` may improve serveral programs' perfomace which affected by IPC (inter
-process communication). For example, PostgreSQL is an process-based parallel
-model, so `shm_size` is important when `postgresql` is running inside of docker.
+process communication).
+
+For example:
+
+1. PostgreSQL is an process-based parallel model, so `shm_size` is important
+   when `postgresql` is running inside of docker.
+
+2. Cache for nodejs application and reduce bundling size
+
+   > Before `RUN yarn install --production`, you can also add
+   > `ENV YARN_CACHE_FOLDER=/dev/shm/yarn_cache`. This will reduce the size of
+   > the final image because it will no longer contain unneeded archives in yarn
+   > cache dir. It is something like `~/.yarn/cache` by default, while
+   > `/dev/shm` is a temp folder that’s not included in the image.
+
+   > By default, the size of `/dev/shm` is quite small so you might end up with
+   > "no space on disk" error when running yarn install. Adding `--shm-size 1G`
+   > to docker build command solves this.
+
+   > Adding `--frozen-lockfile` to yarn install is also a good idea. This
+   > argument makes sure that the dependencies you end up with are what you
+   > expect them to be.
+
+   > Similarly to `--frozen-lockfile`, `npm ci --only-production` is also a good
+   > idea. The main benefit is if dependencies in the package lock do not match
+   > those in package.json, npm ci will exit with an error, instead of updating
+   > the package lock.
 
 Refs:
 
 - [What Is `/dev/shm` And Its Practical Usage](https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html)
 - [When should I use `/dev/shm/` and when should I use `/tmp/`?](https://superuser.com/questions/45342/when-should-i-use-dev-shm-and-when-should-i-use-tmp)
+- [What is the best way to use NextJS with docker? #16995](https://github.com/vercel/next.js/discussions/16995#discussioncomment-132484)
 
 ## Capabilities for container
 
@@ -560,7 +618,7 @@ Ref:
 - [capabilities(7) — Linux manual page](https://man7.org/linux/man-pages/man7/capabilities.7.html)
 - [Capabilities - Docker - Beginners | Intermediate | Advanced](https://dockerlabs.collabnix.com/advanced/security/capabilities/)
 
-## tini
+## `tini`
 
 What is Tini?
 
@@ -689,3 +747,24 @@ Refs:
 - [revert disable provenance by default if not set](https://github.com/docker/build-push-action/pull/784)
 - [Default image output from buildx v0.10 cannot run on Google Cloud Run or AWS Lambda/ECS](https://github.com/gabrieldemarmiesse/python-on-whales/issues/407)
 - [Provenance attestations](https://docs.docker.com/build/attestations/slsa-provenance/)
+
+## Execute command as another user or root in Alpine-based image
+
+`su` and `sudo` (limited) both not work in Alpine-based image. The `su-exec` can
+be used in alpine. Do add it the package, if not already available, add the
+following to your Dockerfile
+
+```Dockerfile
+RUN apk add --no-cache su-exec
+```
+
+Inside your scripts you'd run inside docker you can use the following to become
+another user:
+
+```
+exec su-exec <my-user> <my command>
+```
+
+Ref:
+
+- [Use sudo inside Dockerfile (Alpine)](https://stackoverflow.com/questions/49225976/use-sudo-inside-dockerfile-alpine)

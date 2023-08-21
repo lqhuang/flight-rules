@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-08-04
+updated: 2023-08-21
 ---
 
 ## Resources
@@ -1171,3 +1171,24 @@ echo $?
 Ref:
 
 - [What are Exit Codes in Linux?](https://itsfoss.com/linux-exit-codes/)
+
+## Pipeline content to cURL as POST data
+
+It's common for command line utilities to use `-` to represent standard input.
+cURL is one such utility.
+
+In cURL, `-d @something` will expect to get its data from path something.
+
+```sh
+curl -X POST http://localhost:8000/inference -H 'Content-Type: application/json' -d @local.json
+```
+
+So `-d @-` tells curl to get its POST data from standard input.
+
+```sh
+echo 'your-content' | curl -X POST http://localhost:8000/inference -H 'Content-Type: text/json' -d @-
+```
+
+Ref:
+
+1. [How to send a post request with the result of a command or a script using curl?](https://stackoverflow.com/questions/73574682/how-to-send-a-post-request-with-the-result-of-a-command-or-a-script-using-curl)
