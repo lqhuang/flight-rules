@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-08-21
+updated: 2023-08-24
 tags:
   - docker
   - container
@@ -313,6 +313,24 @@ Refs:
 1. [How to connect to the Docker host from inside a Docker container?](https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66)
 2. [Reference / Command-line reference / Docker CLI / docker run](https://docs.docker.com/engine/reference/commandline/run/#add-host)
 3. [Host Docker Internal in Linux](https://www.delftstack.com/howto/docker/host-docker-internal/)
+
+## Minimize the number of layers
+
+In older versions of Docker, it was important that you minimized the number of
+layers in your images to ensure they were performant. The following features
+were added to reduce this limitation:
+
+- **Important** Only the instructions `RUN`, `COPY`, and `ADD` create layers.
+  Other instructions create temporary intermediate images, and don't increase
+  the size of the build.
+- Where possible, use multi-stage builds, and only copy the artifacts you need
+  into the final image. This allows you to include tools and debug information
+  in your intermediate build stages without increasing the size of the final
+  image.
+
+Ref:
+
+1. [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#minimize-the-number-of-layers)
 
 ## Squash all build layers into one
 
