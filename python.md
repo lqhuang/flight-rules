@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-05-10
+updated: 2023-08-29
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1357,3 +1357,45 @@ experimental: ["jlap"]
 Refs:
 
 - [How we reduced conda’s index fetch bandwidth by 99%](https://conda.discourse.group/t/how-we-reduced-condas-index-fetch-bandwidth-by-99/257)
+
+## Faster page iterator / chunk / partition in Python
+
+TIL, Anton posts a article about how to implement a faster page iterator in
+Python, sometimes also known as `chunk` or `partition` in other third libraries
+like `PyFunctional`, `toolz` and `more-itertools`.
+
+By learning his post, I just realized that `iter` has an alternative function
+signature `iter(object, sentinel)`
+
+> Signatures of built-in `iter` function:
+>
+> - `iter(object)`
+> - `iter(object, sentinel)`
+>
+> If the second argument, `sentinel`, is given, then object must be a callable
+> `object`. The iterator created in this case will call `object` with no
+> arguments for each call to its `__next__()` method; if the value returned is
+> equal to sentinel, `StopIteration` will be raised, otherwise the value will be
+> returned.
+
+I also did some benchmark on different implementations of page iterator. Check
+codes in [bench_page_iterator.py](./snippets/bench_page_iterator.py). And the
+results is here:
+
+```
+One-by-one (baseline): 809 ms
+Use `append()` to fill page: 942 ms
+Use fixed-size page: 792 ms
+Use islice: 451 ms
+Use islice + plain sentinel: 453 ms
+Use `partition` package `toolz`: 429 ms
+Use `partition_all` package `toolz`: 431 ms
+Use `chunked` from package `more-itertools`: 459 ms
+Use `ichunked` from package `more-itertools`: 1648 ms
+Use `grouped` from package `PyFunctional`: 464 ms
+```
+
+Refs:
+
+- [Page iterator in Python by Anton Zhiyanov](https://antonz.org/page-iterator/)
+- [Built-in Functions - `iter`](https://docs.python.org/3/library/itertools.html#itertools.islice)
