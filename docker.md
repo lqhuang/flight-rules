@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-08-24
+updated: 2023-08-29
 tags:
   - docker
   - container
@@ -790,3 +790,79 @@ exec su-exec <my-user> <my command>
 Ref:
 
 - [Use sudo inside Dockerfile (Alpine)](https://stackoverflow.com/questions/49225976/use-sudo-inside-dockerfile-alpine)
+
+## Here-Documents
+
+Here-documents allow redirection of subsequent Dockerfile lines to the input of
+`RUN` or `COPY` commands. A alternative method run command in one line without
+`\` and `$$`.
+
+Example for running a multi-line script
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM debian
+RUN <<EOT bash
+  set -ex
+  apt-get update
+  apt-get install -y vim
+EOT
+```
+
+If the command only contains a here-document, its contents is evaluated with the
+default shell.
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM debian
+RUN <<EOT
+  mkdir -p foo/bar
+EOT
+```
+
+Alternatively, shebang header can be used to define an interpreter.
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM python:3.6
+RUN <<EOT
+#!/usr/bin/env python
+print("hello world")
+EOT
+```
+
+Example for creating inline files (`COPY`)
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM alpine
+ARG FOO=bar
+COPY <<-EOT /app/foo
+hello ${FOO}
+EOT
+```
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM alpine
+COPY <<-"EOT" /app/script.sh
+echo hello ${FOO}
+EOT
+RUN FOO=abc ash /app/script.sh
+```
+
+Bonus
+
+> `<<-EOF` will ignore leading tabs in your heredoc, while `<<EOF` will not.
+> From man page of the Bourne Shell, if, the hyphen (`-`) is appended to `<<`:
+>
+> 1. leading tabs are stripped from word before the shell input is read (but
+>    after parameter and command substitution is done on word);
+> 2. leading tabs are stripped from the shell input as it is read and before
+>    each line is compared with word; and
+> 3. shell input is read up to the first line that literally matches the
+>    resulting word, or to an EOF.
+
+Ref:
+
+- [Dockerfile Docs: Here-Documents](https://docs.docker.com/engine/reference/builder/#here-documents)
