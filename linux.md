@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-08-21
+updated: 2023-09-04
 ---
 
 ## Resources
@@ -201,36 +201,35 @@ If you are using `NetworkManager` for network and `dnsmasq` for dns resolver.
 Here is the solution:
 
 1. Create or edit `/etc/NetworkManager/dnsmasq.d/custom-dns`
+
 2. Add these lines so that `domain.intra` will be resolved by `192.168.30.1` and
    home.intra will be resolved by `192.168.0.1`. Add all of them as you wished.
 
-```conf
-server=/domain.intra/192.168.30.1
-server=/home.intra/192.168.0.1
-```
+   ```conf
+   server=/domain.intra/192.168.30.1
+   server=/home.intra/192.168.0.1
+   ```
 
 3. Check whether `dnsmasq` is eabled as dns resolver by `NetworkManager`. Set
    `main.dns=dnsmasq` with a configuration file in
    `/etc/NetworkManager/conf.d/dns.conf`
 
-```conf
-[main]
-dns=dnsmasq
-```
+   ```conf
+   [main]
+   dns=dnsmasq
+   ```
 
 4. Restart `NetworkManager.service`. NetworkManager will automatically start
    dnsmasq and add `127.0.0.1` to `/etc/resolv.conf`. The original DNS servers
    can be found in /`run/NetworkManager/no-stub-resolv.conf`.
 
-> IPv6: Enabling `dnsmasq` in NetworkManager may break IPv6-only DNS lookups
-> (i.e. `drill -6 [hostname]`) which would otherwise work. In order to resolve
-> this, creating the following file will configure `dnsmasq` to also listen to
-> the IPv6 loopback:
->
-> # add /etc/NetworkManager/dnsmasq.d/ipv6_listen.conf
->
-> listen-address=::1 In addition, `dnsmasq` also does not prioritize upstream
-> IPv6 DNS.
+   IPv6: Enabling `dnsmasq` in NetworkManager may break IPv6-only DNS lookups
+   (i.e. `drill -6 [hostname]`) which would otherwise work. In order to resolve
+   this, creating the file `/etc/NetworkManager/dnsmasq.d/ipv6_listen.conf` and
+   add option `listen-address=::1` will configure `dnsmasq` to also listen to
+   the IPv6 loopback:
+
+   In addition, `dnsmasq` also does not prioritize upstream IPv6 DNS.
 
 Of course, `systemd-resolved` is also configurable.
 
@@ -321,20 +320,80 @@ ref:
 
 1. [chromium src codes](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc)
 
-## Setting locale failed when using SSH to remote server
+## Avoid perl Warning "Setting locale failed" when run shell locally or using SSH to remote server or
+
+If you're experiencing annoyed warning like this:
+
+```
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+    LANGUAGE = (unset),
+    LC_ALL = "en_US.UTF-8",
+    ...
+    LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale ("en_US.UTF-8").
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Selecting previously unselected package iperf.
+```
+
+> [!NOTE]
+>
+> Setting `LC_*` env variables to `en_US.UTF-8` sometimes is not enough.
 
 Three ways:
 
 1. Generate Locales on the Server (server side)
-2. Method 2: Refuse Client Locale Environment Variable (server side)
-3. Disable Locale Environment Variable Forwarding (client side)
+2. Disable Locale Environment Variable Forwarding (client side)
+3. Refuse Client Locale Environment Variable (server side)
 
-So, we choose the last one.
+### 1. Generate Locales on the Server (server side)
 
-We can disable SSH locale environment variable forwarding to fix this error.
-Open the SSH client configuration file on your local computer.
+Try to comment out the following line in `/etc/locale.gen`:
 
-    sudo nano /etc/ssh/ssh_config
+```
+C.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+```
+
+Then run `locale-gen` (requires root permission) to generate the locales. Or you
+can just run `locale-gen en_US.UTF-8` to generate the locale you need.
+
+```sh
+sed -i 's/# C.UTF-8/C.UTF-8/g' /etc/locale.gen
+sed -i 's/# en_US.UTF-8/en_US.UTF-8/g' /etc/locale.gen
+locale-gen
+```
+
+If you want set `locale` from cli, there is serveral command to do this:
+
+```sh
+# generate locales. `locale-gen` reads `/etc/locale.gen` file to know what locales to generate. Multiple locales are available.
+sudo locale-gen en_US en_US.UTF-8
+# debian-like: `dpkg-reconfigure` reconfigures packages after they have already been installed
+sudo dpkg-reconfigure locales
+
+ # It updates /etc/default/locale with provided values.
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+# set each locale evironment variables (systemd-based)
+sudo localectl set-locale LANG=en_US.UTF-8
+```
+
+most changes may need re-login or reboot to take effect.
+
+Ref:
+
+1. [Perl: warning: Setting locale failed in Debian and Ubuntu](https://www.cyberciti.biz/faq/perl-warning-setting-locale-failed-in-debian-ubuntu/)
+2. [How do I fix my locale issue?](https://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue)
+
+### 2. Disable Locale Environment Variable Forwarding (client side)
+
+We can also disable SSH locale environment variable forwarding to fix this
+error. Open the SSH client configuration file on your local computer.
+
+```sh
+sudo nano /etc/ssh/ssh_config
+```
 
 Find this line:
 
@@ -342,22 +401,30 @@ Find this line:
 
 Add a `#` sign at the beginning to comment it out. Save and close the file.
 
-Note: if you want set `locale`, there is serveral command to do this:
-
-    sudo locale-gen en\_US en\_US.UTF-8  # generate locales. `locale-gen` reads `/etc/locale.gen` file to know what locales to generate. Multiple locales are available.
-    sudo dpkg-reconfigure locales  # debian-like: `dpkg-reconfigure` reconfigures packages after they have already been installed
-
-    sudo update-locale LC\_ALL=en\_US.UTF-8 LANG=en\_US.UTF-8  # It updates /etc/default/locale with provided values.
-    sudo localectl set-locale LANG=en\_US.UTF-8  # set each locale evironment variables (systemd-based)
-
-most changes may need re-login or reboot to take effect.
-
 ref:
 
-1. https://www.linuxbabe.com/linux-server/fix-ssh-locale-environment-variable-error
-2. https://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue
+1. [3 Ways to Fix SSH Locale Environment Variable Error](https://www.linuxbabe.com/linux-server/fix-ssh-locale-environment-variable-error)
 
-## release info changed from test to stable
+### 3. Refuse Client Locale Environment Variable (server side)
+
+The last one, you can just refuse client locale environment variable on server
+side.
+
+```sh
+sudo nano /etc/ssh/sshd_config
+```
+
+Add the following line at the end of the file:
+
+    AcceptEnv LANG LC_*
+
+Save and close the file. Then restart SSH service.
+
+```sh
+sudo systemctl restart ssh
+```
+
+## Release info changed from test to stable
 
     N: Repository 'http://mirrors.linode.com/debian buster InRelease' changed its 'Version' value from '' to '10.0'
     E: Repository 'http://mirrors.linode.com/debian buster InRelease' changed its 'Suite' value from 'testing' to 'stable'
@@ -616,7 +683,7 @@ References:
 Yes, when you tried to `cat` or `echo` string redirect to file directly, it
 raise permission denied error.
 
-    sudo echo "something" >> target.file
+    sudo echo "something" >   target.file
 
 The problem is that the redirection is being processed by your original shell,
 not by `sudo`. Shells are not capable of reading minds and do not know that that
