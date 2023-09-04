@@ -866,3 +866,29 @@ Bonus
 Ref:
 
 - [Dockerfile Docs: Here-Documents](https://docs.docker.com/engine/reference/builder/#here-documents)
+
+## Prune unused Docker objects
+
+Clean and remove unused Docker objects, such as images, containers, volumes,
+networks and even system are able to free up disk space by running `prune`
+command
+
+```sh
+docker image prune
+docker container prune
+docker volume prune
+docker network prune
+
+# The docker `system prune` command is a shortcut that prunes images,
+# containers, and networks. Volumes are not pruned by default, and you
+# must specify the `--volumes` flag for docker system prune to prune
+# volumes.
+docker system prune
+```
+
+Bypassing prompts `-a/--all`, `--filter`, `-f/--forece` to customize different
+behaviors.
+
+Ref:
+
+- [Prune unused Docker objects](https://docs.docker.com/config/pruning/)
