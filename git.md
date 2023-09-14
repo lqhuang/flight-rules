@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2023-07-25
+updated: 2023-09-14
 ---
 
 ## Fork 仓库的同步与更新
@@ -407,3 +407,57 @@ git init # Reinitialized existing Git repository with new `.git`
 git add . # Readd all files
 git status
 ```
+
+## Difference between `git reset` and `git restore`
+
+```
+git-reset(1)
+    Reset current HEAD to the specified state.
+
+git-restore(1)
+    Restore working tree files.
+```
+
+Common cases for `get-reset`:
+
+1. Undo add
+2. Undo a commit and redo
+3. Undo a commit, making it a topic branch
+4. Undo commits permanently
+5. Undo a merge or pull
+6. Undo a merge or pull inside a dirty working tree
+7. Interrupted workflow
+8. Reset a single file in the index
+9. Keep changes in working tree while discarding some previous commits
+10. Split a commit apart into a sequence of commits
+
+Common cases for `get-reset`:
+
+1. Restore all source files by glob pattern to match the version in the index.
+2. Restore all files in the current directory
+3. Restore all working tree files with top pathspec magic
+4. Restore a file in the index to match the version in HEAD
+5. Restore both the index and the working tree
+
+Some examples:
+
+- `git reset --hard [to-one-commit]`: Resets the index and working tree. Any
+  changes to **tracked** files in the working tree since `<commit>` are
+  discarded.
+- `git reset -- somefile.c`: Reset a single file in the **index**. This removes
+  the file from the index while keeping it in the working directory.
+  - `git reset --hard -- somefile.c`
+- `git restore .`: To restore all files in the current directory
+  - `-W, --worktree, -S, --staged`: Specify the restore location. If neither
+    option is specified, by default the working tree is restored. Specifying
+    `--staged` will only restore the index. Specifying both restores both.
+
+The following commands are totally the same:
+
+- `git restore --staged hello.c`
+- `git reset --hard -- hello.c`
+
+Ref:
+
+1. Linux Manual Page: `git-reset(1)`
+2. Linux Manual Page: `git-restore(1)`
