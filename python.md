@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-08-29
+updated: 2023-09-25
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1399,3 +1399,53 @@ Refs:
 
 - [Page iterator in Python by Anton Zhiyanov](https://antonz.org/page-iterator/)
 - [Built-in Functions - `iter`](https://docs.python.org/3/library/itertools.html#itertools.islice)
+
+## Cache dir for `pip`
+
+You can use `pip cache dir` (new in version 20.1) to get the cache directory
+that pip is currently configured to use.
+
+Default paths:
+
+- Linux: `~/.cache/pip` and it also respects the `XDG_CACHE_HOME` directory.
+- MacOS: `~/Library/Caches/pip`
+- Windows: `%LocalAppData%\pip\Cache`
+
+For example, mount a volume to cache dir in Docker (Linux based)
+
+```dockerfile
+RUN --mount=type=cache,target=/root/.cache/pip pip install ...
+```
+
+And
+
+- `pip cache info` provides an overview of the contents of pip’s cache, such as
+  the total size and location of various parts of it.
+- `pip cache purge` will clear all wheel files from pip’s cache.
+- `pip cache list` will list all wheel files from pip’s cache.
+- pip’s caching behaviour is disabled by passing the `--no-cache-dir` option.
+
+Ref:
+
+1. [Where is the cache stored](https://pip.pypa.io/en/stable/topics/caching/)
+
+## Useful `pip` options for package management in Docker
+
+While using `pip` to install packages in Docker, there are warnings to remind
+you're in dangerous with root permissions. Here are some useful options to
+suppress them.
+
+- `--break-system-packages`: Allow pip to modify an EXTERNALLY-MANAGED Python
+  installation. Do not recommend in the most cases.
+- `--root-user-action`: Action if pip is run as a root user. By default, a
+  warning message is shown. Options: ("warn", "ignore")
+- `--no-warn-script-location`: Do not warn when installing scripts outside
+  `$PATH`
+- pip’s command line options can be set with environment variables using the
+  format `PIP_<UPPER_LONG_NAME>`. Dashes (`-`) have to be replaced with
+  underscores (`_`).
+  - `PIP_ROOT_USER_ACTION=ignore` is the same as `--root-user-action=ignore`
+
+Refs:
+
+1. [pip documentation -- pip install](https://pip.pypa.io/en/stable/cli/pip_install/)

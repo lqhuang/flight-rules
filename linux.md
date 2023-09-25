@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-09-04
+updated: 2023-09-25
 ---
 
 ## Resources
@@ -1259,3 +1259,105 @@ echo 'your-content' | curl -X POST http://localhost:8000/inference -H 'Content-T
 Ref:
 
 1. [How to send a post request with the result of a command or a script using curl?](https://stackoverflow.com/questions/73574682/how-to-send-a-post-request-with-the-result-of-a-command-or-a-script-using-curl)
+
+## Common environment variables while building projects
+
+When you're building a project or executing binaries, you may need to set some
+environment variables to let compiler or linker know where to find related or
+third dependencies.
+
+```
+71.06 ----------------------------------------------------------------------
+71.06 Libraries have been installed in:
+71.06    /home/username/.local/lib
+71.06
+71.06 If you ever happen to want to link against installed libraries
+71.06 in a given directory, LIBDIR, you must either use libtool, and
+71.06 specify the full pathname of the library, or use the `-LLIBDIR'
+71.06 flag during linking and do at least one of the following:
+71.06    - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+71.06      during execution
+71.06    - add LIBDIR to the `LD_RUN_PATH' environment variable
+71.06      during linking
+71.06    - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+71.06    - have your system administrator add LIBDIR to `/etc/ld.so.conf'
+71.06
+71.06 See any operating system documentation about shared libraries for
+71.06 more information, such as the ld(1) and ld.so(8) manual pages.
+71.06 ----------------------------------------------------------------------
+```
+
+To search executable files:
+
+- `PATH`
+
+To search libraries (`libxxx.so`, `libxxx.a`):
+
+- `LD_RUN_PATH` (for **runtime** search during linking?)
+  - When the `-rpath` option is used during compilation, the path specified in
+    `LD_RUN_PATH` is hardcoded directly into the executable.
+- `LD_PRELOAD` is an environment variable that allows you to specify libraries
+  to be loaded before all others when executing a program.
+- `LD_LIBRARY_PATH` (for **runtime** search after **dynamic** linking)
+- `LIBRARY_PATH` (for **compile-time** search before linking)
+- Specifiy manually:
+  - `-L` is used to specify additional directories where the linker should
+    search for libraries during the compilation process. (`-L/root/.local/lib`)
+  - `-l` links with a library file without the lib prefix and the `.a` or `.so`
+    extensions. For example,` -lmath` will search for `libmath.so` or
+    `libmath.a` in the directories specified by `-L` and the default system
+    library directories.
+
+> [!NOTE]
+>
+> What is the difference between `LD_LIBRARY_PATH` and `LIBRARY_PATH`
+>
+> `LD_LIBRARY_PATH` and `LIBRARY_PATH` are environment variables used by the GCC
+> (GNU Compiler Collection) to specify the paths to search for shared libraries
+> during runtime and compile-time, respectively.
+>
+> `LD_LIBRARY_PATH` is used at runtime by the dynamic linker to find shared
+> libraries, while `LIBRARY_PATH` is used at compile-time by the compiler to
+> find libraries and their header files. When compiling code, `LIBRARY_PATH` is
+> used by the linker (`ld`) to locate libraries specified with `-l` and include
+> directories specified with `-L`.
+
+To search include dir for header files (`xxx.h`, `xxx.hpp`):
+
+- `CPATH` (for both C and C++ header files)
+- `C_INCLUDE_PATH` (for C header files)
+- `CPLUS_INCLUDE_PATH` (for C++ header files)
+- `OBJC_INCLUDE_PATH` (for Objective-C header files)
+- Specifiy manually: `
+  - `-I dir`, eg: `-I.`, `-I/special/include`
+  - `-include file` eg: `-include stdio.h`
+
+Refs:
+
+- [How can I add a default include path for GCC in Linux?](https://stackoverflow.com/questions/558803/how-can-i-add-a-default-include-path-for-gcc-in-linux)
+- [GCC online documentation: Environment Variables](https://gcc.gnu.org/onlinedocs/cpp/Environment-Variables.html)
+- [GCC online documentation: Invocation](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html)
+
+# Changing the Install Directory with `make install`
+
+When we run `./configure`, we can use parameters to change the directories where
+make install will install the files:
+
+- `–prefix=<dir>`: This is usually `/usr` or `/usr/local` by default, and it is
+  the prefix used in other parameters
+- `–libdir=<dir>`: This is the libraries directory, and it’s usually
+  `${prefix}/lib` or `${prefix}/lib64` by default
+- `–bindir=<dir>`: This is the executables directory, and it’s usually
+  `${prefix}/bin` by default
+
+Sometimes, we just want to install the package in another place without changing
+its internal directory structure. To do that properly, we’ll set the
+`DESTDIR=<dir>` variable when running make install
+
+```sh
+DESTDIR=/tmp make install
+```
+
+Ref:
+
+1. [Changing the Install Directory with `make install`](https://www.baeldung.com/linux/change-install-dir-make-install)

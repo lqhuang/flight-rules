@@ -892,3 +892,15 @@ behaviors.
 Ref:
 
 - [Prune unused Docker objects](https://docs.docker.com/config/pruning/)
+
+## (draft) Speed up build process by cache
+
+1. Cache docker images
+2. Cache docker layers
+3. Cache dependencies
+4. Cache build tools
+5. Cache build artifacts
+
+## (draft) Trust and Security
+
+- [Trust](https://docs.docker.com/engine/security/trust/)
