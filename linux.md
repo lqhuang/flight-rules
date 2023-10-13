@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-09-25
+updated: 2023-10-13
 ---
 
 ## Resources
@@ -1361,3 +1361,37 @@ DESTDIR=/tmp make install
 Ref:
 
 1. [Changing the Install Directory with `make install`](https://www.baeldung.com/linux/change-install-dir-make-install)
+
+## Something broken while upgrading glibc on Arch-based Linux
+
+Yeah. I got this error while upgrading glibc on my manjaro system.
+
+```
+...
+... # too many lines
+...
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_MEASUREMENT exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_MESSAGES/SYS_LC_MESSAGES exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_MONETARY exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_NAME exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_NUMERIC exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_PAPER exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_TELEPHONE exists in filesystem
+glibc-locales: /usr/lib/locale/zu_ZA.utf8/LC_TIME exists in filesystem
+Errors occurred, no packages were upgraded.
+```
+
+> ### 2023-10-09
+>
+> glibc-locales update requires manual intervention
+>
+> If you had the old glibc-locales package from the extra repo installed, the
+> update to the new core package will need manual intervention:
+>
+> ```sh
+> sudo pacman -Syu glibc-locales --overwrite /usr/lib/locale/\*/\*
+> ```
+
+Ref:
+
+1. [[Stable Update] 2023-10-09 - Mesa, Grub, GlibC, Thunderbird, KDE Frameworks Renaming](https://forum.manjaro.org/t/stable-update-2023-10-09-mesa-grub-glibc-thunderbird-kde-frameworks-renaming/149302/2)
