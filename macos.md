@@ -1,7 +1,7 @@
 ---
 title: Tips for macOS
 created: 2023-01-29
-updated: 2023-05-16
+updated: 2023-10-29
 ---
 
 ## Resources
@@ -312,3 +312,58 @@ USAGE: networkQuality [-C <configuration_url>] [-c] [-h] [-I <network interface 
 Even more, it allow you to create your own server as test server.
 
 - [Diving into a hidden macOS tool - networkQuality](https://cyberhost.uk/the-hidden-macos-speedtest-tool-networkquality/)
+
+## Config file location of Launchd
+
+| Path                            | Trigger  | root |     | Description                                        |
+| ------------------------------- | -------- | ---- | --- | -------------------------------------------------- |
+| `/Library/LaunchAgents`         | Reboot   | Yes  |     | Per-user agents provided by the administrator.     |
+| `/Library/LaunchDaemons`        | Reboot   | Yes  |     | System-wide daemons provided by the administrator. |
+| `/Library/StartupItems`         |          |      |     | System-wide items provided by the administrator.   |
+| `/System/Library/LaunchAgents`  | Reboot   | Yes  |     | Per-user agents provided by Apple.                 |
+| `/System/Library/LaunchDaemons` | Reboot   | Yes  |     | System-wide daemons provided by Apple.             |
+| `~/Library/LaunchAgents`        | Relog-in | No   |     | Per-user agents provided by the user.              |
+| `~/Library/LaunchDemons`        | Relog-in | No   |     | Per-user agents provided by the user.              |
+
+`launchd` is the first process executed by OX S kernel at startup and the last
+one to finish at shut down. It should always have the PID 1. This process will
+read and execute the configurations indicated in the **ASEP** plists in path
+listed above.
+
+The main difference between **agents** and **daemons** is that agents are loaded
+when the user logs in and the daemons are loaded at system startup. Also agents
+may use GUI while daemons need to run in the background.
+
+There are cases where an agent needs to be executed before the user logins,
+these are called `PreLoginAgents`. For example, this is useful to provide
+assistive technology at login. They can be found also in `/Library/LaunchAgents`
+
+New Daemons or Agents config files will be loaded after next reboot or using
+
+```sh
+launchctl load <target.plist>
+```
+
+It's also possible to load `.plist` files without that extension, however those
+plist files won't be automatically loaded after reboot.
+
+```sh
+launchctl -F <file>
+```
+
+It's also possible to unload with
+
+```sh
+launchctl unload <target.plist>
+```
+
+List all the agents and daemons loaded by the current user:
+
+```
+launchctl list
+```
+
+Refs:
+
+- [macOS Auto Start - Launchd](https://book.hacktricks.xyz/macos-hardening/macos-auto-start-locations#launchd)
+- [Read Me About PreLoginAgents.txt](https://github.com/HelmutJ/CocoaSampleCode/tree/master/PreLoginAgents)

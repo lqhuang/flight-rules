@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-09-04
+updated: 2023-10-28
 tags:
   - docker
   - container
@@ -892,6 +892,227 @@ behaviors.
 Ref:
 
 - [Prune unused Docker objects](https://docs.docker.com/config/pruning/)
+
+## Docker engine behind proxy
+
+If you are behind an HTTP proxy server, for example in corporate settings, you
+may have to configure the Docker daemon to use the proxy server for operations
+such as pulling and pushing images. The daemon (`dockerd`) can be configured in
+three ways:
+
+1. Using environment variables (`HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`).
+2. Using the `http-proxy`, `https-proxy`, and `no-proxy` fields in the daemon
+   configuration file (Docker Engine 23.0 or newer).
+3. Using the `--http-proxy`, `--https-proxy`, and `--no-proxy` command-line
+   options. (Docker Engine 23.0 or newer).
+
+### Cnnfigure daemon (dockerd) via config
+
+In Docker Engine version 23.0 and later versions, you may also configure proxy
+behavior for the daemon in the `daemon.json` file:
+
+```json
+{
+  "proxies": {
+    "http-proxy": "http://proxy.example.com:3128",
+    "https-proxy": "https://proxy.example.com:3129",
+    "no-proxy": "*.test.example.com,.example.org,127.0.0.0/8"
+  }
+}
+```
+
+These configurations **override** the default `docker.service` systemd file.
+
+```
+--http-proxy string                     HTTP proxy URL to use for outgoing traffic
+--https-proxy string                    HTTPS proxy URL to use for outgoing traffic
+```
+
+For rootless mode, the location of `daemon.json` is
+`~/.config/docker/daemon.json`.
+
+The `--validate` option for `dockerd` allows to validate a configuration file
+without starting the Docker daemon. A non-zero exit code is returned for invalid
+configuration files.
+
+```sh
+dockerd --validate --config-file=/tmp/valid-config.json
+```
+
+### Configure `systemd` via ENV
+
+The Docker daemon uses the following environment variables in its **start-up**
+environment to configure HTTP or HTTPS proxy behavior:
+
+- `HTTP_PROXY`
+- `http_proxy`
+- `HTTPS_PROXY`
+- `https_proxy`
+- `NO_PROXY`
+- `no_proxy`
+
+So pass these environment variables to `dockerd` via `systemd` config file is
+available. But notice that `daemon.json` **overrides** the default
+docker.service systemd file.
+
+Create a systemd drop-in directory for the docker service
+
+```sh
+sudo mkdir -p /etc/systemd/system/docker.service.d
+
+# The location of systemd configuration files are **different**
+# when running Docker in **rootless** mode
+mkdir -p ~/.config/systemd/user/docker.service.d
+```
+
+Create a file named
+`/path-depends-on-your-case/docker.service.d/http-proxy.conf` that adds the
+`HTTP_PROXY` environment variable:
+
+```conf
+[Service]
+Environment="HTTP_PROXY=http://proxy.example.com:3128"
+Environment="HTTPS_PROXY=http://proxy.example.com:3129"
+Environment="NO_PROXY=localhost,127.0.0.1,docker-registry.example.com,.corp"
+```
+
+Flush changes and restart Docker
+
+```sh
+# regular install
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+# rootless
+systemctl --user daemon-reload
+systemctl --user restart docker
+```
+
+Verify that the configuration has been loaded and matches the changes you made,
+for example:
+
+```sh
+# regular install
+sudo systemctl show --property=Environment docker
+
+# rootless mode
+systemctl --user show --property=Environment docker
+
+# Expected console output
+# > Environment=HTTP_PROXY=http://proxy.example.com:3128 HTTPS_PROXY=http://proxy.example.com:3129 NO_PROXY=localhost,127.0.0.1,docker-registry.example.com,.corp
+```
+
+### Ref
+
+- [Daemon CLI (dockerd): Proxy configuration](https://docs.docker.com/engine/reference/commandline/dockerd/#proxy-configuration)
+- [Configure the daemon with systemd](https://docs.docker.com/config/daemon/systemd/)
+
+## `COPY` vs `ADD`
+
+`COPY` and `ADD` are both Dockerfile instructions that serve similar purposes.
+
+```Dockerfile
+COPY [--chown=<user>:<group>] [--chmod=<perms>] [--checksum=<checksum>] <src>... <dest>
+ADD [--chown=<user>:<group>] [--chmod=<perms>] [--checksum=<checksum>] <src>... <dest>
+```
+
+Both instructions will copy new files from `<src>` and add them to the
+container's filesystem at path `<dest>`. The major difference between `COPY` and
+`ADD` is
+
+1. If `<src>` is a URL or Git repo **and** `<dest>` does not end with a
+   **trailing slash**, then a file is downloaded from the URL and copied to
+   `<dest>`.
+
+2. If `<src>` is a local tar archive in a recognized compression format
+   (`identity`, `gzip`, `bzip2` or `xz`) then it is unpacked as a directory.
+   When a directory is copied or unpacked, it has the same behavior as `tar -x`,
+   the result is the union of:
+
+   1. Whatever existed at the destination path and
+   2. The contents of the source tree, with conflicts resolved in favor of "2."
+      on a file-by-file basis.
+
+   **Warning**: Whether a file is identified as a recognized compression format
+   or not is done solely based on the contents of the file, not the name of the
+   file.
+
+3. Resources from remote URLs (case 1 & case 2) are not decompressed.
+
+So `COPY` is the same as `ADD`, but without the tar and remote URL handling. In
+the most cases, you should use `COPY` to avoid confusion LOL.
+
+> [!Note]
+>
+> 1. Each `<src>` may contain wildcards and matching will be done using Go's
+>    filepath.Match rules.
+>
+> 2. For both `COPY` and `ADD`, if `<src>` is a directory, the entire contents
+>    of the directory are copied, including filesystem metadata. **But** the
+>    directory itself is not copied, just its contents.
+
+Refs:
+
+- [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+
+### Bonus 1: Add a git repository by `ADD` directly
+
+This form allows adding a git repository to an image directly, **without** using
+the `git` command inside the image:
+
+```Dockerfile
+ADD [--keep-git-dir=<boolean>] <git ref> <dir>
+```
+
+The `--keep-git-dir=true` flag adds the .git directory. This flag defaults to
+false.
+
+What's more, to add a private repo via SSH, create a `Dockerfile` with the
+following form:
+
+```
+ADD git@git.example.com:foo/bar.git /bar
+```
+
+This `Dockerfile` can be built with `docker build --ssh` or
+`buildctl build --ssh`, e.g.,
+
+```sh
+docker build --ssh default
+buildctl build --frontend=dockerfile.v0 --local context=. --local dockerfile=. --ssh default
+```
+
+- [Adding a git repository ADD <git ref> <dir>](https://docs.docker.com/engine/reference/builder/#adding-a-git-repository-add-git-ref-dir)
+
+### Bonus 2: `--link`
+
+### Bonus 3: `filepath.Match` pattern for Golang
+
+Match reports whether name matches the shell file name pattern. The pattern
+syntax is:
+
+```
+pattern:
+	{ term }
+term:
+	'*'         matches any sequence of non-Separator characters
+	'?'         matches any single non-Separator character
+	'[' [ '^' ] { character-range } ']'
+	            character class (must be non-empty)
+	c           matches character c (c != '*', '?', '\\', '[')
+	'\\' c      matches character c
+
+character-range:
+	c           matches character c (c != '\\', '-', ']')
+	'\\' c      matches character c
+	lo '-' hi   matches character c for lo <= c <= hi
+```
+
+On Windows, escaping is disabled. Instead, `\\` is treated as path separator.
+
+Ref
+
+- [Go Packages - `filepath` package](https://pkg.go.dev/path/filepath#Match)
 
 ## (draft) Speed up build process by cache
 

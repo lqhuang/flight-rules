@@ -1,7 +1,7 @@
 ---
 title: Tips for Pandas
-created: unknown
-updated: 2023-05-10
+created: 2019-01-01
+updated: 2023-10-29
 ---
 
 ## Append new row to dataframe
@@ -301,3 +301,43 @@ Refs:
   [Pandas: Avoid inplace](https://docs.sourcery.ai/Reference/Python/Default-Rules/pandas-avoid-inplace/)
 - [^3]
   [PDEP-8: In-place methods in pandas](https://github.com/pandas-dev/pandas/pull/51466/files?short_path=f2cc21a#diff-f2cc21ad9c9caffa3506c4719e07e1db49a2a3368bd6b41a1abf90eb8e3e416c)
+
+## `head` and `tail` methods accept a negative value in Pandas
+
+Probably no body knows that `head` and `tail` methods accept a negative value
+which is useful to delete the last few rows of data without `drop`.
+
+```python
+# For negative values of given input, this function returns all rows
+# except the last `|-n|` rows
+df.head(-n)
+# totally equivalent to
+df.iloc[:-n]
+
+# For negative values of given input, this function returns all rows
+# except the first `|-n|` rows
+df.tail(-n)
+# totally equivlant
+df.iloc[n:]
+```
+
+They are much eaiser to understand and perform well.
+
+```python-repl
+>>> %timeit df[:-1]
+125 µs ± 132 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+
+>>> %timeit df.head(-1)
+129 µs ± 1.18 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+
+>>> %timeit df.drop(df.tail(1).index)
+751 µs ± 20.4 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+```
+
+Actually, that's also how source codes implement them 😅. But note that these
+methods return a **view** instead of a **copy**.
+
+Refs:
+
+- [How to delete the last row of data of a pandas dataframe](https://stackoverflow.com/questions/26921651/how-to-delete-the-last-row-of-data-of-a-pandas-dataframe)
+- [Src code for `head` and `tail`](https://github.com/pandas-dev/pandas/blob/v2.1.2/pandas/core/generic.py#L5729-L5804)

@@ -1,7 +1,7 @@
 ---
 title: Web Development
 created: 2023-04-02
-updated: 2023-04-02
+updated: 2023-10-29
 ---
 
 ## Limit web crawler from search engine
@@ -106,3 +106,18 @@ References:
 
 - [Fixed page header overlaps in-page anchors](https://stackoverflow.com/questions/4086107/fixed-page-header-overlaps-in-page-anchors)
 - [Fixed Headers, On-Page Links, and Overlapping Content, Oh My!](https://css-tricks.com/fixed-headers-on-page-links-and-overlapping-content-oh-my/)
+
+## Special HTTP headers
+
+Such excellent summary of HTTP headers for development and security:
+
+- [Special HTTP headers](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/special-http-headers)
+- [rfc-st/humble](https://github.com/rfc-st/humble): A humble, and fast!,
+  security-oriented HTTP headers analyzer. <https://github.com/rfc-st/humble>
+- [danielmiessler/SecLists](https://github.com/danielmiessler/SecLists/tree/master/Miscellaneous/web/http-request-headers)
+  - http-request-headers-common-ip-address.txt
+  - http-request-headers-common-non-standard-examples.txt
+  - http-request-headers-common-non-standard-fields.txt
+  - http-request-headers-common-standard-examples.txt
+  - http-request-headers-common-standard-fields.txt
+  - http-request-headers-fields-large.txt
