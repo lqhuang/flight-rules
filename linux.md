@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-10-13
+updated: 2023-11-05
 ---
 
 ## Resources
@@ -1395,3 +1395,118 @@ Errors occurred, no packages were upgraded.
 Ref:
 
 1. [[Stable Update] 2023-10-09 - Mesa, Grub, GlibC, Thunderbird, KDE Frameworks Renaming](https://forum.manjaro.org/t/stable-update-2023-10-09-mesa-grub-glibc-thunderbird-kde-frameworks-renaming/149302/2)
+
+## Create a new user with encrypted password
+
+To create a new user with password in automated way, usually useful for script.
+First, of course, you need to define your username and password.
+
+```sh
+USERNAME=foo
+PASSWORD=bar
+
+useradd -m -s /bin/bash $USERNAME
+```
+
+After create your user with `bash` shell and home directory, you can use
+`chpasswd` or `passwd` to set password for the user in **direct** and
+**unencrypted** style.
+
+```bash
+echo "$USERNAME:$PASSWORD" | chpasswd
+echo "$PASSWORD" | passwd "$USERNAME" --stdin
+```
+
+A more succinct approach is to generate a encrypted password with
+`openssl passwd`, and pass it to `useradd` command simultaneously.
+
+```bash
+ENCRYPTED_PASSWORD=$(openssl passwd -1 $PASSWORD)
+# Alternatives: $(echo "P4sSw0rD" | openssl passwd -1 -stdin)
+useradd -m -s /bin/bash -p $ENCRYPTED_PASSWORD $USERNAME
+
+# Interative way to read password from stdin
+# ENCRYPTED_PASSWORD=$(read -sp 'Input your password:': pw ; echo $pw | openssl passwd -1 -stdin)
+```
+
+`mkpasswd` is also a command line tool to generate encrypted password, but it's
+probably not pre-installed on distros unlike `openssl`.
+
+```bash
+mkpasswd -m sha-512
+mkpasswd -m md5
+```
+
+And until now, I just know that hashed password has different prefix to indicate
+its algorithm and salt (known as "hashed passphrase format"). This signature is
+defined in `crypt` function in `glibc2`.
+
+For example,
+
+```
+$1$nYoK618n$3uBwQXtuduPHUmSuu35Nr1
+$6$H80xfvgwmRH8Eu1B$Ja43MWjRdzfWz7kPr1ltil1M./L67KacWll0a8VrPZE6B/qmY4gEtLWzr5mSz1i7fe3Os2et8NyeBEuGGE6xC0
+```
+
+`$1$` means MD5, `$6$` means SHA-512. The format is defined as
+
+```
+$<id>[$<param>=<value>(,<param>=<value>)*][$<salt>[$<hash>]]
+```
+
+where
+
+- `id`: an identifier representing the hashing algorithm (such as `1` for MD5,
+  `5` for SHA-256 etc.)
+- `param` name and its `value`: hash complexity parameters, like
+  rounds/iterations count
+- `salt`: radix-64 encoded salt
+- `hash`: radix-64 encoded result of hashing the password and salt
+
+Another manual description from `glibc2` docs:
+
+```
+If salt is a  character  string  starting  with  the  characters
+"$id$" followed by a string terminated by "$":
+
+    $id$salt$encrypted
+
+then instead of using the DES machine, id identifies the encryp‐
+tion method used and this then determines how the  rest  of  the
+password  string is interpreted.  The following values of id are
+supported:
+
+    ID  | Method
+    ─────────────────────────────────────────────────────────
+    1   | MD5
+    2a  | Blowfish (not in mainline glibc; added in some
+        | Linux distributions)
+    5   | SHA-256 (since glibc 2.7)
+    6   | SHA-512 (since glibc 2.7)
+
+So  $5$salt$encrypted  is  an  SHA-256  encoded   password   and
+$6$salt$encrypted is an SHA-512 encoded one.
+```
+
+Refs:
+
+1. [How to automatically add user account AND password with a Bash script?](https://stackoverflow.com/questions/2150882/how-to-automatically-add-user-account-and-password-with-a-bash-script)
+2. [How to add a user without knowing the encrypted form of the password?](https://serverfault.com/questions/367559/how-to-add-a-user-without-knowing-the-encrypted-form-of-the-password)
+3. [How to create an SHA-512 hashed password for shadow?](https://serverfault.com/questions/330069/how-to-create-an-sha-512-hashed-password-for-shadow/)
+4. [crypt (C)](<https://en.wikipedia.org/wiki/Crypt_(C)>)
+
+### `set -e, -u, -o, -x pipefail` Explanation
+
+set -euxo pipefail is short for:
+
+```bash
+set -e
+set -u
+set -x
+set -o pipefail
+```
+
+Ref:
+
+1. [`set -e, -u, -o, -x pipefail` Explanation](https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425)
+2. [Use Bash Strict Mode (Unless You Love Debugging)](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
