@@ -49,7 +49,7 @@ References:
 
 ## This system doesn't provide enough entropy
 
-Way 1: mount /dev/urandom from the host as /dev/random into the container
+Way 1: mount `/dev/urandom` from the host as `/dev/random` into the container
 
     docker run -v /dev/urandom:/dev/random ...
 
@@ -1084,7 +1084,7 @@ buildctl build --frontend=dockerfile.v0 --local context=. --local dockerfile=. -
 
 - [Adding a git repository ADD <git ref> <dir>](https://docs.docker.com/engine/reference/builder/#adding-a-git-repository-add-git-ref-dir)
 
-### Bonus 2: `--link`
+### (draft) Bonus 2: `--link`
 
 ### Bonus 3: `filepath.Match` pattern for Golang
 
@@ -1125,3 +1125,45 @@ Ref
 ## (draft) Trust and Security
 
 - [Trust](https://docs.docker.com/engine/security/trust/)
+
+## Init system for containers
+
+1. You’re Using the Wrong ENTRYPOINT Form
+2. Your Entrypoint Is a Shell Script and You Didn’t exec
+3. Bonus Best Practice: Let Someone Else Be PID 1
+4. You’re Listening for the Wrong Signal
+
+- [Why Your Dockerized Application Isn’t Receiving Signals](https://hynek.me/articles/docker-signals/)
+- [Introducing dumb-init, an init system for Docker containers](https://engineeringblog.yelp.com/2016/01/dumb-init-an-init-for-docker.html)
+
+### `--init` for `docker run` and `init: true` for `docker-compose` file
+
+Built in `tini` as PID 1, which is a tiny but valid `init` for containers.
+
+- [What's the docker-compose equivalent of docker run --init?](https://stackoverflow.com/questions/50356032/whats-the-docker-compose-equivalent-of-docker-run-init)
+
+### What does docker `STOPSIGNAL` do?
+
+`SIGTERM` is the default signal sent to containers to stop them.
+
+`STOPSIGNAL` does allow you to override the default signal sent to the
+container. Leaving it out of the Dockerfile causes no harm - it will remain the
+default of `SIGTERM`
+
+By default, it does this by sending a `SIGTERM` and then wait a short period so
+the process can exit gracefully. If the process does not terminate within a
+grace period (10s by default, customisable), it will send a `SIGKILL`.
+
+However, your application may be configured to listen to a different signal -
+`SIGUSR1` and `SIGUSR2`, for example.
+
+In these instances, you can use the `STOPSIGNAL` Dockerfile instruction to
+override the default.
+
+The image's default stopsignal can be overridden per container, using the
+`--stop-signal` flag on `docker run` and `docker create`.
+
+Refs:
+
+- [What does Docker STOPSIGNAL do?](https://stackoverflow.com/questions/50898134/what-does-docker-stopsignal-do)
+- [Dockerfile reference: STOPSIGNAL](https://docs.docker.com/engine/reference/builder/#stopsignal)

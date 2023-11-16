@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-11-05
+updated: 2023-11-16
 ---
 
 ## Resources
@@ -1510,3 +1510,52 @@ Ref:
 
 1. [`set -e, -u, -o, -x pipefail` Explanation](https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425)
 2. [Use Bash Strict Mode (Unless You Love Debugging)](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
+
+## Enable NTP services
+
+Jesus, I just found that my server time has a drift. And what amazed me is NTP
+service is not enabled by default on main cloud image even without
+`systemd-timesyncd` installed?
+
+Check your current ntp status:
+
+```sh
+timedatectl status # `status` probably is not imperative
+```
+
+Ouput
+
+```
+Local time: Thu 2023-11-16 01:47:31 UTC
+           Universal time: Thu 2023-11-16 01:47:31 UTC
+                 RTC time: Thu 2023-11-16 01:48:29
+                Time zone: UTC (UTC, +0000)
+System clock synchronized: no
+              NTP service: inactive
+          RTC in local TZ: no
+```
+
+or using `timedatectl show` to get well-formatted env output
+
+```
+Timezone=UTC
+LocalRTC=no
+CanNTP=yes
+NTP=no
+NTPSynchronized=no
+TimeUSec=Thu 2023-11-16 01:55:10 UTC
+RTCTimeUSec=Thu 2023-11-16 01:55:10 UTC
+```
+
+Besides, try also `timesync-status` and `show-timesync` to show status and
+properties of `systemd-timesyncd`.
+
+```sh
+# Make sure you have `systemd-timesyncd` installed
+# apt install systemd-timesyncd
+timedatectl set-ntp true
+```
+
+Ref:
+
+- [Arch Wiki: systemd-timesyncd](https://wiki.archlinux.org/title/systemd-timesyncd)
