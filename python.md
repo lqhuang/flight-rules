@@ -932,7 +932,7 @@ directory strucutre to contain serveral auxiliary files.
     'sharedstatedir': '$prefix/com',
     'localstatedir': '$prefix/var',
     'libdir': '$eprefix/lib',
-    'static_libdir': r'$prefix/lib',
+    'static_libdir': '$prefix/lib',
     'includedir': '$prefix/include',
     'datarootdir': '$prefix/share',
     'datadir': '$datarootdir',
