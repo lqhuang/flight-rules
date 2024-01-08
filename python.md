@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2023-09-25
+updated: 2024-01-08
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -359,7 +359,7 @@ than 1 document**". Thus, the default setting does not ignore any terms.
 
 Ref:
 
-1. [understanding-min-df-and-max-df-in-scikit-countvectorizer](https://stackoverflow.com/questions/27697766/understanding-min-df-and-max-df-in-scikit-countvectorizer)
+1. [Understanding `min_df` and `max_df` in scikit CountVectorizer](https://stackoverflow.com/questions/27697766/understanding-min-df-and-max-df-in-scikit-countvectorizer)
 
 ## Hidden variable in `dataclass`
 
@@ -386,7 +386,7 @@ Ref:
 
 1. [Python Tips and Trick, You Haven't Already Seen](https://martinheinz.dev/blog/1)
 
-## Subclass instance attribute in Pydantic
+## Subclass instance attribute in Pydantic (<2.0)
 
 1. `__init_subclass__`
 
@@ -520,7 +520,7 @@ if __name__ == '__main__':
 You can copy these and run with `python -c "..." package-name` fastly. Output
 will be like:
 
-```shell
+```
 ['starlette', 'httpcore']
 ```
 
@@ -557,7 +557,7 @@ their output when applying in empty collections.
 any([])  # False
 all([])  # True
 any([True, False])  # True
-all([True,False])  # False
+all([True, False])  # False
 ```
 
 ## Round numbers in Python
@@ -1449,3 +1449,68 @@ suppress them.
 Refs:
 
 1. [pip documentation -- pip install](https://pip.pypa.io/en/stable/cli/pip_install/)
+
+## `decimal` and `fractions` for advanced arithmetic
+
+- `decimal`: precise arithmetic with decimal numbers
+- `fractions`: support for rational number arithmetic
+
+### Decimal
+
+```python-repl
+>>> from decimal import Decimal
+>>> 0.1 + 0.2 == 0.3
+False
+>>> Decimal('0.1') + Decimal('0.2') == Decimal('0.3')
+True
+```
+
+We can control many aspects of a Decimal number, like, for instance, the
+precision:
+
+```
+from decimal import localcontext
+
+with localcontext(prec=42) as ctx:
+    s = calculate_something()
+```
+
+The `getcontext()` and `setcontext()` function accesses a different `Context`
+object for each thread (usually current thread).
+
+And if you want to control the defaults so that each thread will use the same
+values throughout the application, directly modify the `DefaultContext` object.
+This should be done _before_ any threads are started.
+
+- [Python 3 Docs: decimal — Decimal fixed point and floating point arithmetic](https://docs.python.org/3/library/decimal.html)
+- [Python 3 Docs: decimal - Working with threads](https://docs.python.org/3/library/decimal.html#working-with-threads)
+
+## Fractions
+
+```python-repl
+>>> from fractions import Fraction
+>>> f = Fraction(1, 3)
+>>> f.numerator
+1
+>>> f.denominator
+3
+>>> Fraction('1/3')
+Fraction(1, 3)
+>>> Fraction('-.125')
+Fraction(-1, 8)
+```
+
+There are other ways of building fractions, although using `float` and `Decimal`
+may lose precision:
+
+```python-repl
+>>> Fraction(1/3)
+Fraction(6004799503160661, 18014398509481984)
+>>> Fraction(Decimal('1') / Decimal('3'))
+Fraction(3333333333333333333333333333, 10000000000000000000000000000)
+```
+
+### Refs
+
+- [Understanding Numeric Data Types in Python](https://fullspeedpython.com/articles/understanding-numeric-data-types/)
+- [PEP 3141 – A Type Hierarchy for Numbers](https://peps.python.org/pep-3141/)
