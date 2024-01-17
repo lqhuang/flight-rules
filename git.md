@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2023-09-14
+updated: 2024-01-17
 ---
 
 ## Fork 仓库的同步与更新
@@ -461,3 +461,37 @@ Ref:
 
 1. Linux Manual Page: `git-reset(1)`
 2. Linux Manual Page: `git-restore(1)`
+
+## Ignore SSL verification for git operations
+
+self-signed certificate or debugging
+
+one off
+
+1. `GIT_SSL_NO_VERIFY=true`
+2. `git -c <name>=<value>`: `git -c http.sslVerify=false pull`
+
+```sh
+# Per repo based settings
+git config http.sslVerify false
+# Per user based settings
+git config --global http.sslVerify false
+```
+
+We could also specify CA file by `GIT_SSL_CAINFO`.
+
+- [Resolving SSL Self-Signed Certificate Errors](https://confluence.atlassian.com/bitbucketserverkb/resolving-ssl-self-signed-certificate-errors-806029899.html)
+
+## Debug logging for Git operations on the client
+
+```sh
+export GIT_TRACE_PACKET=1
+export GIT_TRACE=1
+export GIT_CURL_VERBOSE=1
+```
+
+Another interesting project to debug git client is
+[git-client-debug](https://bitbucket.org/atlassian/git-client-debug/src/master/)(Debug
+wrapper for the git clone and push commands)
+
+- [Bitbucket Support / Documentation / Enable debug logging](https://confluence.atlassian.com/bitbucketserver/enable-debug-logging-776640147.html)

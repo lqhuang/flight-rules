@@ -1,7 +1,7 @@
 ---
 title: Python Tips
 created: 2019-01-01
-updated: 2024-01-08
+updated: 2024-01-17
 ---
 
 ## Difference between `numpy.asarray` and `numpy.array`
@@ -1514,3 +1514,285 @@ Fraction(3333333333333333333333333333, 10000000000000000000000000000)
 
 - [Understanding Numeric Data Types in Python](https://fullspeedpython.com/articles/understanding-numeric-data-types/)
 - [PEP 3141 – A Type Hierarchy for Numbers](https://peps.python.org/pep-3141/)
+
+## Some corner cases for Python string interpolation
+
+- [聊一聊 Python 的换行以及转义 (Chinese)](https://mp.weixin.qq.com/s/eR34xJYpKEeUEO7J_76X3A)
+
+## Real application for pattern matching
+
+### Cases from PEP 0636
+
+This will match any sequences having `"drop"` as its first elements. All
+remaining elements will be captured in a `list` object which will be bound to
+the `objects` variable.
+
+This syntax has similar restrictions as sequence unpacking: you can not have
+more than one starred name in a pattern.
+
+```python
+match command.split():
+    case ["drop", *objects]:
+        for obj in objects:
+            character.drop(obj, current_room)
+```
+
+Capturing matched sub-patterns. The first version of our `"go"` command was
+written with a `["go", direction]` pattern. This leads to some code duplication,
+but at the same time we get better input validation, and we will not be getting
+into that branch if the command entered by the user is `"go figure!"` instead of
+a direction. We could try to get the best of both worlds doing the following
+(I’ll omit the aliased version without `"go"` for brevity):
+
+```python
+match command.split():
+    case ["go", ("north" | "south" | "east" | "west") as direction]:
+        current_room = current_room.neighbor(direction)
+```
+
+This code is a single branch, and it verifies that the word after `"go"` is
+really a direction. What we need is a pattern that behaves like the or pattern
+but at the same time does a capture. We can do so with an as pattern. The
+as-pattern matches whatever pattern is on its left-hand side, but also binds the
+value to a name.
+
+```python
+match command.split():
+    case ["go", ("north" | "south" | "east" | "west") as direction]:
+        current_room = current_room.neighbor(direction)
+```
+
+Adding conditions to patterns. Guards consist of the `if` keyword followed by
+any expression
+
+```python
+match command.split():
+    case ["go", direction] if direction in current_room.exits:
+        current_room = current_room.neighbor(direction)
+    case ["go", _]:
+        print("Sorry, you can't go that way")
+```
+
+Matching objects. The resulting object `event.get()` can have different type and
+attributes according to the user action. Rather than writing multiple
+`isinstance()` checks, you can use patterns to recognize different kinds of
+objects, and also apply patterns to its attributes:
+
+```python
+match event.get():
+    case Click(position=(x, y)):
+        handle_click_at(x, y)
+    case KeyPress(key_name="Q") | Quit():
+        game.quit()
+    case KeyPress(key_name="up arrow"):
+        game.go_north()
+    ...
+    case KeyPress():
+        pass # Ignore other keystrokes
+    case other_event:
+        raise ValueError(f"Unrecognized event: {other_event}")
+```
+
+A pattern like `Click(position=(x, y))` only matches if the type of the event is
+a subclass of the `Click` class. It will also require that the event has a
+`position` attribute that matches the `(x, y)` pattern. If there’s a match, the
+locals x and y will get the expected values.
+
+A pattern like `KeyPress()`, with no arguments will match any object which is an
+instance of the `KeyPress` class. Only the attributes you specify in the pattern
+are matched, and any other attributes are ignored.
+
+Matching positional attributes. The `__match_args__` special attribute defines
+an explicit order for your attributes that can be used in patterns like
+`case Click((x,y))`. The `(x, y)` pattern will be automatically matched against
+the `position` attribute, because the first argument in the pattern corresponds
+to the first attribute in your class definition.
+
+```python
+class Click:
+    __match_args__ = ("position", "button")
+    def __init__(self, pos, btn):
+        self.position = pos
+        self.button = btn
+        ...
+
+match event.get():
+    case Click((x, y)):
+        handle_click_at(x, y)
+```
+
+Going to the cloud: Mappings. Via the `json` module, those will be mapped to
+Python dictionaries, lists and other builtin objects.
+
+The keys in your mapping pattern need to be literals, but the values can be any
+pattern. As in sequence patterns, all subpatterns have to match for the general
+pattern to match.
+
+You can use `**rest` within a mapping pattern to capture additional keys in the
+subject. Note that if you omit this, extra keys in the subject will be ignored
+while matching, i.e. the message
+`{"text": "foo", "color": "red", "style": "bold"}` will match the first pattern
+in the example above.
+
+```python
+for action in actions:
+    match action:
+        case {"text": message, "color": c}:
+            ui.set_text_color(c)
+            ui.display(message)
+        case {"sleep": duration}:
+            ui.wait(duration)
+        case {"sound": url, "format": "ogg"}:
+            ui.play(url)
+        case {"sound": _, "format": _}:
+            warning("Unsupported audio format")
+```
+
+Matching builtin classes. The code above could use some validation. Given that
+messages came from an external source, the types of the field could be wrong,
+leading to bugs or security issues.
+
+Any class is a valid match target, and that includes built-in classes like
+`bool`, `str` or `int`. That allows us to combine the code above with a class
+pattern. So instead of writing `{"text": message, "color": c}` we can use
+`{"text": str() as message, "color": str() as c}` to ensure that message and c
+are both strings. For many builtin classes (see PEP 634 [^pep-0634] for the
+whole list), you can use a positional parameter as a shorthand, writing `str(c)`
+rather than `str() as c`. The fully rewritten version looks like this:
+
+```python
+for action in actions:
+    match action:
+        case {"text": str(message), "color": str(c)}:
+            ui.set_text_color(c)
+            ui.display(message)
+        case {"sleep": float(duration)}:
+            ui.wait(duration)
+        case {"sound": str(url), "format": "ogg"}:
+            ui.play(url)
+        case {"sound": _, "format": _}:
+            warning("Unsupported audio format")
+```
+
+- [^pep-0636][PEP 636 – Structural Pattern Matching: Tutorial](https://peps.python.org/pep-0636/)
+- [^pep-0634][PEP 634 – Structural Pattern Matching: Specification](https://peps.python.org/pep-0634/)
+
+### Cases from @netbat
+
+Check the structure or the fields of dictionary. Hand-writing these sorts of
+checks might result in shorter bytecode. But the Python code would be twistier
+and harder to get right.
+
+```python
+match event:
+    case {
+        "issue": {"closed_at": closed},
+        "comment": {"created_at": commented},
+        } if closed == commented:
+        # This is a "Close with comment" comment. Don't do anything for the
+        # comment, because we'll also get a "pull request closed" event at
+        # the same time, and it will do whatever we need.
+        pass
+
+    case {"sender": {"login": who}} if who == get_bot_username():
+        # When the bot comments on a pull request, it causes an event, which
+        # gets sent to webhooks, including us.  We don't have to do anything
+        # for our own comment events.
+        pass
+
+    case {"issue": {"pull_request": _}}:
+        # The comment is on a pull request. Process it.
+        return process_pull_request_comment(event)
+```
+
+An interesting use of match is matching on types, which is nicer than isinstance
+checks:
+
+```py
+match obj:
+    case int(0): ...   # special case for 0
+    case int(): ...    # any other int
+    case float(): ...  # any float
+    case _:            # anything else
+```
+
+- [^nedbat-matchcase][Real-world match/case](https://nedbatchelder.com/blog/202312/realworld_matchcase.html)
+
+## Using `for-else` to track variables during loops
+
+Usually, we use flag variable to track if found something in loops.
+
+```python
+found = False
+for f in flowers:
+    if f.endswith("z"):
+        found = True
+        print("Found it!")
+        break
+
+if not found:
+    print("Not found :(")
+```
+
+We probably knew there is keyword `else` for `while` and `for`, but seldom use
+it in real word. What's effect of `else` with `while` and `for`? It's activated
+if the loop **never reached** `break`.
+
+Hence, the above codes could simplify to
+
+```python
+for f in flowers:
+    if f.endswith("z"):
+        print("Found it!")
+        break
+else:
+    print("Not found :(")
+```
+
+But I don't suggest still using flag varibale in the above codes:
+
+```python
+for f in flowers:
+    if f.endswith("z"):
+        print("Found it!")
+        break
+else:
+    found = False  # `found` will become an unbound variable.
+    print("Not found :(")
+```
+
+Refs:
+
+- [You don't need this in Python](https://www.bitecode.dev/i/139716011/do-not-track)
+
+### Send HTTP requests using python-requests with timeout, session reuse and retry
+
+```python
+from requests.adapters import HTTPAdapter, Retry
+from requests import Session
+
+retries = Retry(
+  total=5, backoff_factor=1, status_forcelist=[502, 503, 504]
+)
+session = Session()  # reuse tcp connection
+session.mount("http://", HTTPAdapter(max_retries=retries))
+session.mount("https://", HTTPAdapter(max_retries=retries))
+
+session.get("https://example.com", timeout=5)  # seconds
+```
+
+Ref:
+
+- [GitHub Gist: Send HTTP requests using python-requests with timeout, tcp reuse(session) and retry.](https://gist.github.com/laixintao/e9eae48a835e741969ae06af3ad45f71)
+
+## CPU Count
+
+- affinity: the number of CPUs that a process is bound to
+  - not applied in BSD systems
+- multiprocessing: `multiprocessing.cpu_count()`
+- joblib: `joblib.cpu_count(only_physical_cores=False)`
+- psutil: `psutil.cpu_count(logical=True)`
+- os: `os.cpu_count()`
+- torch
+  - `torch.get_num_threads()`
+  - `torch.get_num_interop_threads()`

@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2023-10-28
+updated: 2024-01-17
 tags:
   - docker
   - container
@@ -1167,3 +1167,21 @@ Refs:
 
 - [What does Docker STOPSIGNAL do?](https://stackoverflow.com/questions/50898134/what-does-docker-stopsignal-do)
 - [Dockerfile reference: STOPSIGNAL](https://docs.docker.com/engine/reference/builder/#stopsignal)
+
+## You may not need `systemd` and `iptables` for docker
+
+While playing WSL2, I found that `systemd` and `iptables` are not necessary for
+docker actually.
+
+```sh
+# install rootless docker
+dockerd-rootless-setuptool.sh install --skip-iptables
+# manually start dockerd
+dockerd-rootless.sh --iptables=false
+```
+
+Refs:
+
+- [Packet filtering and firewalls](https://docs.docker.com/network/packet-filtering-firewalls/)
+- [Bypass the Docker --iptables limitations](https://tipstricks.itmatrix.eu/bypass-the-docker-iptables-limitations/)
+- [Preventing Docker from manipulating iptables rules](https://www.michelebologna.net/2018/preventing-docker-from-manipulating-iptables-rules/)
