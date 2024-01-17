@@ -102,7 +102,26 @@ References:
 Two ways to do if-else pattern in Makefile (looping is very similar):
 
 1. Use `ifeq` and `endif` by Makefile condition syntax
-2. Use `$(if condition,then-part[,else-part])` function for conditionals
+   ```
+   conditional-directive-one
+   text-if-one-is-true
+   else conditional-directive-two
+   text-if-two-is-true
+   else
+   text-if-one-and-two-are-false
+   endif
+   ```
+2. Use `$(if condition,then-part[,else-part])` function for conditionals.
+   - If the condition is true then the second argument, `then-part`, is
+     evaluated and this is used as the result of the evaluation of the entire if
+     function.
+   - If the condition is false then the third argument, `else-part`, is
+     evaluated and this is the result of the if function.
+   - If there is no third argument, the if function evaluates to nothing (the
+     empty string).
+   - Note that only one of the `then-part` or the `else-part` will be evaluated,
+     **never both**. Thus, either can contain side-effects (such as shell
+     function calls, etc.)
 3. One line `if-else` by Shell script
 
 Refs:
@@ -401,3 +420,30 @@ References:
 - [Make manual - 2.6 Another Style of Makefile](https://www.gnu.org/software/make/manual/html_node/Combine-By-Prerequisite.html)
 - [Make manual - 5.5 Errors in Recipes](https://www.gnu.org/software/make/manual/html_node/Errors.html)
 - [A Super-Simple Makefile for Medium-Sized C/C++ Projects](https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
+
+## Arithmetic operations for Makefile
+
+1. shell echo
+2. shell expr
+3. third libs
+4. guile / perl
+
+> GNU `make` may be built with support for GNU Guile as an embedded extension
+> language. Guile implements the Scheme language. A review of GNU Guile and the
+> Scheme language and its features is beyond the scope of this manual: see the
+> documentation for GNU Guile and Scheme.
+
+> You can determine if `make` contains support for Guile by examining the
+> `.FEATURES` variable; it will contain the word _guile_ if Guile support is
+> available.
+
+> The Guile integration provides one new `make` function: `guile`. The guile
+> function takes one argument which is first expanded by `make` in the normal
+> fashion, then passed to the GNU Guile evaluator. The result of the evaluator
+> is converted into a string and used as the expansion of the `guile` function
+> in the makefile.
+
+- [Makefile Tricks: Arithmetic – Addition, Subtraction, Multiplication, Division, Modulo, Comparison](https://gist.github.com/pushandplay/2f42415bcf4250ccdf13)
+- [How do I perform arithmetic in a makefile?](https://stackoverflow.com/questions/1926063/how-do-i-perform-arithmetic-in-a-makefile)
+- [Make Manual - 12.1 GNU Guile Integration](https://www.gnu.org/software/make/manual/html_node/Guile-Integration.html)
+- [Guile Manual - 6.6.2.11 Arithmetic Functions](https://www.gnu.org/software/guile/manual/html_node/Arithmetic.html)

@@ -212,3 +212,9 @@ Refs:
 - [Tweet Status from @real_doctormin](https://twitter.com/real_doctormin/status/1644241714465632257?t=vYm0PkQRhQuIGMbWade2Hw)
 - [CUDA Toolkit and Minimum Required Driver Version for CUDA Minor Version Compatibility](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id3)
 - [How to find NVIDIA driver version on Linux](https://www.cyberciti.biz/faq/check-print-find-nvidia-driver-version-on-linux-command/)
+
+## Tricks for Markdown
+
+- [Olwiba/Kickass-markdown](https://github.com/Olwiba/Kickass-markdown): A
+  collection of Github markdown tricks for writing kickass READMEs, Pull
+  Requests & Comments.
