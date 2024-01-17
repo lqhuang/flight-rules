@@ -1,5 +1,5 @@
 ---
-title: Scala Tips
+title: Scala Tips or Cheatsheet
 created: 2023-02-05
 updated: 2024-01-17
 ---
@@ -107,3 +107,87 @@ Refs:
 - [Triggered Execution](https://www.scala-sbt.org/1.x/docs/Triggered-Execution.html)
 - [Provide multiple commands to run consecutively](https://www.scala-sbt.org/1.x/docs/Howto-Running-Commands.html)
 - [Triggered Execution - Configuration](https://www.scala-sbt.org/1.x/docs/Triggered-Execution.html#Configuration)
+
+## Cheatsheet for pattern matching
+
+Simply remember that `@` symbol cannot use to catch type, and `:` symbol cannot
+use to extract specific pattern (unapply).
+
+```scala
+import scala.util.Random
+
+abstract class PL
+case class Scala(creator: String, age: Int, version: Int) extends PL
+case class Other(name: String, age: Int, version: Int)    extends PL
+
+val that =
+  Random.shuffle(List(Scala("scala", 20, 3), Other("Any", 30, 22))).head
+
+that match {
+  case x: Scala         => x.age
+  case Scala(_, age, _) => age - 15
+
+  // It also works
+  case lang @ Scala(_, age, _) if lang.version != 2 => age
+  // matching for Scala with only 'scala' name ... it works
+  case lang @ Scala(_, _, 2) => lang.age
+
+  /*
+   * The following two cases wouldn't work and failed to compile
+   */
+  /* want to match Other type */
+  // case lang @ Other => ???
+  /* matching for language with only version 2. */
+  // case lang: Scala(_, _, 2) => ???
+
+  // While using `@` symbol, the right side is an unapplied Instance
+  case lang @ Other(_, _, _) => lang.age + 10
+  // While using `:` symbol, the right side is a type
+  case lang: Other => lang.age + 10
+
+  case _ => 0
+}
+```
+
+## Case class inheritance is so wrong
+
+In scala, case-to-case inheritance is prohibited. The main cause is the
+**equality** problem. Case classes come with a supplied implementation of
+`equals` and `hashCode`, equality of its sub class is quite fragile.
+
+Through case-to-case inheritance is limited by compiler, we still could make
+corner case to show that:
+
+```scala
+case class ColoredPoint(x: Int, y: Int, c: String)
+class RedPoint(x: Int, y: Int)   extends ColoredPoint(x, y, "red")
+class GreenPoint(x: Int, y: Int) extends ColoredPoint(x, y, "green")
+
+val colored = ColoredPoint(0, 0, "red")
+val red1    = new RedPoint(0, 0)
+val red2    = new RedPoint(0, 0)
+val green   = new GreenPoint(0, 0)
+
+/*
+ * Why? `equals` method from parent class is called?
+ */
+red1 equals colored // true
+red2 equals colored // true
+red1 equals red2    // true
+
+red1 == colored // true
+red2 == colored // true
+red1 == red2    // true
+
+colored equals green // false
+red1 equals green    // false
+red2 equals green    // false
+
+colored == green // false
+red1 == green    // false
+red2 == green    // false
+```
+
+Yeah, it's so wrong.
+
+1. [What is _so_ wrong with case class inheritance?](https://stackoverflow.com/questions/11158929/what-is-so-wrong-with-case-class-inheritance)

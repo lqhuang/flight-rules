@@ -1796,3 +1796,27 @@ Ref:
 - torch
   - `torch.get_num_threads()`
   - `torch.get_num_interop_threads()`
+
+## Threads Config for Numpy
+
+The following environment variables could affect to the real threads used by
+numpy when computing.
+
+```
+OMP_NUM_THREADS: openmp,
+OPENBLAS_NUM_THREADS: openblas,
+MKL_NUM_THREADS: mkl,
+VECLIB_MAXIMUM_THREADS: accelerate,
+NUMEXPR_NUM_THREADS: numexpr
+```
+
+Luckily, it now could be set after numpy imported.
+
+Besides above envs, I will recommend `threadpoolctl` to control parallel
+behaviors of numpy.
+
+- [Limit number of threads in numpy](https://stackoverflow.com/a/53224849)
+- [joblib/threadpoolctl](https://github.com/joblib/threadpoolctl): Python
+  helpers to limit the number of threads used in native libraries that handle
+  their own internal threadpool (BLAS and OpenMP implementations)
+- [Set number of threads after numpy import](https://github.com/numpy/numpy/issues/11826)
