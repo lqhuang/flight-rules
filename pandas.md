@@ -61,12 +61,12 @@ References:
 
 1. [How to Use Pandas GroupBy, Counts and Value Counts](https://kite.com/blog/python/pandas-groupby-count-value-count/)
 
-## 在其他列上 aggregate
+## Aggregate on other columns after groupby
 
 one or more columns
 
-groupby 操作后继续的 aggregate 默认是针对 groupby 的那一列，如果要对其他列进行操
-作，需要进一步指定 columns
+`groupby` 操作后继续的 `aggregate` 默认是针对 `groupby` 的那一列，如果要对其他列
+进行操作，需要进一步指定 columns
 
 ```python
 df.groupby("column_A").agg({"column_B": lambda x: x})
@@ -102,7 +102,7 @@ References:
 
 1. [groupby-pandas-dataframe-and-select-most-common-value](https://stackoverflow.com/questions/15222754/groupby-pandas-dataframe-and-select-most-common-value)
 
-## pandas drop inf
+## Pandas drops `Inf` value
 
 `df.dropna()` doesn't drop `Inf/-Inf` in default. Two methods to drop `Inf`
 value.
@@ -126,7 +126,7 @@ References:
 
 1. [Dropping infinite values from dataframes in pandas?](https://stackoverflow.com/questions/17477979/dropping-infinite-values-from-dataframes-in-pandas)
 
-## counting consecutive positive value in Python
+## Counting consecutive positive value in Python
 
 先用 `shift` 进行转换然后判断是否和前一个元素是不同的用 `cumsum()` 计算出台阶
 step level 用 `groupby` 和 `cumcount` 进行分组统计
@@ -140,7 +140,7 @@ Ref:
 1. [Counting consecutive positive value in Python array](https://stackoverflow.com/questions/27626542/counting-consecutive-positive-value-in-python-array)
 2. [How to groupby consecutive values in pandas DataFrame](https://stackoverflow.com/questions/40802800/how-to-groupby-consecutive-values-in-pandas-dataframe)
 
-## multiple aggregation for same column
+## Multiple aggregation for same column
 
 Named aggregation "但是不能混用"
 
@@ -194,7 +194,31 @@ Solution:
 
 example
 
-- https://github.com/pandas-dev/pandas/issues/450
+- [When adding a Series to a DataFrame with a different index, the Series gets turned into all NaNs](https://github.com/pandas-dev/pandas/issues/450)
+
+### 2023-11-08: Yeah I suffered this again...
+
+problem caused: series - series with different index, and one of them is
+datetime index
+
+```python
+import pandas as pd
+
+a = pd.Series(range(100))
+b = pd.Series(range(59))
+
+print(a - b)
+print((a - b).sum())
+
+b = pd.Series(range(59), index=(i+1 for i in range(59)))
+print(a - b)
+print((a - b).sum())
+```
+
+### Index alignment feature for operations
+
+- [Operating on Data in Pandas](https://jakevdp.github.io/PythonDataScienceHandbook/03.03-operations-in-pandas.html)
+- [Intro to data structures](https://pandas.pydata.org/docs/user_guide/dsintro.html)
 
 ## Make groupby apply method parallel
 

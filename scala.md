@@ -11,6 +11,20 @@ Thank god! Finally, I get all (?) compiler flags.
 - [Compiler Options Lookup Table](https://docs.scala-lang.org/scala3/guides/migration/options-lookup.html)
 - [New Compiler Options](https://docs.scala-lang.org/scala3/guides/migration/options-new.html)
 
+## Scala 3 new syntax: `try ... match case ... catch`
+
+```scala
+try parseNumber(input) match
+  case i: Integer => handleInt(i)
+  case f: Float   => handleFloat(f)
+catch
+  case e: NumberFormatException => handleException(e)
+```
+
+Ref:
+
+- [Martin Odersky (@odersky) on X](https://twitter.com/odersky/status/1736089879350518020)
+
 ## sbt: Running "sbt commands" in cli
 
 `sbt` interprets each command line argument provided to it as a command together

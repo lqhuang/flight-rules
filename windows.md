@@ -1,7 +1,7 @@
 ---
 title: CLI on Windows
 created: 2018-11-03
-updated: 2023-10-13
+updated: 2023-11-09
 ---
 
 ## Create a proxy to redirect network trafic origined to target host
@@ -114,3 +114,27 @@ Refs:
 
 1. [OpenSSH utility scripts to fix file permissions](https://github.com/PowerShell/Win32-OpenSSH/wiki/OpenSSH-utility-scripts-to-fix-file-permissions)
 2. [ssh.exe examples: Setup server-side (`sshd`)](https://github.com/PowerShell/Win32-OpenSSH/wiki/ssh.exe-examples#setup-server-side-sshd)
+
+## Windows 10 / Windows 11: Outdated audio driver make the system unstable and cause BSOD
+
+> If you’re having issues with BSODs and other errors/maybe even really bad
+> frame rate. It’s probably your Realtek audio driver I’ve had this issue on
+> multiple PCs and it’s always been the Realtek audio. To fix it you could try
+> reinstalling the driver but I’ve had no luck with that. What’s worked for me
+> is using one of five drivers.
+>
+> 1. Old driver from Realtek site probably not recommended as it’s the old
+>    control panel also and not even made for windows 11 but still works.
+> 2. Generic high definition audio driver may not have all the features though
+> 3. Realtek-UAD-generic driver on GitHub it should equivalent to your default
+>    driver just much newer.
+> 4. AAF Optimus driver has a lot more features then the stock driver and could
+>    enhance your audio quality
+> 5. Just disable Realtek audio if you have no use for it
+
+I had the very similar issue and I simply disable my onboard audio device in
+BIOS, then things work fine now.
+
+Refs:
+
+- [ PSA: If you’re having issues after the 23H2 update please read ](https://www.reddit.com/r/windows/comments/17p9toh/psa_if_youre_having_issues_after_the_23h2_update/)

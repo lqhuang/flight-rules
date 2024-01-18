@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2024-01-17
+updated: 2024-01-18
 tags:
   - docker
   - container
@@ -1185,3 +1185,30 @@ Refs:
 - [Packet filtering and firewalls](https://docs.docker.com/network/packet-filtering-firewalls/)
 - [Bypass the Docker --iptables limitations](https://tipstricks.itmatrix.eu/bypass-the-docker-iptables-limitations/)
 - [Preventing Docker from manipulating iptables rules](https://www.michelebologna.net/2018/preventing-docker-from-manipulating-iptables-rules/)
+
+## Interactive shell using Docker Compose
+
+```yaml
+services:
+myapp:
+  image: alpine:latest
+  entrypoint: /bin/sh
+```
+
+make `entrypoint` to `/bin/sh` is not enough to get an interactive shell with
+Docker Compose. Before you run `docker compose exec myapp /bin/bsh` to get in,
+you would still find docker restart repeatly.
+
+```yaml
+services:
+  app:
+    image: alpine:latest
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+```
+
+Try `stdin_open` and `tty` options for compose file, just like `docker run -it`.
+
+Refs:
+
+- [Interactive shell using Docker Compose](https://stackoverflow.com/questions/36249744/interactive-shell-using-docker-compose)
