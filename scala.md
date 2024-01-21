@@ -6,10 +6,17 @@ updated: 2024-01-17
 
 ## Cheatsheet
 
+### Scala compiler flags
+
 Thank god! Finally, I get all (?) compiler flags.
 
 - [Compiler Options Lookup Table](https://docs.scala-lang.org/scala3/guides/migration/options-lookup.html)
 - [New Compiler Options](https://docs.scala-lang.org/scala3/guides/migration/options-new.html)
+
+### JVM eco system
+
+- [Apache Maven -- Introduction to the Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html)
+- [sbt 1.x docs -- Directories](https://www.scala-sbt.org/1.x/docs/Directories.html)
 
 ## Scala 3 new syntax: `try ... match case ... catch`
 

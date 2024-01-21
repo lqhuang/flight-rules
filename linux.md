@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-11-16
+updated: 2023-11-21
 ---
 
 ## Resources
@@ -1559,3 +1559,15 @@ timedatectl set-ntp true
 Ref:
 
 - [Arch Wiki: systemd-timesyncd](https://wiki.archlinux.org/title/systemd-timesyncd)
+
+## Shell: assign output of pipe (`|`) to variable
+
+Using stdin redirection (`<`) or `read` builtin command
+
+```sh
+echo 'hello' | message=$(</dev/stdin)
+# or
+echo 'hello' | read message
+```
+
+- [Bash: Assign output of pipe to a variable](https://unix.stackexchange.com/questions/338000/bash-assign-output-of-pipe-to-a-variable)
