@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2024-01-18
+updated: 2024-02-08
 tags:
   - docker
   - container
@@ -1212,3 +1212,18 @@ Try `stdin_open` and `tty` options for compose file, just like `docker run -it`.
 Refs:
 
 - [Interactive shell using Docker Compose](https://stackoverflow.com/questions/36249744/interactive-shell-using-docker-compose)
+
+## Exposing privileged ports
+
+To expose privileged ports (< 1024), set `CAP_NET_BIND_SERVICE` on `rootlesskit`
+binary and restart the daemon.
+
+```sh
+sudo setcap cap_net_bind_service=ep $(which rootlesskit)
+systemctl --user restart docker
+```
+
+Or add `net.ipv4.ip_unprivileged_port_start=0` to `/etc/sysctl.conf` (or
+`/etc/sysctl.d`) and run `sudo sysctl --system`.
+
+- [Manuals / Docker Engine / Security / Rootless mode](https://docs.docker.com/engine/security/rootless/#exposing-privileged-ports)
