@@ -1,7 +1,7 @@
 ---
 title: Tips for WSL
 created: 2024-01-10
-updated: 2024-01-21
+updated: 2024-02-16
 tags:
   - linux
   - windows
@@ -60,13 +60,47 @@ Refs:
 
 ## SSH Server for WSL
 
-- https://askubuntu.com/questions/1339980/enable-ssh-in-wsl-system
+Install and start ssh server in WSL.
+
+```sh
+apt install ssh
+service ssh start
+```
+
+Add boot command to `/etc/wsl.conf` to start ssh server at boot.
+
+```conf
+# in your `.wslconfig`
+[boot]
+command = service ssh start
+```
+
+- [Enable SSH in WSL system](https://askubuntu.com/questions/1339980/enable-ssh-in-wsl-system)
   - ssh @windows-host: wsl
-- https://www.ibm.com/docs/en/tnpm/1.4.5?topic=ss-configure-openssh-server-start-up-system-boot
-- https://exampleconfig.com/view/openssh-centos6-etc-rc-d-init-d-sshd
-- https://askubuntu.com/questions/1144447/the-ssh-instead-of-ssh-in-etc-init-d
-- http://www.styma.org/SunAtHome/sample_files/sshd.html
-- https://jmmv.dev/2022/02/wsl-ssh-access.html
+- [The ssh instead of ssh in /etc/init.d](https://askubuntu.com/questions/1144447/the-ssh-instead-of-ssh-in-etc-init-d)
+- [The is the "init" start/stop script for the OpenSSH server daemon "sshd"](http://www.styma.org/SunAtHome/sample_files/sshd.html)
+- [Configuring SSH access into WSL 1 and WSL 2](https://jmmv.dev/2022/02/wsl-ssh-access.html)
+
+## Expose WSL to the network
+
+Though you have listened to `0.0.0.0`/`::` inside WSL 2, it is stilll not
+exposed to public by default (network in NAT mode).
+
+By now, you can use `netsh` in windows host to add a proxy to expose WSL ports.
+
+```powershell
+New-NetFirewallRule -Name 'OpenSSH-Server-In-WSL' -DisplayName 'OpenSSH Server (WSL)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 2222
+
+netsh interface portproxy add v4tov4 listenport=2222 listenaddress=0.0.0.0 `
+connectport=2222 connectaddress=$($(wsl hostname -I).Trim());
+netsh interface portproxy show all
+```
+
+Don't forget to add firewall rule :)
+
+Refs:
+
+1. [Connecting to WSL2 server via local network [closed]](https://stackoverflow.com/a/74018117)
 
 ## Cons: Multiple WSL instances
 
@@ -76,5 +110,5 @@ Currently (2024-01-15), WSL 2 have no support for multiple instances.
 > given name. The only _documented_ way is to export the distro and re-import it
 > under a different name.
 
-- https://wpclouddeploy.com/how-to-use-multiple-wsl-instances-for-development/
-- https://github.com/microsoft/WSL/issues/9977
+- [How To Use Multiple WSL Instances For Development](https://wpclouddeploy.com/how-to-use-multiple-wsl-instances-for-development/)
+- [Why isn't it possible to install multiple instances of a given distro without using hacks/workarounds? #9977](https://github.com/microsoft/WSL/issues/9977)
