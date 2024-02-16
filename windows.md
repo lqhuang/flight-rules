@@ -280,6 +280,31 @@ Refs:
 1.  [Window's ssh service defaults to admin permission](https://stackoverflow.com/questions/70902288/windows-ssh-service-defaults-to-admin-permission)
 2.  [ SSH login has full admin rights and there's no way to not grand them #1652 ](https://github.com/PowerShell/Win32-OpenSSH/issues/1652)
 
+## WSL2 over SSH failed to start on Windows 11
+
+Happens only when executing `wsl` command over SSH. The error message is:
+
+```plaintext
+c:\....> wsl --version
+The file cannot be accessed by the system.
+```
+
+> Release Notes for Windows Subsystem for Linux in the Microsoft Store Launching
+>
+> Windows Subsystem for Linux from session zero does not currently work (for
+> example from an ssh connection).
+
+Try to update WSL2 to the latest version by running the following command in
+
+```shell
+wsl --update --pre-release
+```
+
+It probably will be fixed in future.
+
+- [Cannot run WSL2 over SSH on Windows 11](https://superuser.com/questions/1714736/cannot-run-wsl2-over-ssh-on-windows-11)
+- [Release Notes for Windows Subsystem for Linux in the Microsoft Store - Known Issues](https://learn.microsoft.com/en-us/windows/wsl/store-release-notes#known-issues)
+
 ## Cheatsheet from Unix Shell to PowerShell
 
 | Shell                | PowerShell                                                   | More usages                                         |
