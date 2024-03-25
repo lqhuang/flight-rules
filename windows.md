@@ -327,3 +327,7 @@ List all environment variables
 Get-ChildItem Env:
 Get-ChildItem env:
 ```
+
+## Sysinternals Live
+
+- [Tool: TCPView](https://learn.microsoft.com/en-us/sysinternals/downloads/tcpview)

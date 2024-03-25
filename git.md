@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2024-01-17
+updated: 2024-03-25
 ---
 
 ## Fork 仓库的同步与更新
@@ -36,16 +36,39 @@ updated: 2024-01-17
     git push -f origin master
     You only need to use the -f the first time after you've rebased.
 
-## 分离单独文件夹出来成为独立的仓库
+## Splitting a subfolder out into a new repository
 
-### method 1
+First, install the
+[`git-filter-repo`](https://github.com/newren/git-filter-repo) tool, it's a
+simple one file
+[script](https://raw.githubusercontent.com/newren/git-filter-repo/main/git-filter-repo).
 
-- https://blessing.studio/splitting-a-subfolder-out-into-a-new-git-repository/
-- https://help.github.com/articles/splitting-a-subfolder-out-into-a-new-repository/
+Then, clone the repository that contains the subfolder. In the root of the
+repository, run:
 
-注意这两种方式都会使得根部目录变换到该文件夹下.
+```sh
+git-filter-repo --path FOLDER-NAME/
+# Filter the specified branch in your directory and remove empty commits
+```
 
-### method 2 (多文件夹)
+The repository should now only contain the files that were in your subfolder(s).
+
+or using
+
+```sh
+git-filter-repo --subdirectory-filter FOLDER-NAME
+# Filter the specific branch by using a single sub-directory as the root for the new repository
+```
+
+> **Note**
+>
+> this approach (second one) will change the root directory to that folder.
+
+- [Splitting a subfolder out into a new repository](https://help.github.com/articles/splitting-a-subfolder-out-into-a-new-repository/)
+- [newren/git-filter-repo](https://github.com/newren/git-filter-repo): Quickly
+  rewrite git repository history (filter-branch replacement)
+
+## Splitting multiple subfolders out into a new repository
 
 - https://stackoverflow.com/questions/2982055/detach-many-subdirectories-into-a-new-separate-git-repository?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
