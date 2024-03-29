@@ -1,7 +1,7 @@
 ---
 title: Tips for Javascript / Typescript
 created: 2023-03-18
-updated: 2023-03-21
+updated: 2024-03-29
 ---
 
 ## What is order of items from `Object.entries()` and `Object.values()`
@@ -55,3 +55,23 @@ Refs:
 
 1. [Does JavaScript guarantee object property order?](https://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order)
 2. [Does ES6 introduce a well-defined order of enumeration for object properties?](https://stackoverflow.com/questions/30076219/does-es6-introduce-a-well-defined-order-of-enumeration-for-object-properties)
+
+## You don't have to throw an error (every time) by @basarat
+
+```js
+function myFunction (callback: (e?: Error)) {
+  doSomethingAsync(function () {
+    if (somethingWrong) {
+      callback(new Error('This is my error'))
+    } else {
+      callback();
+    }
+  });
+}
+```
+
+It is okay to pass an `Error` object around. This is conventional in Node.js
+callback style code which takes callbacks with the first argument as an error
+object.
+
+1. [TypeScript Deep Dive: Exception Handling](https://basarat.gitbook.io/typescript/type-system/exceptions#you-dont-have-to-throw-an-error)
