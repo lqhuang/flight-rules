@@ -220,6 +220,30 @@ print((a - b).sum())
 - [Operating on Data in Pandas](https://jakevdp.github.io/PythonDataScienceHandbook/03.03-operations-in-pandas.html)
 - [Intro to data structures](https://pandas.pydata.org/docs/user_guide/dsintro.html)
 
+### 2023-11-08: Yeah I suffered this again...
+
+problem caused: series - series with different index, and one of them is
+datetime index
+
+```python
+import pandas as pd
+
+a = pd.Series(range(100))
+b = pd.Series(range(59))
+
+print(a - b)
+print((a - b).sum())
+
+b = pd.Series(range(59), index=(i+1 for i in range(59)))
+print(a - b)
+print((a - b).sum())
+```
+
+### Index alignment feature for operations
+
+- https://jakevdp.github.io/PythonDataScienceHandbook/03.03-operations-in-pandas.html
+- https://pandas.pydata.org/docs/user_guide/dsintro.html
+
 ## Make groupby apply method parallel
 
 Adds an `apply_parallel` method of making groupby calculation parallel with
@@ -365,3 +389,7 @@ Refs:
 
 - [How to delete the last row of data of a pandas dataframe](https://stackoverflow.com/questions/26921651/how-to-delete-the-last-row-of-data-of-a-pandas-dataframe)
 - [Src code for `head` and `tail`](https://github.com/pandas-dev/pandas/blob/v2.1.2/pandas/core/generic.py#L5729-L5804)
+
+## Fast and Efficient Inequality Joins in Pandas
+
+Ref: https://samukweku.github.io/data-wrangling-blog/notebooks/Fast-and-Efficient-Inequality-Joins-in-Pandas.html

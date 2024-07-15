@@ -1,7 +1,7 @@
 ---
 title: Shell Tips
 created: 2019-01-20
-updated: 2023-02-04
+updated: 2023-07-15
 ---
 
 ## Useful rules
@@ -704,3 +704,72 @@ Refs:
 
 - [Can `${var}` parameter expansion expressions be nested in bash?](https://stackoverflow.com/questions/917260/can-var-parameter-expansion-expressions-be-nested-in-bash)
 - [Bash - Get the VALUE of 'nested' variable into another variable [Edit: Indirect Variable Expansion]](https://stackoverflow.com/a/46383462)
+
+## ASH: Array like features
+
+```bash
+#!/bin/bash
+
+ARRAY_LIKE=(
+  'a'
+  'b'
+  'c'
+)
+```
+
+Bash only array syntax is not available in feature sets of busybox implemented shell (a.k.a ASH), but you can use tricks to mimic the array features.
+
+1. Using `set --` to set positional parameters
+
+   ```
+   set -- "service1.service" \
+       "service2.service" \
+       "service3.service"
+
+   for service in "$@"
+   do
+     START $service
+   done
+   ```
+
+2. Split the string with whitespace into an array
+
+   ```
+   # backslash-escape any non-delimiter whitespace and all other characters that
+   # have special meaning to the shell, e.g. globs, parenthesis, ampersands, etc.
+   services='service1.service service2.service service3.service'
+
+   for s in $services ; do  # NOTE: do not double-quote $services here.
+     START "$s"
+   done
+   ```
+
+   `$services` should **NOT** be double-quoted here because we want the shell to split it into "words"s.
+
+3. Read contents line by line and read input from here docs
+
+   ```
+   while IFS= read -r service
+   do
+     START "$service"
+   done << END
+   service1.service
+   service2.service
+   service3.service
+   END
+
+   # use <<- instead of << and indent the names with tabs:
+   while IFS= read -r service
+   do
+     START "$service"
+   done <<- END
+           service1.service
+           service2.service
+           service3.service
+   END
+   ```
+
+Refs:
+
+- https://stackoverflow.com/questions/26091758/arrays-in-shell-script-not-bash
+- https://unix.stackexchange.com/questions/384614/how-to-port-to-bash-style-arrays-to-ash

@@ -1,7 +1,7 @@
 ---
 title: Makefile Tips
 created: 2023-12-06
-updated: 2023-12-23
+updated: 2024-07-15
 ---
 
 ## Resources
@@ -447,3 +447,23 @@ References:
 - [How do I perform arithmetic in a makefile?](https://stackoverflow.com/questions/1926063/how-do-i-perform-arithmetic-in-a-makefile)
 - [Make Manual - 12.1 GNU Guile Integration](https://www.gnu.org/software/make/manual/html_node/Guile-Integration.html)
 - [Guile Manual - 6.6.2.11 Arithmetic Functions](https://www.gnu.org/software/guile/manual/html_node/Arithmetic.html)
+
+## Wilecard recipe
+
+Using wilecard `${*}` and `${@}` to capture different input rule name.
+
+```Makefile
+prefix-%:
+	@echo "Your input is '${@}' and you catched '${*}'"
+```
+
+```console
+$ make prefix-foo
+Your input is 'prefix-foo' and you catched 'foo'
+$ make prefix-bar
+Your input is 'prefix-bar' and you catched 'bar'
+```
+
+Ref:
+
+- [4.12.1 Syntax of Static Pattern Rules](https://www.gnu.org/software/make/manual/html_node/Static-Usage.html)

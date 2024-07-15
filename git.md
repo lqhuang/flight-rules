@@ -1,10 +1,14 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2024-03-25
+updated: 2024-07-15
 ---
 
-## Fork 仓库的同步与更新
+## Resources
+
+- [89 things I know about Git commits](https://www.jvt.me/posts/2024/07/12/things-know-commits/)
+
+## Sync your forked repo with upstream
 
 > - https://help.github.com/articles/syncing-a-fork/
 > - https://stackoverflow.com/questions/7244321/how-do-i-update-a-github-forked-repository
@@ -76,7 +80,7 @@ git-filter-repo --subdirectory-filter FOLDER-NAME
 git filter-branch --index-filter 'git rm --cached -qr --ignore-unmatch -- . && git reset -q $GIT_COMMIT -- DIR_A DIR_B' --prune-empty -- --all
 ```
 
-## 为不同的目录下的仓库 (Repos) 设置不同的 gitconfig
+## Configure different `gitconfig` for repos under different directories
 
 经常会遇到需要为不同的 Git 项目设置不同的 `user` 和 `email`。在 `Git 2.13` 以后
 的版本中引入了 `conditional includes`。
@@ -518,3 +522,19 @@ Another interesting project to debug git client is
 wrapper for the git clone and push commands)
 
 - [Bitbucket Support / Documentation / Enable debug logging](https://confluence.atlassian.com/bitbucketserver/enable-debug-logging-776640147.html)
+
+## Generate a git checkpoint commit by Makefile
+
+```makefile
+checkpoint:
+	@git add -A
+	@git commit -m "checkpoint at $$(date '+%Y-%m-%dT%H:%M:%S%z')"
+	@git push
+	@echo Checkpoint created and pushed to remote
+```
+
+- [Make Checkpoint](https://kyleshevlin.com/make-checkpoint/)
+
+## Only fetch specific upstream branch (for everytime)
+
+https://stackoverflow.com/questions/6368987/how-do-i-fetch-only-one-branch-of-a-remote-git-repository
