@@ -1227,3 +1227,19 @@ Or add `net.ipv4.ip_unprivileged_port_start=0` to `/etc/sysctl.conf` (or
 `/etc/sysctl.d`) and run `sudo sysctl --system`.
 
 - [Manuals / Docker Engine / Security / Rootless mode](https://docs.docker.com/engine/security/rootless/#exposing-privileged-ports)
+
+## Docker user service stop after shell connection closed under rootless mode
+
+Make sure user's systemd service is running in background
+
+```sh
+systemctl --user enable --now docker
+```
+
+And enable linger for the user
+
+```sh
+sudo loginctl enable-linger ${USER}
+```
+
+- [Rootless mode - Daemon with systemd](https://docs.docker.com/engine/security/rootless/#daemon)
