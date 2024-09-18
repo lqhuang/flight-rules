@@ -1571,3 +1571,35 @@ echo 'hello' | read message
 ```
 
 - [Bash: Assign output of pipe to a variable](https://unix.stackexchange.com/questions/338000/bash-assign-output-of-pipe-to-a-variable)
+
+# Disable Sleep, Hibernate, Suspend on Debian Linux
+
+```sh
+# mask out related systemd targets
+sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+# check status
+sudo systemctl status sleep.target suspend.target hibernate.target hybrid-sleep.target
+```
+
+```console
+○ sleep.target
+     Loaded: masked (Reason: Unit sleep.target is masked.)
+     Active: inactive (dead)
+
+○ suspend.target
+     Loaded: masked (Reason: Unit suspend.target is masked.)
+     Active: inactive (dead)
+
+○ hibernate.target
+     Loaded: masked (Reason: Unit hibernate.target is masked.)
+     Active: inactive (dead)
+
+○ hybrid-sleep.target
+     Loaded: masked (Reason: Unit hybrid-sleep.target is masked.)
+     Active: inactive (dead)
+```
+
+Ref:
+
+- [suspend - How do I disable my system from going to sleep? - Ask Ubuntu](https://askubuntu.com/questions/47311/how-do-i-disable-my-system-from-going-to-sleep)
+- [How to Disable Sleep, Hibernate, and Suspend on [Debian] Linux via Terminal · Snippets · GitLab](https://gitlab.com/-/snippets/2515869)

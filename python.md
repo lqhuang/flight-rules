@@ -1820,3 +1820,26 @@ behaviors of numpy.
   helpers to limit the number of threads used in native libraries that handle
   their own internal threadpool (BLAS and OpenMP implementations)
 - [Set number of threads after numpy import](https://github.com/numpy/numpy/issues/11826)
+
+## Check devices in JAX
+
+```python
+import jax
+jax.default_backend()
+# JAX defaults to a GPU or TPU if you have one.
+# So you can just check it doesn't return "cpu".
+
+jax.local_device_count()
+```
+
+- [google/jax/issues/971: how to detect if GPU is being used? (feature request)](https://github.com/google/jax/issues/971)
+
+## Treads in Jax
+
+- https://github.com/google/jax/issues/1539
+- https://github.com/google/jax/issues/743
+- https://github.com/google/jax/issues/743
+- https://github.com/google/jax/issues/6790
+- https://github.com/joblib/threadpoolctl/issues/127
+- https://bnikolic.co.uk/blog/python/jax/2023/03/22/jax-multithreaded.html
+- https://stackoverflow.com/questions/72328521/jax-pmap-with-multi-core-cpu
