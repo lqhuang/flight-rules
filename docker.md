@@ -299,12 +299,12 @@ The `--add-host` flag supports a special `host-gateway` value that resolves to
 the internal IP address of the host. This is useful when you want containers to
 connect to services running on the host machine.
 
-> [!Note] If you have set port mapping `127.0.0.1:8080:8080`, you probably
+> [!NOTE] If you have set port mapping `127.0.0.1:8080:8080`, you probably
 > cannot access that container by `host.docker.internal:80` from other
 > containers. You need to use `172.17.0.1:8080:8080` instead, where the
 > `172.17.0.1` is the gateway IP address of `bridge` network.
 
-> [!Warning] `host.docker.internal` or `gateway.docker.internal` both are the
+> [!WARNING] `host.docker.internal` or `gateway.docker.internal` both are the
 > special DNS name and only **natively** supported on Docker Desktop for macOS
 > and Windows.
 
@@ -1042,7 +1042,7 @@ container's filesystem at path `<dest>`. The major difference between `COPY` and
 So `COPY` is the same as `ADD`, but without the tar and remote URL handling. In
 the most cases, you should use `COPY` to avoid confusion LOL.
 
-> [!Note]
+> [!NOTE]
 >
 > 1. Each `<src>` may contain wildcards and matching will be done using Go's
 >    filepath.Match rules.

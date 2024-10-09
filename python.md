@@ -1843,3 +1843,59 @@ jax.local_device_count()
 - https://github.com/joblib/threadpoolctl/issues/127
 - https://bnikolic.co.uk/blog/python/jax/2023/03/22/jax-multithreaded.html
 - https://stackoverflow.com/questions/72328521/jax-pmap-with-multi-core-cpu
+
+## Padding for base64 decoding in Python
+
+Some base64 encoded strings may not have padding characters (`=`) in the end, stripped by some tools or libraries. For example, we encode a string `content-encoded-by-base64` into base64:
+
+```
+Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA==
+```
+
+and if we remove the padding characters `=`, it will become
+
+```
+Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA
+```
+
+The `base64` module in Python will raise an error while decoding the string without padding characters.
+
+```python
+import base64
+base64.b64decode("Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA")
+# raised -> Error: Incorrect padding
+```
+
+To handle this case, we could add padding characters to the end of the encoded string. Fortunately, we could calculate the number of padding characters by the stripped string.
+
+```python
+stripped_b64_string = "Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA"
+padding = "=" * ((4 - len(stripped_b64_string) % 4) % 4)
+b64_string = stripped_b64_string + padding
+```
+
+> [!NOTE]
+>
+> `4 - len(stripped_b64_string) % 4` is also practically working, except its value ranges from `[0, 4)`. So we need to apply modulo operation again to get the correct number of padding characters to make it theoretically correct with range `[0, 3)`.
+
+Now, we could decode the string with padding characters normally.
+
+```python-repl
+>>> base64.b64decode(b64_string)
+b'content-encoded-by-base64'
+```
+
+PS: `base64` command in Unix-like systems will not raise an error while missing padding characters (`=`) in the end of the encoded string. But it will output a cut-off result by dropping the last few characters.
+
+```console
+$ echo Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA | base64 -d
+content-encoded-by-base6
+$ echo Y29udGVudC1lbmNvZGVkLWJ5LWJhc2U2NA== | base64 -d
+content-encoded-by-base64
+```
+
+Refs:
+
+- [Wikipedia - Base64](https://en.wikipedia.org/wiki/Base64#Padding)
+- [Stack Overflow - Python: Ignore 'Incorrect padding' error when base64 decoding](https://stackoverflow.com/questions/2941995/python-ignore-incorrect-padding-error-when-base64-decoding)
+  - thanks to @henry-woody and @badp
