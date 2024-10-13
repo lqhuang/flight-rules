@@ -1,7 +1,7 @@
 ---
 title: Makefile Tips
 created: 2023-12-06
-updated: 2024-07-15
+updated: 2024-10-13
 ---
 
 ## Resources
@@ -70,7 +70,7 @@ Config `.RECIPEPREFIX` to use other character instead of tab.
 
 ```makefile
 ifeq ($(origin .RECIPEPREFIX), undefined)
-  $(error This Make does not support .RECIPEPREFIX. Please use GNU Make 4.0 or later)
+	$(error This Make does not support .RECIPEPREFIX. Please use GNU Make 4.0 or later)
 endif
 .RECIPEPREFIX = >
 ```
@@ -102,7 +102,7 @@ References:
 Two ways to do if-else pattern in Makefile (looping is very similar):
 
 1. Use `ifeq` and `endif` by Makefile condition syntax
-   ```
+   ```makefile
    conditional-directive-one
    text-if-one-is-true
    else conditional-directive-two
@@ -251,7 +251,7 @@ validate: terraform
 FOO ?= bar
 # is exactly equivalent to this
 ifeq ($(origin FOO), undefined)
-    FOO = bar
+	FOO = bar
 endif
 ```
 
@@ -286,13 +286,13 @@ immediate += deferred or immediate
 immediate != immediate
 
 define immediate
-  deferred
+	deferred
 endef
 
 ...
 
 define immediate :=
-  immediate
+	immediate
 endef
 
 ...
@@ -309,9 +309,9 @@ But there is a special case for imedate variable defined in target-specific.
 
 A rule is always expanded the same way, regardless of the form:
 
-```
+```makefile
 immediate : immediate ; deferred
-        deferred
+	deferred
 ```
 
 That is, the target and prerequisite sections are expanded immediately, and the
@@ -467,3 +467,7 @@ Your input is 'prefix-bar' and you catched 'bar'
 Ref:
 
 - [4.12.1 Syntax of Static Pattern Rules](https://www.gnu.org/software/make/manual/html_node/Static-Usage.html)
+
+## Path of Current Makefile
+
+- https://stackoverflow.com/questions/18136918/how-to-get-current-relative-directory-of-your-makefile
