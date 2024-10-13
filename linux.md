@@ -1338,7 +1338,7 @@ Refs:
 - [GCC online documentation: Environment Variables](https://gcc.gnu.org/onlinedocs/cpp/Environment-Variables.html)
 - [GCC online documentation: Invocation](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html)
 
-# Changing the Install Directory with `make install`
+## Changing the Install Directory with `make install`
 
 When we run `./configure`, we can use parameters to change the directories where
 make install will install the files:
@@ -1572,7 +1572,7 @@ echo 'hello' | read message
 
 - [Bash: Assign output of pipe to a variable](https://unix.stackexchange.com/questions/338000/bash-assign-output-of-pipe-to-a-variable)
 
-# Disable Sleep, Hibernate, Suspend on Debian Linux
+## Disable Sleep, Hibernate, Suspend on Debian Linux
 
 ```sh
 # mask out related systemd targets
@@ -1603,3 +1603,58 @@ Ref:
 
 - [suspend - How do I disable my system from going to sleep? - Ask Ubuntu](https://askubuntu.com/questions/47311/how-do-i-disable-my-system-from-going-to-sleep)
 - [How to Disable Sleep, Hibernate, and Suspend on [Debian] Linux via Terminal · Snippets · GitLab](https://gitlab.com/-/snippets/2515869)
+
+## User specific crontab job not running
+
+From _man page of `crontab(1)`_:
+
+> Scheduling cron jobs with **crontab** can be allowed or disallowed
+> for different users. For this purpose, use the `cron.allow` and
+> `cron.deny` files. If the `cron.allow` file exists, a user must be
+> listed in it to be allowed to use **crontab**. If the `cron.allow`
+> file does not exist but the `cron.deny` file does exist, then a
+> user must not be listed in the `cron.deny` file in order to use
+> **crontab**. If neither of these files exist, then only the super
+> user is allowed to use **crontab**.
+
+> Another way to restrict the scheduling of cron jobs beyond
+> **crontab** is to use PAM authentication in `/etc/security/access.conf`
+> to set up users, which are allowed or disallowed to use **crontab**
+> or modify system cron jobs in the `/etc/cron.d/` directory.
+
+> The temporary directory can be set in an environment variable.
+> If it is not set by the user, the `/tmp` directory is used.
+
+And please notice
+
+> The files `cron.allow` and `cron.deny` cannot be used to restrict the
+> execution of cron jobs; they only restrict the use of crontab.
+> In particular, restricting access to crontab has no effect on an
+> existing crontab of a user. Its jobs will continue to be executed
+> until the crontab is removed.
+
+> The files `cron.allow` and `cron.deny` must be readable by the user
+> invoking crontab. If this is not the case, then they are treated
+> as non-existent.
+
+From _Linux Bash Shell Scripting Tutorial - /etc/cron.allow_
+
+> ```
+> # Enter the user names, one per line, who will be allowed to use crontab commands.
+> # Be sure to add `root` to this list. If you do not, superuser access to crontab commands will be denied.
+> root
+> username1
+> username2
+> username3
+> .
+> .
+> .
+> ```
+
+Refs:
+
+- [Stackoverflow - Crontab won't run for user](https://stackoverflow.com/questions/53172222/crontab-wont-run-for-user)
+  - outdated, but still useful and informative which make me understand the concept of `cron.allow` and `cron.deny`
+  - [Controlling Access to crontab](https://docs.oracle.com/cd/E19455-01/805-7229/6j6q8svfu/index.html)
+  - [Linux Bash Shell Scripting Tutorial - /etc/cron.allow](https://bash.cyberciti.biz/guide//etc/cron.allow)
+- [crontab(1) — Linux manual page](https://man7.org/linux/man-pages/man1/crontab.1.html)
