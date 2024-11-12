@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2024-02-08
+updated: 2024-11-12
 tags:
   - docker
   - container
@@ -1243,3 +1243,60 @@ sudo loginctl enable-linger ${USER}
 ```
 
 - [Rootless mode - Daemon with systemd](https://docs.docker.com/engine/security/rootless/#daemon)
+
+## Pre-defined environment variables in Docker Compose
+
+There lots of pre-defined environment variables have been set by Docker Compose:
+
+- `COMPOSE_CONVERT_WINDOWS_PATHS`
+- `COMPOSE_FILE`
+- `COMPOSE_PROFILES`
+- `COMPOSE_PROJECT_NAME`
+- `DOCKER_CERT_PATH`
+- `COMPOSE_PARALLEL_LIMIT`
+- `COMPOSE_IGNORE_ORPHANS`
+- `COMPOSE_REMOVE_ORPHANS`
+- `COMPOSE_PATH_SEPARATOR`
+- `COMPOSE_ANSI`
+- `COMPOSE_STATUS_STDOUT`
+- `COMPOSE_ENV_FILES`
+- `COMPOSE_MENU`
+- `COMPOSE_EXPERIMENTAL`
+
+Refs:
+
+- [Pre-defined environment variables | Docker Docs
+  ](https://docs.docker.com/compose/how-tos/environment-variables/envvars): Compose pre-defined environment variables
+
+## Configure logging driver for Docker
+
+A long living container host with local file logging driver may have a large log records. To avoid disk space exhausted, you can configure the log rotation for docker logging driver. (By default, Docker captures the standard output (and standard error) of all your containers, and writes them in files using the JSON format)
+
+Set the `log-driver` and `log-opt` keys to appropriate values in the `daemon.json` file, which is located in `/etc/docker/` on Linux hosts
+
+```json
+{
+  "log-opts": {
+    "max-size": "10m"
+  }
+}
+```
+
+Restart Docker for the changes to take effect for newly created containers. **Existing containers don't use the new logging configuration automatically.**
+
+We can set the logging driver for a specific container by using the `--log-driver` flag to `docker container create` or `docker run`
+
+The local logging driver supports the following logging options:
+
+- `max-size`: `--log-opt max-size=10m`
+- `max-file`: `--log-opt max-file=3`
+- `compress`: `--log-opt compress=true`
+
+Refs:
+
+- [Configure logging drivers | Docker Docs
+  ](https://docs.docker.com/engine/logging/configure/): Learn how to configure logging driver for the Docker daemon
+- [JSON File logging driver | Docker Docs
+  ](https://docs.docker.com/engine/logging/drivers/json-file/): Learn how to use the json-file logging driver with Docker Engine
+- [Local file logging driver | Docker Docs
+  ](https://docs.docker.com/engine/logging/drivers/local/): Learn how to use the local logging driver with Docker Engine
