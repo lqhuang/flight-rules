@@ -14,6 +14,7 @@ updated: 2024-12-10
 6. [Bash Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
 7. [Advanced Bash-Scripting Guide](http://tldp.org/LDP/abs/html/)
 8. [6 Techniques I Use to Create a Great User Experience for Shell Scripts](https://nochlin.com/blog/6-techniques-i-use-to-create-a-great-user-experience-for-shell-scripts)
+9. [Make Linux/Unix Script Portable With `#!/usr/bin/env` As a Shebang](https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html)
 
 ## Shell: Use variable inside single quote
 

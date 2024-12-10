@@ -1,7 +1,7 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2024-07-15
+updated: 2024-12-10
 ---
 
 ## Resources
@@ -153,10 +153,34 @@ https://github.com/k88hudson/git-flight-rules#i-committed-with-the-wrong-name-an
 
 ### 历史提交记录中的 commit
 
+Approach 1: `git filter-repo`
+
+```
+# Replace all instances of the old email with the new email
+git filter-repo --email-callback '
+  return email.replace("old_email@example.com", "new_email@example.com")
+'
+```
+
+Approach 2: Add a `mailmap` file to the repository
+
+If the file `.mailmap` exists at the toplevel of the repository, or at the location pointed to by the `mailmap.file` or `mailmap.blob` configuration options, it is used to map author and committer names and email addresses to canonical real names and email addresses.
+
+```
+# In the simple form, each line in the file consists of the canonical real name of an author
+Proper Name <commit@email.xx>
+# which allows mailmap to replace only the email part of a commit, and:
+Proper Name <proper@email.xx> <commit@email.xx>
+# which allows mailmap to replace both the name and the email of a commit matching the specified commit email address
+Proper Name <proper@email.xx> Commit Name <commit@email.xx>
+```
+
 Refs:
 
-1. https://segmentfault.com/q/1010000006999861
-2. https://stackoverflow.com/questions/750172/how-to-change-the-author-and-committer-name-and-e-mail-of-multiple-commits-in-gi
+1. [How do I change the author and committer name/email for multiple commits?](https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits)
+2. [Git, rewrite previous commit usernames and emails - Stack Overflow](https://stackoverflow.com/questions/2919878/git-rewrite-previous-commit-usernames-and-emails)
+3. [git-mailmap](https://git-scm.com/docs/gitmailmap): Map author/committer names and/or E-Mail addresses
+4. [Using git mailmap when names change (or you mess up your email)](https://ntietz.com/blog/git-mailmap-for-name-changes/)
 
 ## 查看哪些历史提交过文件占用空间较大, 重写 commit，删除大文件
 
@@ -538,3 +562,13 @@ checkpoint:
 ## Only fetch specific upstream branch (for everytime)
 
 https://stackoverflow.com/questions/6368987/how-do-i-fetch-only-one-branch-of-a-remote-git-repository
+
+## Not a git tips but for GitHub code search
+
+> By default, code search is case-insensitive, and results will include both uppercase and lowercase results. You can do case-sensitive searches by using a regular expression with case insensitivity turned off. For example, to search for the string "True", you would use:
+>
+> ```
+> /(?-i)True/
+> ```
+
+- [Understanding GitHub Code Search syntax: Case sensitivity](https://docs.github.com/en/search-github/github-code-search/understanding-github-code-search-syntax#case-sensitivity)
