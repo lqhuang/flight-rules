@@ -1,7 +1,7 @@
 ---
 title: Tips for Docker or Container
 created: 2019-04-02
-updated: 2024-11-12
+updated: 2024-12-12
 tags:
   - docker
   - container
@@ -18,13 +18,13 @@ As of compose file version 3.5:
 This now works:
 
 ```yaml
-version: "3.5"
+version: '3.5'
 
 services:
   proxy:
     image: user/image:tag
     ports:
-      - "80:80"
+      - '80:80'
     networks:
       - proxynet
 
@@ -96,8 +96,8 @@ solution 2: using `cloud-init` script
 #cloud-config
 coreos:
   units:
-    - name: "docker.service"
-      command: "start"
+    - name: 'docker.service'
+      command: 'start'
       enable: true
 ```
 
@@ -292,7 +292,7 @@ or configure it in compose file
 services:
   app:
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
 ```
 
 The `--add-host` flag supports a special `host-gateway` value that resolves to
@@ -542,16 +542,16 @@ features like external caches.
 
 ```yaml
 ports:
-  - "3000"
-  - "3000-3005"
-  - "8000:8000"
-  - "9090-9091:8080-8081"
-  - "49100:22"
-  - "127.0.0.1:8001:8001"
-  - "127.0.0.1:5000-5010:5000-5010"
-  - "127.0.0.1::5000"
-  - "6060:6060/udp"
-  - "12400-12500:1240"
+  - '3000'
+  - '3000-3005'
+  - '8000:8000'
+  - '9090-9091:8080-8081'
+  - '49100:22'
+  - '127.0.0.1:8001:8001'
+  - '127.0.0.1:5000-5010:5000-5010'
+  - '127.0.0.1::5000'
+  - '6060:6060/udp'
+  - '12400-12500:1240'
 ```
 
 References:
@@ -973,7 +973,7 @@ Create a file named
 [Service]
 Environment="HTTP_PROXY=http://proxy.example.com:3128"
 Environment="HTTPS_PROXY=http://proxy.example.com:3129"
-Environment="NO_PROXY=localhost,127.0.0.1,docker-registry.example.com,.corp"
+Environment="NO_PROXY=localhost,.local,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
 ```
 
 Flush changes and restart Docker
