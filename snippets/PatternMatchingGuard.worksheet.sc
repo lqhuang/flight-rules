@@ -2,7 +2,7 @@ import scala.util.Random
 
 abstract class PL
 case class Scala(creator: String, age: Int, version: Int) extends PL
-case class Other(name: String, age: Int, version: Int)    extends PL
+case class Other(name: String, age: Int, version: Int) extends PL
 
 val that =
   Random.shuffle(List(Scala("scala", 20, 3), Other("Any", 30, 22))).head

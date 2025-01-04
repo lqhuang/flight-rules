@@ -1658,3 +1658,45 @@ Refs:
   - [Controlling Access to crontab](https://docs.oracle.com/cd/E19455-01/805-7229/6j6q8svfu/index.html)
   - [Linux Bash Shell Scripting Tutorial - /etc/cron.allow](https://bash.cyberciti.biz/guide//etc/cron.allow)
 - [crontab(1) — Linux manual page](https://man7.org/linux/man-pages/man1/crontab.1.html)
+
+## Ignore files while compressing via `zip`
+
+`zip` command has `-x` option to exclude files or directories while compressing.
+
+```man
+  -r   recurse into directories
+  -x   exclude the following names
+  -i   include only the following names
+
+Include and Exclude:
+  -i pattern pattern ...   include files that match a pattern
+  -x pattern pattern ...   exclude files that match a pattern
+  Patterns are paths with optional wildcards and match paths as stored in
+  archive.  Exclude and include lists end at next option, @, or end of line.
+    zip -x pattern pattern @ zipfile path path ...
+```
+
+But the `-x` option is a bit tricky, the following command does not work as expected:
+
+```sh
+zip -r archive.zip . -x dir/*
+```
+
+You need to use `\` to escape `*` on Unix like system to exclude files or directories you want.
+
+```sh
+zip -r archive.zip . -x dir/\*.c
+# or
+zip -r archive.zip . -x "dir/\*.c"
+# or
+zip -r archive.zip . -x 'dir/*'
+# Bash wildcard expansion will interfere with supplying `*` or `.` in an argument.
+```
+
+And note that currently the trailing `/` is needed for directories.
+
+```sh
+zip -r archive.zip . -x ./\*\*/dir/
+```
+
+- [Unix zip directory but excluded specific subdirectories (and everything within them) - Super User](https://superuser.com/questions/312301/unix-zip-directory-but-excluded-specific-subdirectories-and-everything-within-t)

@@ -1,8 +1,3 @@
 {
-  // "files.exclude": {
-  //   "**/*.sc": true
-  // },
-  "files.watcherExclude": {
-    "**/*.sc": true
-  }
+  "metals.inlayHints.implicitConversions.enable": true
 }
