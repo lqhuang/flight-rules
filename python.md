@@ -1350,7 +1350,7 @@ Refs:
 > a 99% reduction in index fetch bandwith.
 
 ```yaml
-experimental: ["jlap"]
+experimental: ['jlap']
 # flag `jlap`: conda 23.3.1 release from March, 2023
 ```
 
