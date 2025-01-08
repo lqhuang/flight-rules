@@ -1,7 +1,7 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2023-11-21
+updated: 2025-01-07
 ---
 
 ## Resources
@@ -1700,3 +1700,26 @@ zip -r archive.zip . -x ./\*\*/dir/
 ```
 
 - [Unix zip directory but excluded specific subdirectories (and everything within them) - Super User](https://superuser.com/questions/312301/unix-zip-directory-but-excluded-specific-subdirectories-and-everything-within-t)
+
+## Ubuntu: Find all files installed by a package
+
+```sh
+# by dpkg
+# ...
+# -L|--listfiles <package>...      List files 'owned' by package(s).
+dpkg -L <package-name>
+
+
+# or by apt-file
+#
+#   list|show          <pattern>        List files in packages (pattern is package)
+#   search|find        <pattern>        Search files in packages (pattern is file)
+apt-file list <package-name>
+# do not forget to update the index after installing apt-file
+# `apt-file update`
+```
+
+Refs:
+
+- [apt-file - Debian Wiki](https://wiki.debian.org/apt-file): no description found
+- [ubuntu - Finding path of static system libraries in Linux - Stack Overflow](https://stackoverflow.com/questions/26415485/finding-path-of-static-system-libraries-in-linux)
