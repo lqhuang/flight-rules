@@ -1,12 +1,57 @@
 ---
 title: LaTex Notes
 created: 2017-02-13
-updated: 2023-01-12
+updated: 2025-01-14
 ---
 
 ## Resources
 
 - [The Art of LaTeX: Common Mistakes, and Advice for Typesetting Beautiful, Delightful Proofs](https://fanpu.io/blog/2023/latex-tips/)
+- [MiKTeX](https://miktex.org/)
+  - [“Just enough TeX”](https://miktex.org/kb/just-enough-tex)
+  - [TeX Directory Structure](https://miktex.org/kb/tds)
+  - [MiKTeX Manual](https://docs.miktex.org/manual/)
+    - [Part II. Reference](https://docs.miktex.org/manual/reference.html)
+    - [Chapter 10. Run-Time Defaults](https://docs.miktex.org/manual/defaults.html)
+
+## Setup `miktex` after installation
+
+After installing `miktex`, you have to finish the setup via `miktexsetup` (if prefer cli).
+
+By default `miktex` will install the packages under the user's home directory `${HOME}/bin`. If you want to install the packages under `${HOME}/.local/bin`, you can run the following command with option `--user-install=${HOME}/.local/bin`.
+
+```sh
+# or you may try run `miktexsetup cleanup` to remove the old links
+miktexsetup finish --user-link-target-directory="${HOME}/.local/bin"
+```
+
+And you could use `miktex links list` to check all installed links.
+
+According to TDS (TeX Directory Structure), the TEXMF root directories managed by MiKTeX are the following:
+
+- UserConfig: for user-specific configuration files
+- UserData: for user-specific data files (format files, font caches, ...)
+- UserInstall: the installation destination for packages installed by the user
+
+And the localtion of these directories is:
+
+Linux
+
+- UserConfig: `$HOME/.miktex/texmfs/config`
+- UserData: `$HOME/.miktex/texmfs/data`
+- UserInstall: `$HOME/.miktex/texmfs/install`
+
+macOS
+
+- UserConfig: `$HOME/Library/Application Support/MiKTeX/texmfs/config`
+- UserData: `$HOME/Library/Application Support/MiKTeX/texmfs/data`
+- UserInstall: `$HOME/Library/Application Support/MiKTeX/texmfs/install`
+
+Refs:
+
+- [Install MiKTeX for Linux](https://miktex.org/howto/install-miktex-unx)
+- [TEXMF root directories](https://miktex.org/kb/texmf-roots)
+- [`miktex-links` — manage links from scripts and formats to executables](https://docs.miktex.org/manual/miktex-links.html)
 
 ## float object always fill a full page
 
@@ -76,3 +121,28 @@ is obviously missing. Once the package found, you can install it
 Refs:
 
 1. [find-the-right-package-for-missing-files-in-texlive](https://tex.stackexchange.com/questions/274536/find-the-right-package-for-missing-files-in-texlive)
+
+## Which is the best directory to keep my .sty files?
+
+> If you want to install your own `.sty` files, then you should copy the files into the directory `tex/latex/mystuff` relative to a new [TEXMF root directory](https://miktex.org/kb/texmf-roots).
+>
+> Example (Mac/Linux):
+>
+> - Create a new TEXMF root: `mkdir ~/mytexmf`
+> - Create a sub directory: `mkdir -p ~/mytexmf/tex/latex/mystuff`
+> - Copy your `.cls` and/or `.sty `files to `~/mytexmf/tex/latex/mystuff`
+> - Register the TEXMF root directory `~/mytexmf`
+
+## Install a package by miktex
+
+```sh
+miktex package install package-id
+miktex package list
+# ...
+# miktex package update
+# miktex package upgrade
+```
+
+Refs:
+
+- [`miktex-packages` — manage MiKTeX packages](https://docs.miktex.org/manual/miktex-packages.html)
