@@ -1,6 +1,7 @@
 ---
 title: Jupyter Tips
-updated: 2022-12-08
+created: 2022-12-08
+updated: 2025-01-19
 tags:
   - jupyter
   - python
@@ -49,23 +50,23 @@ Refs:
 MathJax.Hub.Config({
   tex2jax: {
     inlineMath: [
-      ["$", "$"],
-      ["\\(", "\\)"],
+      ['$', '$'],
+      ['\\(', '\\)'],
     ],
     displayMath: [
-      ["$$", "$$"],
-      ["\\[", "\\]"],
+      ['$$', '$$'],
+      ['\\[', '\\]'],
     ],
     processEscapes: true,
   },
   TeX: {
-    equationNumbers: { autoNumber: "AMS" },
-    extensions: ["boldsymbol.js"],
+    equationNumbers: { autoNumber: 'AMS' },
+    extensions: ['boldsymbol.js'],
     macros: {
-      bm: ["\\boldsymbol{#1}", 1],
+      bm: ['\\boldsymbol{#1}', 1],
     },
   },
-  "HTML-CSS": {
+  'HTML-CSS': {
     imageFont: null,
   },
 });
@@ -80,4 +81,44 @@ ref:
 
 ```
 jupyter notebook password
+```
+
+## Inline animations in Jupyter
+
+First tune your notebook backend to `widget`:
+
+```python
+%matplotlib widget
+
+# %matplotlib notebook
+# is deprecated and not recommended for using inside VS Code
+```
+
+`inline` means that the plots are shown as png graphics. Those png images cannot be animated. But notice that installed `ipympl` is required to use `widget` backend.
+
+Then ty to use `jshtml` as the animation format:
+
+```python
+from IPython.display import HTML
+HTML(ani.to_jshtml())
+```
+
+where `ani` is the animation object from `matplotlib`.
+
+Refs
+
+- [python - Inline animations in Jupyter - Stack Overflow](https://stackoverflow.com/questions/43445103/inline-animations-in-jupyter)
+
+## Disable show figure object automatically after runned cell
+
+In recent versions of `Matplotlib` and `IPython`, it is sufficient to import `matplotlib.pyplot` and call `pyplot.ion`.
+
+```python
+import matplotlib.pyplot as plt
+
+_ = plt.ioff()  # Turn off interactive mode to disable automatic redrawing of the plot
+
+# So you need to call plt.show() or fig explicitly to display the figure
+
+# Warning: This may not work under `%matplotlib inline` mode
 ```

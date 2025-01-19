@@ -1,12 +1,14 @@
 ---
 title: Git Cheatsheet
 created: 2017-02-13
-updated: 2024-12-10
+updated: 2025-01-19
 ---
 
 ## Resources
 
 - [89 things I know about Git commits](https://www.jvt.me/posts/2024/07/12/things-know-commits/)
+- [Oh Shit, Git!?!](https://ohshitgit.com/)
+  - Multiple languages available
 
 ## Sync your forked repo with upstream
 
