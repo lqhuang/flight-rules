@@ -1,12 +1,13 @@
 ---
 title: Linux Notes
 created: 2017-02-13
-updated: 2025-01-07
+updated: 2025-03-30
 ---
 
 ## Resources
 
 - [Linux Cheat Sheet](https://sites.google.com/site/mrxpalmeiras/linux/linux-cheat-sheet)
+- 🌟 [What every SRE should know about](https://biriukov.dev/)
 
 ## Change permissions of all files and subfolders
 

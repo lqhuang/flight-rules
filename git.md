@@ -10,6 +10,7 @@ updated: 2025-01-21
 - [Oh Shit, Git!?!](https://ohshitgit.com/)
   - Multiple languages available
 - [Commits are snapshots, not diffs](https://github.blog/open-source/git/commits-are-snapshots-not-diffs/)
+- [Automating cherry-picks between OSS and private forks — PlanetScale](https://planetscale.com/blog/automating-cherry-picks-between-oss-and-private-forks)
 
 ## Sync your forked repo with upstream
 

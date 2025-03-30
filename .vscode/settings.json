@@ -1,6 +1,11 @@
 {
   "metals.inlayHints.implicitConversions.enable": true,
   "files.watcherExclude": {
-    "**/target": true
+    "**/target": true,
+    // avoid to activate metals on current working directory
+    "**/.bloop": true,
+    "**/.metals": true,
+    "**/*.scala": true,
+    "**/*.sc": true
   }
 }
