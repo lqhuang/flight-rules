@@ -467,7 +467,3 @@ Your input is 'prefix-bar' and you catched 'bar'
 Ref:
 
 - [4.12.1 Syntax of Static Pattern Rules](https://www.gnu.org/software/make/manual/html_node/Static-Usage.html)
-
-## Path of Current Makefile
-
-- https://stackoverflow.com/questions/18136918/how-to-get-current-relative-directory-of-your-makefile
