@@ -1,3 +1,4 @@
 .scala-build/
 .metals/
 .bsp/
+.DS_Store
